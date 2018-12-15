@@ -6,9 +6,6 @@ julia:
   - 1.0
   - nightly
 
-notifications:
-  email: false
-
 matrix:
   include:
     - os: linux
@@ -16,9 +13,6 @@ matrix:
     - os: osx
   allow_failures:
     - julia: nightly
-
-notifications:
-  email: true
 
 script:
   - julia --project --check-bounds=yes -e 'import Pkg; Pkg.build(); Pkg.test("SatelliteDynamics"; coverage=true)'
