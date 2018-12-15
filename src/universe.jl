@@ -84,6 +84,7 @@ function UT1_UTC(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
         y1 = eop.data[convert(Int32, floor(mjd))][1]
         y2 = eop.data[convert(Int32, floor(mjd)+1)][1]
         x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
+        return x
     else
         return eop.data[convert(Int32, floor(mjd))][1]
     end
@@ -96,9 +97,12 @@ function POLE_LOCATOR(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
     if interp
         x1 = floor(mjd)
         x2 = floor(mjd) + 1
-        y1 = eop.data[convert(Int32, floor(mjd))][2:3]
-        y2 = eop.data[convert(Int32, floor(mjd)+1)][2:3]
+
+        # Get values converted to array for interpolation
+        y1 = [v for v in eop.data[convert(Int32, floor(mjd))][2:3]]
+        y2 = [v for v in eop.data[convert(Int32, floor(mjd)+1)][2:3]]
         x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
+        return x
     else
         return eop.data[convert(Int32, floor(mjd))][2:3]
     end
@@ -114,6 +118,7 @@ function XP(eop::EarthOrientationData, mjd::Real; interp=false)
         y1 = eop.data[convert(Int32, floor(mjd))][2]
         y2 = eop.data[convert(Int32, floor(mjd)+1)][2]
         x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
+        return x
     else
         return eop.data[convert(Int32, floor(mjd))][2]
     end
@@ -129,6 +134,7 @@ function YP(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
         y1 = eop.data[convert(Int32, floor(mjd))][3]
         y2 = eop.data[convert(Int32, floor(mjd)+1)][3]
         x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
+        return x
     else
         return eop.data[convert(Int32, floor(mjd))][3]
     end

@@ -7,6 +7,11 @@ os:
 julia:
   - 1.0
   - nightly
+  
+# safelist branches
+branches:
+  only:
+  - master
 
 matrix:
   include:

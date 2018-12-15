@@ -1,12 +1,53 @@
+# Earth Orientation
+
+# Test internal data type
 let 
     @test typeof(EOP.data) == Dict{Int32,Tuple{Float64,Float64,Float64}}
+end
 
+# Test constructors
+let
+    finals_2000 = EarthOrientationData(:FINALS_2000)
+    eop_c04     = EarthOrientationData(:C04_14)
+end
+
+# Test Data valutes
+let
     @test UT1_UTC(58747)      == -0.1897929
     @test POLE_LOCATOR(58747) == (0.230292*AS2RAD, 0.332704*AS2RAD)
     @test XP(58747)           == 0.230292*AS2RAD
     @test YP(58747)           == 0.332704*AS2RAD
 end
 
+# Test interpolation values
+let
+    ut1_utc = (UT1_UTC(58748) + UT1_UTC(58747))/2.0
+    @test UT1_UTC(58747.5, interp=true) == ut1_utc
+
+    x1, y1 = POLE_LOCATOR(58747)
+    x2, y2 = POLE_LOCATOR(58748)
+    pole_locator = ((x2+x1)/2.0, (y2+y1)/2.0)
+    @test POLE_LOCATOR(58747.5, interp=true)[1] == pole_locator[1]
+    @test POLE_LOCATOR(58747.5, interp=true)[2] == pole_locator[2]
+
+    xp = (XP(58748) + XP(58747))/2.0
+    @test XP(58747.5, interp=true) == xp
+
+    yp = (YP(58748) + YP(58747))/2.0
+    @test YP(58747.5, interp=true) == yp
+end
+
+# Test loading new products into project global vairable
+let 
+    load_eop(:C04_14)
+    @test UT1_UTC(37665) == 0.0326338
+
+    # Return to original state
+    load_eop(:FINALS_2000)
+end
+
+
+# Gravity Model 
 let
     @test typeof(GRAVITY_MODEL.data) == Array{Float64, 2}
 
