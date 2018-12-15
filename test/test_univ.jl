@@ -62,3 +62,11 @@ let
     @test GRAV_COEF(0, 0)   == 1.0
     @test GRAV_COEF(90, 90) == 0.733188520723327e-09
 end
+
+let
+    gmdl = GravModel(:EGM2008_90)
+end
+
+let 
+    load_gravity_model(:GGM01S)
+end

@@ -17,8 +17,6 @@ using SatelliteDynamics.Constants
 # Earth Orientation Data #
 ##########################
 
-valid_products = [:C04_14, :C04_80, :FINALS_2000]
-
 # Define product dictionary
 eop_products = Dict(
     :C04_14 => ("https://datacenter.iers.org/data/latestVersion/224_EOP_C04_14.62-NOW.IAU2000A224.txt", abspath(string(@__DIR__), "../data/EOP_C04_14.62-NOW.IAU2000A.txt")),
@@ -65,7 +63,7 @@ function EarthOrientationData(product::Symbol)
             end
         end
     else
-        @error "Unknown symbol $(String(:product))"
+        error("Unknown symbol $(String(:product))")
     end
 
     return EarthOrientationData(eop_data)
@@ -156,6 +154,14 @@ end
 # Gravity Model #
 #################
 
+grav_products = Dict(
+    :EGM2008_20 => abspath(string(@__DIR__), "../data/EGM2008_20.gfc"),
+    :EGM2008_90 => abspath(string(@__DIR__), "../data/EGM2008_90.gfc"),
+    :GGM01S => abspath(string(@__DIR__), "../data/GGM01S.gfc"),
+    :GGM01S => abspath(string(@__DIR__), "../data/GGM05S.gfc"),
+)
+
+
 function line_starts_with(line::String, str::String)
     if length(line) > length(str) && line[1:length(str)] == str
         return true
@@ -164,60 +170,70 @@ function line_starts_with(line::String, str::String)
     end
 end
 
+export GravModel
 struct GravModel
     name::String
     normalized::Bool
-    n_max::Int64
-    m_max::Int64
     R::Float64
     GM::Float64
+    n_max::Int64
+    m_max::Int64
     data::Array{Float64, 2}
+end
 
-    function GravModel(filepath::String)
-        model_name = ""
-        normalized = false
-        R          = 0.0
-        GM         = 0.0
-        data       = Array{Float64, 2}(undef, 1, 1)
-        n_max      = 0.0
-        m_max      = 0.0
+function GravModel(filepath::String)
+    model_name = ""
+    normalized = false
+    R          = 0.0
+    GM         = 0.0
+    n_max      = 0.0
+    m_max      = 0.0
+    data       = Array{Float64, 2}(undef, 1, 1)
 
-        # Parse File
-        for line in readlines(filepath)
-            if line_starts_with(line, "modelname")
-                model_name = split(line)[2]
-            elseif line_starts_with(line, "max_degree")
-                n_max = parse(Int16, split(line)[2])
-                m_max = n_max
-                data = zeros(Float64, n_max+1, m_max+1)
-            elseif line_starts_with(line, "earth_gravity_constant")
-                GM = parse(Float64, split(line)[2])
-            elseif line_starts_with(line, "radius")
-                R = parse(Float64, split(line)[2])
-            elseif line_starts_with(line, "norm")
-                if split(line)[2] == "fully_normalized"
-                    normalized = true
-                else
-                    normalized = false
-                end
-            elseif line_starts_with(line, "gfc")
-                line_split = split(line)
-                n = parse(Int16, line_split[2])
-                m = parse(Int16, line_split[3])
-                C = parse(Float64, line_split[4])
-                S = parse(Float64, line_split[5])
+    # Parse File
+    for line in readlines(filepath)
+        # Replace non-standard float formatting in GFC files
+        line = replace(line, "D+" => "e+")
+        line = replace(line, "D-" => "e-")
 
-                data[n+1, m+1] = C
-                if m != 0
-                    data[m+1-1, n+1] = S
-                end
+        if line_starts_with(line, "modelname")
+            model_name = split(line)[2]
+        elseif line_starts_with(line, "max_degree")
+            n_max = parse(Int16, split(line)[2])
+            m_max = n_max
+            data = zeros(Float64, n_max+1, m_max+1)
+        elseif line_starts_with(line, "earth_gravity_constant")
+            GM = parse(Float64, split(line)[2])
+        elseif line_starts_with(line, "radius")
+            R = parse(Float64, split(line)[2])
+        elseif line_starts_with(line, "norm")
+            if split(line)[2] == "fully_normalized"
+                normalized = true
+            else
+                normalized = false
+            end
+        elseif line_starts_with(line, "gfc")
+            line_split = split(line)
+            n = parse(Int16, line_split[2])
+            m = parse(Int16, line_split[3])
+            C = parse(Float64, line_split[4])
+            S = parse(Float64, line_split[5])
+
+            data[n+1, m+1] = C
+            if m != 0
+                data[m+1-1, n+1] = S
             end
         end
-
-        # Pre-Allocate 
-        new(model_name, normalized, n_max, m_max, R, GM, data)
     end
+
+    # Pre-Allocate 
+    return GravModel(model_name, normalized, R, GM, n_max, m_max, data)
 end
+
+function GravModel(product_name::Symbol)
+    return GravModel(grav_products[product_name])
+end
+
 
 # Declare glrobal Gravity Model used by dynamics model calls
 export GRAVITY_MODEL
@@ -226,6 +242,10 @@ global GRAVITY_MODEL = GravModel(abspath(@__DIR__, "../data/EGM2008_90.gfc"))
 export load_gravity_model
 function load_gravity_model(gfc_file::String)
     global GRAVITY_MODEL = GravModel(gfc_file::String) 
+end
+
+function load_gravity_model(product_name::Symbol)
+    global GRAVITY_MODEL = GravModel(product_name::Symbol) 
 end
 
 export GRAV_COEF
