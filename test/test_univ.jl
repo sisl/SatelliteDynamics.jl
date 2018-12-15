@@ -1,10 +1,10 @@
 let 
-    @test typeof(EOP.data) == Dict{Int64,Tuple{Float64,Float64,Float64}}
+    @test typeof(EOP.data) == Dict{Int32,Tuple{Float64,Float64,Float64}}
 
-    @test UT1_UTC(58747)      == -0.1975390
-    @test POLE_LOCATOR(58747) == (0.214445*AS2RAD, 0.339054*AS2RAD)
-    @test XP(58747)           == 0.214445*AS2RAD
-    @test YP(58747)           == 0.339054*AS2RAD
+    @test UT1_UTC(58747)      == -0.1897929
+    @test POLE_LOCATOR(58747) == (0.230292*AS2RAD, 0.332704*AS2RAD)
+    @test XP(58747)           == 0.230292*AS2RAD
+    @test YP(58747)           == 0.332704*AS2RAD
 end
 
 let

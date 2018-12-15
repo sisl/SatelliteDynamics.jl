@@ -21,9 +21,9 @@ valid_products = [:C04_14, :C04_80, :FINALS_2000]
 
 # Define product dictionary
 eop_products = Dict(
-    :C04_14 => ("https://datacenter.iers.org/data/latestVersion/224_EOP_C04_14.62-NOW.IAU2000A224.txt", abspath("./data/EOP_C04_14.62-NOW.IAU2000A.txt")),
-    :C04_80 => ("https://datacenter.iers.org/data/latestVersion/223_EOP_C04_14.62-NOW.IAU1980223.txt", abspath("./data/EOP_C04_80.62-NOW.IAU2000A.txt")),
-    :FINALS_2000 => ("https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt", abspath("./data/FINALS.ALL_IAU2000.txt"))
+    :C04_14 => ("https://datacenter.iers.org/data/latestVersion/224_EOP_C04_14.62-NOW.IAU2000A224.txt", abspath(string(@__DIR__), "../data/EOP_C04_14.62-NOW.IAU2000A.txt")),
+    :C04_80 => ("https://datacenter.iers.org/data/latestVersion/223_EOP_C04_14.62-NOW.IAU1980223.txt", abspath(string(@__DIR__), "../data/EOP_C04_80.62-NOW.IAU2000A.txt")),
+    :FINALS_2000 => ("https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt", abspath(string(@__DIR__), "../data/FINALS.ALL_IAU2000.txt"))
 )
 
 export EarthOrientationData
@@ -85,7 +85,6 @@ function UT1_UTC(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
         y2 = eop.data[convert(Int32, floor(mjd)+1)][1]
         x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
     else
-        println(collect(keys(eop.data)))
         return eop.data[convert(Int32, floor(mjd))][1]
     end
 end
@@ -135,7 +134,7 @@ function YP(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
     end
 end
 
-YP(mjd::Real; interp::Bool=false) = XP(EOP, mjd, interp=interp)
+YP(mjd::Real; interp::Bool=false) = YP(EOP, mjd, interp=interp)
 
 export set_eop
 function set_eop(mjd::Real, ut1_utc::Float64, xp::Float64, yp::Float64)
@@ -216,8 +215,12 @@ end
 
 # Declare glrobal Gravity Model used by dynamics model calls
 export GRAVITY_MODEL
-global GRAVITY_MODEL = GravModel(abspath("./data/EGM2008_90.gfc"))
+global GRAVITY_MODEL = GravModel(abspath(@__DIR__, "../data/EGM2008_90.gfc"))
 
+export load_gravity_model
+function load_gravity_model(gfc_file::String)
+    global GRAVITY_MODEL = GravModel(gfc_file::String) 
+end
 
 export GRAV_COEF
 function GRAV_COEF(i::Int, j::Int)

@@ -14,12 +14,12 @@ Random.seed!(0)
     @testset "universe" begin
         include(joinpath(testdir, "test_univ.jl"))
     end
-    @testset "time" begin
-        include(joinpath(testdir, "test_time.jl"))
-    end
-    @testset "refsys" begin
-        include(joinpath(testdir, "test_refsys.jl"))
-    end
+    # @testset "time" begin
+    #     include(joinpath(testdir, "test_time.jl"))
+    # end
+    # @testset "refsys" begin
+    #     include(joinpath(testdir, "test_refsys.jl"))
+    # end
     # @testset "coordinates" begin
     #     include(joinpath(testdir, "test_coordinates.jl"))
     # end
