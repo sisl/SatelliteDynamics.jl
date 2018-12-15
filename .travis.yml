@@ -1,10 +1,11 @@
 language: julia
 
-os:
-
 julia:
   - 1.0
   - nightly
+
+notifications:
+  email: false
 
 matrix:
   include:
