@@ -1,22 +1,13 @@
 language: julia
 
-os:
-  - linux
-  - osx
-
 julia:
   - 1.0
   - nightly
-  
-# safelist branches
-branches:
-  only:
-  - master
 
 matrix:
   include:
     - os: linux
-      dist: trusty
+      dist: xenial
     - os: osx
   allow_failures:
     - julia: nightly
