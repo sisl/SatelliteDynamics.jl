@@ -1,0 +1,26 @@
+language: julia
+
+os:
+  - linux
+  - osx
+
+julia:
+  - 1.0
+  - nightly
+
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+    - os: osx
+  allow_failures:
+    - julia: nightly
+
+notifications:
+  email: true
+
+script:
+  - julia --project --check-bounds=yes -e 'import Pkg; Pkg.build(); Pkg.test("SatelliteDynamics"; coverage=true)'
+  
+after_success:
+  - julia --project -e 'import Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'  

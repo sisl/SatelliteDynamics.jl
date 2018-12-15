@@ -1,0 +1,7 @@
+julia 1.0
+Reexport
+HTTP
+Random
+LinearAlgebra
+DifferentialEquations
+SOFA 0.1.1
