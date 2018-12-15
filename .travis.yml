@@ -7,7 +7,9 @@ julia:
 matrix:
   include:
     - os: linux
-      dist: xenial, trusty
+      dist: xenial
+    - os: linux
+      dist: trusty
     - os: osx
   allow_failures:
     - julia: nightly
