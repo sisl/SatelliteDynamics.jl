@@ -1,3 +1,7 @@
 using Documenter, SatelliteDynamics
 
-makedocs(sitename="My Documentation")
+makedocs(sitename="SatelliteDynamics Documentation")
+
+deploydocs(
+    repo = "github.com/sisl/SatelliteDynamics.jl",
+)
