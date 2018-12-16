@@ -19,6 +19,10 @@ let
     @test YP(58747)           == 0.332704*AS2RAD
 end
 
+# Test Set values
+let
+    set_eop()
+
 # Test interpolation values
 let
     ut1_utc = (UT1_UTC(58748) + UT1_UTC(58747))/2.0
@@ -47,11 +51,11 @@ let
 end
 
 # Test Update of EOP
-# let
-#     update_eop(:C04_14)
-#     update_eop(:C04_80)
-#     update_eop(:FINALS_2000)
-# end
+let
+    update_eop(:C04_14)
+    update_eop(:C04_80)
+    update_eop(:FINALS_2000)
+end
 
 
 # Gravity Model 
