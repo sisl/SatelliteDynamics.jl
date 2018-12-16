@@ -21,7 +21,19 @@ end
 
 # Test Set values
 let
-    set_eop()
+    set_eop(58747, -0.2, 0.225, 0.3)
+
+    @test UT1_UTC(58747) == -0.2
+    @test POLE_LOCATOR(58747) == (0.225*AS2RAD, 0.3*AS2RAD)
+    @test XP(58747)      == 0.225*AS2RAD
+    @test YP(58747)      == 0.3*AS2RAD
+
+    set_eop(58747, -0.1897929, 0.230292, 0.332704)
+    @test UT1_UTC(58747)      == -0.1897929
+    @test POLE_LOCATOR(58747) == (0.230292*AS2RAD, 0.332704*AS2RAD)
+    @test XP(58747)           == 0.230292*AS2RAD
+    @test YP(58747)           == 0.332704*AS2RAD
+end
 
 # Test interpolation values
 let
