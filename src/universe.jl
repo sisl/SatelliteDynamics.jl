@@ -25,9 +25,21 @@ eop_products = Dict(
 )
 
 export EarthOrientationData
+"""
+The EarthOrientationData constains a single data member of type 
+`Dict{Int32, Tuple{Float64, Float64, Float64}}` that stores the Earth
+Orientation parameters `UT1-UTC`, `xp`, and `yp` whose units are _meters_, 
+_radians_, and _radians_, respectively. `xp` and `yp` are the x- and 
+y-components of Earth's polar motion. The dictionary key is the Epoch the 
+parameters are for as a Modified Julian Day at 0h UTC.
+
+# Arguments:
+- `product::Symbol` The IERS product type can be `:C04_14`, `:C04_80`, or `:FINALS_2000`
+"""
 struct EarthOrientationData
     data::Dict
 end
+
 
 function EarthOrientationData(product::Symbol) 
     # Initialize Data Array
@@ -71,10 +83,35 @@ end
 
 # Declare global Earth Orientation Data Object used by Reference System Calls
 export EOP
+"""
+Module-wide global EarthOrientationData object. This data object is used as the
+default source of Earth Orientation Data by reference system transformations if
+no explicit EarthOrientationData file is provided to those transformations.
+
+This value can be overridden in your own code as follows:
+
+```julia
+SatelliteDynamics.EOP = EarthOrientationData(:EOP_PRODUCT_CHOICE)
+```
+
+This global variable defaults to use the module's internal version of `:FINALS_2000` 
+if it is not otherwise set/provided.
+"""
 global EOP = EarthOrientationData(:FINALS_2000)
 
 # Access Methods
 export UT1_UTC
+"""
+Compute the offset between the UT1 and UTC time systems in seconds. If the EarthOrientationData argument is ommitted the function will use the default module-global value.
+
+# Arguments:
+- `eop::EarthOrientationData` EarthOrientationData object to use to compute the offset
+- `mjd::Real` Modified Julian Date in UTC of the Epoch for which the UT1-UTC offset is desired.
+- `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
+
+# Returns:
+- `ut1_utc::Float` UT1 - UTC offset. [s] 
+"""
 function UT1_UTC(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
     if interp
         x1 = floor(mjd)
@@ -91,6 +128,17 @@ end
 UT1_UTC(mjd::Real; interp::Bool=false) = UT1_UTC(EOP, mjd, interp=interp)
 
 export POLE_LOCATOR
+"""
+Compute the location of the pole. Returns x- and y- components as a tuple with the units of [radians].  If the EarthOrientationData argument is ommitted the function will use the default module-global value.
+
+# Arguments:
+- `eop::EarthOrientationData` EarthOrientationData object to use to compute the offset
+- `mjd::Real` Modified Julian Date in UTC of the Epoch for which the pole locator is desired.
+- `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
+
+# Returns:
+- `pole_locator::Tuple{ -Float, Float}` (x, y) pole location in radians.
+"""
 function POLE_LOCATOR(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
     if interp
         x1 = floor(mjd)
@@ -109,6 +157,17 @@ end
 POLE_LOCATOR(mjd::Real; interp::Bool=false) = POLE_LOCATOR(EOP, mjd, interp=interp)
 
 export XP
+"""
+Compute the x-component of the pole locator in [radians]. If the first EarthOrientationData argument is ommitted the function will use the default module-global value.
+
+# Arguments:
+- `eop::EarthOrientationData` EarthOrientationData object to use to compute the offset
+- `mjd::Real` Modified Julian Date in UTC of the Epoch for which the xp value is desired.
+- `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
+
+# Returns:
+- `xp::Float` x-component of pole locator in radians.
+"""
 function XP(eop::EarthOrientationData, mjd::Real; interp=false)
     if interp
         x1 = floor(mjd)
@@ -125,6 +184,17 @@ end
 XP(mjd::Real; interp::Bool=false) = XP(EOP, mjd, interp=interp)
 
 export YP
+"""
+Compute the y-component of the pole locator in [radians]. If the first EarthOrientationData argument is ommitted the function will use the default module-global value.
+
+# Arguments:
+- `eop::EarthOrientationData` EarthOrientationData object to use to compute the offset
+- `mjd::Real` Modified Julian Date in UTC of the Epoch for which the yp value is desired.
+- `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
+
+# Returns:
+- `yp::Float` y-component of pole locator in radians.
+"""
 function YP(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
     if interp
         x1 = floor(mjd)
@@ -141,11 +211,26 @@ end
 YP(mjd::Real; interp::Bool=false) = YP(EOP, mjd, interp=interp)
 
 export set_eop
-function set_eop(mjd::Real, ut1_utc::Float64, xp::Float64, yp::Float64)
+"""
+Set Earth orientation data values for a specific date in the module global EarthOrientationData object.
+
+# Arguments:
+- `mjd::Real` Modified Julian Date in UTC of the Epoch for which the Earth orientation data is aligned to.
+- `ut1_utc::Real` Offset between UT1 and UTC in seconds.
+- `xp::Real` x-component of the pole locator in radians.
+- `yp::Real` y-component of the pole locator in radians.
+"""
+function set_eop(mjd::Real, ut1_utc::Real, xp::Real, yp::Real)
     EOP.data[convert(Int32, floor(mjd))] = (ut1_utc, xp*AS2RAD, yp*AS2RAD)
 end
 
 export load_eop
+"""
+Load new Earth orientation data into the module global EarthOrientationData object. The product can be one of the symbols: `:C04_14`, `:C04_80`, or `:FINALS_2000`.
+
+# Arguments:
+- `product::Symbol` Loads a different set of EarthOrientationData values into the module-wide global EarthOrientationData parameters.
+"""
 function load_eop(product::Symbol)
     global EOP = EarthOrientationData(product::Symbol) 
 end
@@ -171,6 +256,14 @@ function line_starts_with(line::String, str::String)
 end
 
 export GravModel
+"""
+GravModel stores a spherical harmonic gravity field in memory. Can store normalized or denomalized coefficients. Package contains EGM2008, GGM01S, and GGM0S gravity models, as well as the default gravity model of EGM2008 truncated to degree and order 90.
+
+Additional gravity field models can be downloaded from: <http://icgem.gfz-potsdam.de/home>
+
+# Arguments:
+- `filepath::string` Path to spherical harmonic gravity model file.
+"""
 struct GravModel
     name::String
     normalized::Bool
@@ -237,9 +330,28 @@ end
 
 # Declare glrobal Gravity Model used by dynamics model calls
 export GRAVITY_MODEL
+"""
+Module-wide global GravityModel object. This data object is used as the
+default spherical harmonic gravity field unless one is otherwise provided.
+
+This value can be overridden in your own code as follows:
+
+```julia
+SatelliteDynamics.GravityModel = GravityModel(PATH_TO_YOUR_GRAVITY_MODEL)
+```
+
+This global variable defaults to use the module's internal version of the EGM2008 model truncated to order and degree 90, if it is not otherwise set.
+"""
 global GRAVITY_MODEL = GravModel(abspath(@__DIR__, "../data/EGM2008_90.gfc"))
 
 export load_gravity_model
+"""
+Load new gravity model into module global EarthOrientationData object. The product can be one of the symbols: `:EGM2008_20`, `:EGM2008_90`, `:GGM01S`, `:GGM05S`, or the filepath to a text-encoded gravity model file.
+
+# Arguments:
+- `gfc_file::String` File path of gravity field model
+- `product_name::Symbol` _OR_ a symbol of a known gravity field product. Valid ones are: `:EGM2008_20`, `:EGM2008_90`, `:GGM01S`, `:GGM05S`
+"""
 function load_gravity_model(gfc_file::String)
     global GRAVITY_MODEL = GravModel(gfc_file::String) 
 end
@@ -248,7 +360,6 @@ function load_gravity_model(product_name::Symbol)
     global GRAVITY_MODEL = GravModel(product_name::Symbol) 
 end
 
-export GRAV_COEF
 function GRAV_COEF(i::Int, j::Int)
     # Offset into matrix to deal with julia indexing
     return GRAVITY_MODEL.data[i+1, j+1]
@@ -259,15 +370,21 @@ end
 ##########
 
 export update_eop
-function update_eop(product_name::Symbol)
-    if (product_name != :C04_14) && (product_name != :C04_80) && (product_name != :FINALS_2000)
-        error("Unknown product type \"$(String(product_name))\"")
+"""
+Download updated Earth orientation datafiles for included products IERS products.
+
+# Arguments:
+- `product::Symbol` The IERS product type can be `:C04_14`, `:C04_80`, or `:FINALS_2000`
+"""
+function update_eop(product::Symbol)
+    if (product != :C04_14) && (product != :C04_80) && (product != :FINALS_2000)
+        error("Unknown product type \"$(String(product))\"")
     end
 
-    @debug "Getting product: \"$(String(product_name))\""
+    @debug "Getting product: \"$(String(product))\""
 
-    product_url  = eop_products[product_name][1]
-    product_file = eop_products[product_name][2]
+    product_url  = eop_products[product][1]
+    product_file = eop_products[product][2]
 
     @debug "IERS Product Server URL: \"$product_url\""
     @debug "Local IERS file location: \"$product_file\""

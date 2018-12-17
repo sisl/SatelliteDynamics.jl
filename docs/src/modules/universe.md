@@ -13,3 +13,18 @@ distributed by the IERS. The module also supports IERS C04 product files.
 
 `GRAVITY_MODEL` defaults to use the EGM2008 spherical harmonic gravity model, 
 truncated to order and degree 90.
+
+```@docs
+EarthOrientationData
+EOP
+UT1_UTC
+POLE_LOCATOR
+XP
+YP
+set_eop
+load_eop
+update_eop
+GravModel
+GRAVITY_MODEL
+load_gravity_model
+```

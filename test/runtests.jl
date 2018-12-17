@@ -1,9 +1,14 @@
 using Test
 using Random
 using LinearAlgebra
+using Logging
 
 using SatelliteDynamics
 
+# Set logging level
+global_logger(SimpleLogger(stderr, Logging.Debug))
+
+# Fix randomness during tests
 Random.seed!(0)
 
 @testset "SatSchedule" begin

@@ -8,14 +8,6 @@ communities. In particular, it is designed and built to fill the following needs
 2. High-quality, validated, tested library for orbit and attitude dynamics modeling.
 3. Easily acceible API design to make implementation of simulation and analysis intuitive.
 
-## Supporting and Citing
-
-The software in this ecosystem was developed as part of academic research.
-If you would like to help support it, please star the repository as such metrics on
-usage help guage interest and secure funding. If you use the software as part of
-your research, teaching, or other activities, we would be grateful if you could
-cite our work.
-
 ## Getting Started: Installation And First Steps
 
 To install the package, use the following command inside the Julia REPL:
@@ -46,7 +38,7 @@ Depth = 2
 
 The best way to learn how to use any software is to 
 
-``@contents
+```@contents
 Pages = [
     "tutorials/universe_example.md",
     "tutorials/time_example.md",
@@ -54,6 +46,14 @@ Pages = [
 ]
 Depth = 2
 ```
+
+## Citing
+
+The software in this package was developed as part of academic research.
+If you would like to help support it, please star the repository as such metrics on
+usage help guage interest and secure funding. If you use the software as part of
+your research, teaching, or other activities, we would be grateful if you could
+cite our work.
 
 ## Index
 

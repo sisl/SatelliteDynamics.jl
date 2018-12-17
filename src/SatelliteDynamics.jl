@@ -26,9 +26,4 @@ include("universe.jl")
 # @reexport using SatelliteDynamics.Simulation
 # @reexport using SatelliteDynamics.DataStructures
 
-# Update package data files at build time
-update_eop(:C04_14)
-update_eop(:C04_80)
-update_eop(:FINALS_2000)
-
 end # module

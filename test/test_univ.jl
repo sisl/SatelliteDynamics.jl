@@ -63,12 +63,11 @@ let
 end
 
 # Test Update of EOP
-let
-    update_eop(:C04_14)
-    update_eop(:C04_80)
-    update_eop(:FINALS_2000)
-end
-
+# let
+#     update_eop(:C04_14)
+#     update_eop(:C04_80)
+#     update_eop(:FINALS_2000)
+# end
 
 # Gravity Model 
 let
