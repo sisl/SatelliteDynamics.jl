@@ -1,6 +1,6 @@
 # Universe
 
-The Universe module defines simulation-specific data files which are constants 
+The Universe submodule defines simulation-specific data files which are constants 
 of most simulations. In particular it provides data structures for storing and
 accessing Earth orientation parameters and spherical harmonic gravity field 
 models.

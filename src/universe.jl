@@ -360,7 +360,7 @@ function load_gravity_model(product_name::Symbol)
     global GRAVITY_MODEL = GravModel(product_name::Symbol) 
 end
 
-export
+export GRAV_COEF
 function GRAV_COEF(i::Int, j::Int)
     # Offset into matrix to deal with julia indexing
     return GRAVITY_MODEL.data[i+1, j+1]

@@ -1,6 +1,6 @@
 # Constants
 
-The constants module constains common mathematical, physical, astronomical constants.
+The constants submodule constains common mathematical, physical, astronomical constants.
 
 ```@docs
 AS2RAD
