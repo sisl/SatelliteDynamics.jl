@@ -49,14 +49,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "#Index-1",
-    "page": "Home",
-    "title": "Index",
-    "category": "section",
-    "text": ""
-},
-
-{
     "location": "modules/constants/#",
     "page": "Constants",
     "title": "Constants",
@@ -441,35 +433,107 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "tutorials/universe_example/#",
-    "page": "Earth Orientation Parameters",
-    "title": "Earth Orientation Parameters",
+    "location": "modules/time/#",
+    "page": "Time",
+    "title": "Time",
     "category": "page",
     "text": ""
 },
 
 {
-    "location": "tutorials/universe_example/#Earth-Orientation-Parameters-1",
-    "page": "Earth Orientation Parameters",
-    "title": "Earth Orientation Parameters",
-    "category": "section",
-    "text": ""
+    "location": "modules/time/#SatelliteDynamics.Time.caldate_to_mjd",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.caldate_to_mjd",
+    "category": "function",
+    "text": "Convert a Gregorian calendar date to the equivalent Modified Julian Date representation of that time instant.\n\nAguments:\n\nyear::Int Year\nyear::Int Month\nyear::Int Day\nhour::Int Hour\nminute::Int Minute \nsecond::Real Seconds\nnanoseconds::Real Microseconds\n\nReturns:\n\nmjd::Float64 Modified Julian Date of Epoch\n\n\n\n\n\n"
 },
 
 {
-    "location": "tutorials/epoch_example/#",
-    "page": "Time Epoch",
-    "title": "Time Epoch",
+    "location": "modules/time/#SatelliteDynamics.Time.mjd_to_caldate",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.mjd_to_caldate",
+    "category": "function",
+    "text": "Convert a Modified Julian Date to the equivalent Gregorian calendar date representation of the same instant in time.\n\nAguments:\n\nmjd::Real: Modified Julian Date of Epoch\n\nReturns:\n\nyear::Int32: Year\nyear::Int32: Month\nyear::Int32: Day\nhour::Int32: Hour\nminute::Int32: Minute \nsecond::Float64: Seconds\nnanoseconds::Float64: nanosecondss\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.caldate_to_jd",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.caldate_to_jd",
+    "category": "function",
+    "text": "Convert a Gregorian calendar date to the equivalent Julian Date representation of that time instant.\n\nAguments:\n\nyear::Int: Year\nyear::Int: Month\nyear::Int: Day\nhour::Int: Hour\nminute::Int: Minute \nsecond::Real: Seconds\nnanoseconds::Real: nanosecondss\n\nReturns:\n\nmjd::Float64: Julian Date of Epoch\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.jd_to_caldate",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.jd_to_caldate",
+    "category": "function",
+    "text": "Convert a Julian Date to the equivalent Gregorian calendar date representation of the same instant in time.\n\nAguments:\n\nmjd::Real: Julian Date of Epoch\n\nReturns:\n\nyear::Int32: Year\nyear::Int32: Month\nyear::Int32: Day\nhour::Int32: Hour\nminute::Int32: Minute \nsecond::Float64: Seconds\nmicrosecond::Float64: Microseconds\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.elapsed_from_epoch",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.elapsed_from_epoch",
+    "category": "function",
+    "text": "Compute the number of elapsed seconds since a given Epoch from the day number. Can be used to compute the elapsed time since a given Julian or Modified Julian Date.\n\nArguments:\n\nday_number::Real: Day number, can contain fractional days. Asummes all days are a uniform 86400.0 seconds in length.\nday_epoch::Real: Modified Julian Date of Epoch\n\nReturns:\n\nt::Float: Number of elapsed seconds between the Provided Modified   Julian date and the epoch.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.days_from_elapsed",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.days_from_elapsed",
+    "category": "function",
+    "text": "Computes the day number in a given time scale given the elapsed time since epoch and the epoch itself.\n\nAssumes all days are counted using a uniform 86400.0 seconds over the time span.\n\nArguments:\n\nt::Real: Elapsed seconds since the day_epoch.\nday_epoch::Real: Day number of the epoch. Common values are SatelliteDynamics.Constants.MJD_ZERO (to get the Julian Day number) or SatelliteDynamics.Constants.MJD2000 (to get Modified Julian Days if reckoning time from January 1, 2000 0H)\n\nReturns:\n\ndays::Float: Number of elapsed days in the time scale.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#Time-1",
+    "page": "Time",
+    "title": "Time",
+    "category": "section",
+    "text": "The Time submodule contains common time transformations such as converting between different date representations or converting a specific instant in time between different time systems.The module also defines the Epoch class which pMost of the transformations are make backend calls to the SOFA C-library functions provide the package SOFA.jlcaldate_to_mjd\nmjd_to_caldate\ncaldate_to_jd\njd_to_caldate\nelapsed_from_epoch\ndays_from_elapsed"
+},
+
+{
+    "location": "modules/function_index/#",
+    "page": "Function Index",
+    "title": "Function Index",
     "category": "page",
     "text": ""
 },
 
 {
-    "location": "tutorials/epoch_example/#Time-Epoch-1",
-    "page": "Time Epoch",
-    "title": "Time Epoch",
+    "location": "modules/function_index/#Function-Library-1",
+    "page": "Function Index",
+    "title": "Function Library",
     "category": "section",
     "text": ""
+},
+
+{
+    "location": "modules/function_index/#Constants-1",
+    "page": "Function Index",
+    "title": "Constants",
+    "category": "section",
+    "text": "Modules = [SatelliteDynamics.Constants]"
+},
+
+{
+    "location": "modules/function_index/#Universe-1",
+    "page": "Function Index",
+    "title": "Universe",
+    "category": "section",
+    "text": "Modules = [SatelliteDynamics.Universe]"
+},
+
+{
+    "location": "modules/function_index/#Time-1",
+    "page": "Function Index",
+    "title": "Time",
+    "category": "section",
+    "text": "Modules = [SatelliteDynamics.Time]"
 },
 
 ]}
