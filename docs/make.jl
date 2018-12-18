@@ -13,11 +13,13 @@ makedocs(
         "Modules" => Any[
             "modules/constants.md",
             "modules/universe.md",
+            "modules/time.md",
+            "Function Index" => "modules/function_index.md",
         ],
-        "Tutorials" => Any[
-            "tutorials/universe_example.md",
-            "tutorials/epoch_example.md",
-        ]
+        # "Tutorials" => Any[
+        #     "tutorials/universe_example.md",
+        #     "tutorials/epoch_example.md",
+        # ],
     ]
 )
 

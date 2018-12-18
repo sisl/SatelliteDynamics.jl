@@ -11,33 +11,33 @@ global_logger(SimpleLogger(stderr, Logging.Debug))
 # Fix randomness during tests
 Random.seed!(0)
 
-@testset "SatSchedule" begin
+@time @testset "SatelliteDynamics Package Tests" begin
     testdir = joinpath(dirname(@__DIR__), "test")
-    @testset "constants" begin
+    @time @testset "SatelliteDynamics.Contants" begin
         include(joinpath(testdir, "test_constants.jl"))
     end
-    @testset "universe" begin
+    @time @testset "SatelliteDynamicsUniverse" begin
         include(joinpath(testdir, "test_univ.jl"))
     end
-    # @testset "time" begin
-    #     include(joinpath(testdir, "test_time.jl"))
-    # end
-    # @testset "refsys" begin
+    @time @testset "SatelliteDynamics.Time" begin
+        include(joinpath(testdir, "test_time.jl"))
+    end
+    # @time @testset "SatelliteDynamics.Refsys" begin
     #     include(joinpath(testdir, "test_refsys.jl"))
     # end
-    # @testset "coordinates" begin
+    # @time @testset "SatelliteDynamics.Coordinates" begin
     #     include(joinpath(testdir, "test_coordinates.jl"))
     # end
-    # @testset "astrodynamics" begin
+    # @time @testset "SatelliteDynamics.Astrodynamics" begin
     #     include(joinpath(testdir, "test_astrodynamics.jl"))
     # end
-    # @testset "orbit_dynamics" begin
+    # @time @testset "SatelliteDynamics.OrbitDynamics" begin
     #     include(joinpath(testdir, "test_orbit_dynamics.jl"))
     # end
-    # @testset "simulation" begin
+    # @time @testset "SatelliteDynamics.Simulation" begin
     #     include(joinpath(testdir, "test_simulation.jl"))
     # end
-    # @testset "data_structures" begin
+    # @time @testset "SatelliteDynamics.DataStructures" begin
     #     include(joinpath(testdir, "test_data_structures.jl"))
     # end
 end

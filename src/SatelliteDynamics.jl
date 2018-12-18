@@ -1,13 +1,13 @@
+__precompile__(true)
 module SatelliteDynamics
 
 # Usings
 using Reexport
-using LinearAlgebra
 
 # Includes
 include("constants.jl")
 include("universe.jl")
-# include("time.jl")
+include("time.jl")
 # include("refsys.jl")
 # include("coordinates.jl")
 # include("astrodynamics.jl")
@@ -18,7 +18,7 @@ include("universe.jl")
 # Export Values
 @reexport using SatelliteDynamics.Constants
 @reexport using SatelliteDynamics.Universe
-# @reexport using SatelliteDynamics.Time
+@reexport using SatelliteDynamics.Time
 # @reexport using SatelliteDynamics.RefSys
 # @reexport using SatelliteDynamics.Coordinates
 # @reexport using SatelliteDynamics.Astrodynamics
