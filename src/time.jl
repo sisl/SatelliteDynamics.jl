@@ -4,6 +4,52 @@ module Time
 using Printf
 using SOFA
 using SatelliteDynamics.Constants
+using SatelliteDynamics.Universe: UT1_UTC
+
+#############
+# Constants #
+#############
+
+"""
+Defines valid time systems usable as inputs in the time module, and in functions
+pertaining to the `Epoch` class.
+
+Valid systems are: `:GPS`, `:TAI`, `:TT`, `:UTC`, and `:UT1`
+"""
+VALID_TIME_SYSTEMS = [:GPS, :TAI, :TT, :UTC, :UT1]
+
+
+####################
+# Helper Functions #
+####################
+
+string_to_nanoseconds(str::AbstractString) = parse(Float64, str)*10^(9-length(str))
+
+function align_epoch_data(days::Integer, seconds::Integer, nanoseconds::Real)
+    # Align nanoseconds to [0, 1.0e9)
+    while nanoseconds < 0.0
+        nanoseconds += 1.0e9
+        seconds     -= 1
+    end
+
+    while nanoseconds >= 1.0e9
+        nanoseconds -= 1.0e9
+        seconds     += 1
+    end
+
+    # Align seconds to [0, 86400)
+    while seconds < 0
+        seconds += 86400
+        days    -= 1
+    end
+
+    while seconds >= 86400
+        seconds -= 86400
+        days    += 1
+    end
+
+    return days, seconds, nanoseconds
+end
 
 ################
 # Time Methods #
@@ -14,21 +60,21 @@ export caldate_to_mjd
 Convert a Gregorian calendar date to the equivalent Modified Julian Date representation of that time instant.
 
 # Aguments:
-- `year::Int` Year
-- `year::Int` Month
-- `year::Int` Day
-- `hour::Int` Hour
-- `minute::Int` Minute 
+- `year::Integer` Year
+- `year::Integer` Month
+- `year::Integer` Day
+- `hour::Integer` Hour
+- `minute::Integer` Minute 
 - `second::Real` Seconds
-- `nanoseconds::Real` Microseconds
+- `nanoseconds::Real` Nanoseconds
 
 # Returns:
 - `mjd::Float64` Modified Julian Date of Epoch
 """
-function caldate_to_mjd(year::Int, month::Int, day::Int, hour=0::Int, minute=0::Int, second=0.0::Real, nanosecond=0.0::Real)
-    status, jd, fd = iauDtf2d("TAI", year, month, day, hour, minute, second + nanosecond/1.0e9)
+function caldate_to_mjd(year::Integer, month::Integer, day::Integer, hour=0::Integer, minute=0::Integer, second=0.0::Real, nanoseconds=0.0::Real)
+    status, jd, fd = iauDtf2d("TAI", year, month, day, hour, minute, second + nanoseconds/1.0e9)
 
-    mjd = (jd - MJD_ZERO) + fd
+    mjd = (jd - Constants.MJD_ZERO) + fd
 
     return mjd
 end
@@ -47,7 +93,7 @@ Convert a Modified Julian Date to the equivalent Gregorian calendar date represe
 - `hour::Int32`: Hour
 - `minute::Int32`: Minute 
 - `second::Float64`: Seconds
-- `nanoseconds::Float64`: nanosecondss
+- `nanoseconds::Float64`: Nanoseconds
 """
 function mjd_to_caldate(mjd::Real)
     status, iy, im, id, ihmsf = iauD2dtf("TAI", 9, Constants.MJD_ZERO, mjd)
@@ -60,23 +106,23 @@ export caldate_to_jd
 Convert a Gregorian calendar date to the equivalent Julian Date representation of that time instant.
 
 # Aguments:
-- `year::Int`: Year
-- `year::Int`: Month
-- `year::Int`: Day
-- `hour::Int`: Hour
-- `minute::Int`: Minute 
+- `year::Integer`: Year
+- `year::Integer`: Month
+- `year::Integer`: Day
+- `hour::Integer`: Hour
+- `minute::Integer`: Minute 
 - `second::Real`: Seconds
-- `nanoseconds::Real`: nanosecondss
+- `nanoseconds::Real`: Nanoseconds
 
 # Returns:
 - `mjd::Float64`: Julian Date of Epoch
 """
-function caldate_to_jd(year::Int, month::Int, day::Int, hour=0::Int, minute=0::Int, second=0.0::Real, nanoseconds=0.0::Real)
-    status, jd, fd = iauDtf2d("TAI", year, month, day, hour, minute, second + nanoseconds/1.0e6)
+function caldate_to_jd(year::Integer, month::Integer, day::Integer, hour=0::Integer, minute=0::Integer, second=0.0::Real, nanoseconds=0.0::Real)
+    status, jd, fd = iauDtf2d("TAI", year, month, day, hour, minute, second + nanoseconds/1.0e9)
 
-    mjd = jd + fd
+    jd = jd + fd
 
-    return mjd
+    return jd
 end
 
 export jd_to_caldate
@@ -84,7 +130,7 @@ export jd_to_caldate
 Convert a Julian Date to the equivalent Gregorian calendar date representation of the same instant in time.
 
 # Aguments:
-- `mjd::Real`: Julian Date of Epoch
+- `jd::Real`: Julian Date of Epoch
 
 # Returns:
 - `year::Int32`: Year
@@ -93,10 +139,10 @@ Convert a Julian Date to the equivalent Gregorian calendar date representation o
 - `hour::Int32`: Hour
 - `minute::Int32`: Minute 
 - `second::Float64`: Seconds
-- `microsecond::Float64`: Microseconds
+- `microsecond::Float64`: Nanoseconds
 """
-function jd_to_caldate(mjd::Real)
-    status, iy, im, id, ihmsf = iauD2dtf("TAI", 9, MJD_ZERO, mjd - MJD_ZERO)
+function jd_to_caldate(jd::Real)
+    status, iy, im, id, ihmsf = iauD2dtf("TAI", 9, jd, 0)
 
     return iy, im, id, ihmsf[1], ihmsf[2], ihmsf[3], ihmsf[4]/1.0e9
 end
@@ -135,295 +181,562 @@ function days_from_elapsed(t::Real, day_epoch=0::Real)
     return (t/86400.0 + day_epoch)
 end
 
-# #########################
-# # Time System Alignment #
-# #########################
+###############
+# Epoch Class #
+###############
 
-# """
-# Internal function to align a Julian Date and fractional days so the
-# fractional day value is within +/- 1.0.
-# """
-# function align_jd_fd(jd::Real, fd::Real)
-#     if fd < 0
-#         days = - floor(fd)
-#         # days = 1
-#         jda = jd - days
-#         fda = fd + days
-#     elseif fd >= 1
-#         days = floor(fd)
-#         jda  = jd + days
-#         fda  = fd - days
-#     else
-#         jda, fda = jd, fd
-#     end
+"""
+Returns whether a symbol is a valid time system.
 
-#     return jda, fda
-# end
+Valid systems are: `:GPS`, `:TAI`, `:TT`, `:UTC`, and `:UT1`
 
+# Arguments:
+- `tsys::Symbol`: time system symbol to check for validity.
 
-# function time_system_offset(mjd::Real, tsys_src::String, tsys_dst::String)
-#     # If no transformatio needed return early
-#     if tsys_src == tsys_dst
-#         return 0.0
-#     end
+# Returns:
+- `valid::Bool`: Return `true` if tsys is a valid time system.
+"""
+function valid_time_system(tsys::Symbol)
+    return tsys in VALID_TIME_SYSTEMS
+end
+
+export Epoch
+"""
+The `Epoch` type represents a single instant in time. It is used throughout the
+SatelliteDynamics module. It is meant to provide a clear definition of moments
+in time and provide a convenient interface display time in various representations
+as well as in differrent time systems. The internal data members are also chosen
+such that the representation maintains nanosecond-precision in reprersenation
+of time and doesn't accumulate floating-point arithmetic errors larger than
+nanoseconds even after centuries.
+
+Supports `+`, `+=`, `-`, and `-=` operators. Two Epoch's can be differenced to
+return the time difference between two Epochs. If adding a `Real` number it is
+interpreted as an offset in seconds to add to the Epoch.
+
+The class also supports all arithmetic operators: `==`, `!=`, `<`, `<=`, `>`, `>=`
+
+Arguments:
+- `year::Int` Year
+- `year::Int` Month
+- `year::Int` Day
+- `hour::Int` Hour (optional)
+- `minute::Int` Minute (optional)
+- `second::Real` Seconds (optional)
+- `nanoseconds::Real` Nanoseconds (optional)
+- `tsys::Symbol`: Time system of the epoch at initialization
+
+The Epoch class can be also be initialized from a string. Examples of Valid String constructors are: 
+
+```julia
+epc = Epoch("2018-12-20")
+epc = Epoch("2018-12-20T16:22:19.0Z")
+epc = Epoch("2018-12-20T16:22:19.123Z")
+epc = Epoch("2018-12-20T16:22:19.123456789Z")
+epc = Epoch("2018-12-20T16:22:19Z")
+epc = Epoch("20181220T162219Z")
+epc = Epoch("2018-12-01 16:22:19 GPS")
+epc = Epoch("2018-12-01 16:22:19.0 GPS")
+epc = Epoch("2018-12-01 16:22:19.123 GPS")
+epc = Epoch("2018-12-01 16:22:19.123456789 GPS")
+```
+"""
+struct Epoch
+    # All days, seconds, and nanoseconds are stored internally in the TAI time scale, conversion to from TAI is done on intpu/output interacting.
+    days::Int32 # Total days [0, ∞)
+    seconds::Int32 # Integer seconds [0, 86400)
+    nanoseconds::Float64 # Fractional seconds [0, 1)
+    tsys::Symbol # Time system of epoch
+end
+
+function Epoch(year::Real, month::Real, day::Real, hour::Real=0, minute::Real=0, 
+               second::Real=0, nanosecond::Real=0.0; tsys::Symbol=:TAI)
+    if !valid_time_system(tsys)
+        error("Invalid time system $(String(tsys))")
+    end
+
+    # Convert date into days and fractional days in desired time system
+    status, jd, fd = iauDtf2d("TAI", year, month, day, hour, minute, 0)
+
+    # Log initial output
+    # @debug "iauDtf2d returned ($status, $jd, $fd)"
+
+    if status != 0
+        error("Non-zero SOFA status returned initializing Epoch.")
+    end
+
+    # Get time system offset based on days and fractional days using SOFA
+    tsys_offset     = time_system_offset(jd, fd, tsys, :TAI)
+    foffset, offset = modf(tsys_offset)
+
+    # Ensure days is an integer number, add entire fractional component to the
+    # fractional days variable
+    fdays, days = modf(jd)
+    fd          = fd + fdays
+
+    # Convert fractional days into total seconds still retaining fractional part
+    seconds = fd * 86400
+    fsecs, secs = modf(seconds)
+
+    # @debug "seconds: $seconds"
+    # @debug "fsecs: $fsecs, secs: $secs"
+
+    # Now trip second of the fractional part
+    fsecond, second = modf(second)
+    # @debug "fsecond: $fsecond, second: $second"
+
+    # Add the integer parts together
+    seconds = secs + second + offset
+    # @debug "seconds: $seconds"
+
+    # Convert the fractional parts to nanoseconds
+    nanoseconds = nanosecond + fsecs*1e9 + fsecond*1e9 + foffset*1e9
+    nanoseconds = Float64(nanoseconds)
+    # @debug "nanoseconds: $nanoseconds"
+
+    # @debug "Initializing Epoch: days: $days, seconds: $seconds, nanoseconds: $nanoseconds"
     
-#     offset = 0.0
+    # Ensure type consistency of input:
+    days        = Int32(days)
+    seconds     = Int32(seconds)
+    nanoseconds = Float64(nanoseconds)
 
-#     # Convert To TAI 
-#     if tsys_src == "GPS"
-#         offset += TAI_GPS
-#     elseif tsys_src == "TT"
-#         offset += TAI_TT
-#     elseif tsys_src == "UTC"
-#         status, iy, im, id, ihmsf = iauD2dtf("UTC", 6, MJD_ZERO, mjd) # Returns TAI-UTC
-#         status, dutc = iauDat(iy, im, id, (ihmsf[1]*3600 + ihmsf[2]*60 + ihmsf[3] + ihmsf[4]/1e6)/86400.0)
-#         offset += dutc
-#     elseif tsys_src == "UT1"
-#         # Convert UT1 -> UTC
-#         offset -= SatelliteDynamics.Universe.UT1_UTC(mjd)
+    days, seconds, nanoseconds = align_epoch_data(days, seconds, nanoseconds)
+    # @debug "Initializing Epoch: days: $days, seconds: $seconds, nanoseconds: $nanoseconds"
 
-#         # Convert UTC -> TAI
-#         status, iy, im, id, ihmsf = iauD2dtf("UTC", 6, MJD_ZERO, mjd + offset) # Returns TAI-UTC
-#         status, dutc = iauDat(iy, im, id, (ihmsf[1]*3600 + ihmsf[2]*60 + ihmsf[3] + ihmsf[4]/1e6)/86400.0)
-#         offset += dutc
-#     elseif tsys_src == "TAI"
-#         # Do nothing in this case
-#     end
+    # Parse inputs into Epoch internal storage
+    Epoch(days, seconds, nanoseconds, tsys)
+end
 
-#     # Covert from TAI to source
-#     if tsys_dst == "GPS"
-#         offset += GPS_TAI
-#     elseif tsys_dst == "TT"
-#         offset += TT_TAI
-#     elseif tsys_dst == "UTC"
-#         # Initial UTC guess
-#         u1, u2 = MJD_ZERO, mjd + offset/86400.0
-
-#         # Iterate to get the UTC time
-#         for i in 1:3
-#             status, d1, d2 = iauUtctai(u1, u2)
-
-#             # Adjust UTC guess
-#             u1 += MJD_ZERO - d1
-#             u2 += mjd + offset/86400.0 - d2
-#         end
-
-#         # Compute Caldate from two-part date
-#         status, iy, im, id, ihmsf = iauD2dtf("UTC", 6, u1, u2)
-
-#         status, dutc = iauDat(iy, im, id, (ihmsf[1]*3600 + ihmsf[2]*60 + ihmsf[3] + ihmsf[4]/1e6)/86400.0)
-#         offset -= dutc
-#     elseif tsys_dst == "UT1"
-#         # Initial UTC guess
-#         u1, u2 = MJD_ZERO, mjd + offset/86400.0
-
-#         # Iterate to get the UTC time
-#         for i in 1:3
-#             status, d1, d2 = iauUtctai(u1, u2)
-
-#             # Adjust UTC guess
-#             u1 += MJD_ZERO - d1
-#             u2 += mjd + offset/86400.0 - d2
-#         end
-
-#         # Compute Caldate from two-part date
-#         status, iy, im, id, ihmsf = iauD2dtf("UTC", 6, u1, u2)
-
-#         status, dutc = iauDat(iy, im, id, (ihmsf[1]*3600 + ihmsf[2]*60 + ihmsf[3] + ihmsf[4]/1e6)/86400.0)
-#         offset -= dutc
-
-#         # Convert UTC to UT1
-#         offset += SatelliteDynamics.Universe.UT1_UTC(u1 + u2 + offset/86400.0 - MJD_ZERO)
-#     elseif tsys_dst == "TAI"
-#         # Do nothing in this case
-#     end
-
-#     return offset
-# end
-
-# function convert_time_system(jd_src::Real, fd_src::Real, tsys_src::String, tsys_dst::String)
-
-#     # Convert To TAI 
-#     if tsys_src == "GPS"
-#         jd, fd = jd_src, fd_src + TAI_GPS/86400.0
-#     elseif tsys_src == "TT"
-#         jd, fd = iauTttai(jd_src, fd_src)
-#     elseif tsys_src == "UTC"
-#         jd, fd = iauUtctai(jd_src, fd_src)
-#     elseif tsys_src == "UT1"
-#         # Convert UT1 -> UTC
-#         jd, fd = iauUt1utc(jd_src, fd_src, SatelliteDynamics.Universe.UT1_UTC(jd_src +fd_src - MJD_ZERO))
-
-#         # Convert UTC -> TAI
-#         jd, fd = iauUtctai(jd, fd)
-#     elseif tsys_src == "TAI"
-#         jd, fd = jd_src, fd_src
-#     end
-
-#     jd, fd = align_jd_fd(jd, fd)
-
-#     # Covert from TAI to source
-#     if tsys_dst == "GPS"
-#         jd_dst, fd_dst = jd, fd + GPS_TAI/86400.0
-#     elseif tsys_dst == "TT"
-#         jd_dst, fd_dst = iauTaitt(jd, fd)
-#     elseif tsys_dst == "UTC"
-#         jd_dst, fd_dst = iauTaiutc(jd, fd)
-#     elseif tsys_dst == "UT1"
-#         # Convert TAI to UTC
-#         jd_dst, fd_dst = iauTaiutc(jd, fd)
-        
-#         # Convert UTC to UT1
-#         jd_dst, fd_dst = iauUtcut1(jd, fd, SatelliteDynamics.Universe.UT1_UTC(jd + fd - MJD_ZERO))
-#     elseif tsys_dst == "TAI"
-#         jd_dst, fd_dst = jd, fd
-#     end
-
-#     return align_jd_fd(jd_dst, fd_dst)
-# end
+# All REGEX used for epoch initialization MUST BE AN EXACT MATCH.
+# Otherwise the regex parse improperly match on a partial fit and fail.
+VALID_EPOCH_REGEX = [
+    r"^(\d{4})\-(\d{2})\-(\d{2})$",
+    # r"^(\d{4})\-(\d{2})\-(\d{2})[T](\d{2})\:(\d{2})\:(\d{2})([+-])(\d{2})\:(\d{2})$",
+    r"^(\d{4})\-(\d{2})\-(\d{2})[T](\d{2})\:(\d{2})\:(\d{2})[Z]$",
+    r"^(\d{4})\-(\d{2})\-(\d{2})[T](\d{2})\:(\d{2})\:(\d{2})[.](\d*)[Z]$",
+    r"^(\d{4})(\d{2})(\d{2})[T](\d{2})(\d{2})(\d{2})[Z]$",
+    r"^(\d{4})\-(\d{2})\-(\d{2})\s(\d{2})\:(\d{2})\:(\d{2})\.*\s*(\d*)\s*([A-Z]*)$"
+]
 
 
-# ###############
-# # Epoch Class #
-# ###############
+function Epoch(str::String)
+    year        = 0
+    month       = 0
+    day         = 0
+    hour        = 0
+    minute      = 0
+    second      = 0
+    nanoseconds = 0.0
+    tsys        = :UTC
 
-# struct Epoch
-#     jd::Int32
-#     fd::Float64
-#     kahan_c::Float64
-# end
+    m = nothing
+    # Iterate through valid regex string 
+    for regex in VALID_EPOCH_REGEX
+        m = match(regex, str)
+        if !(m === nothing)
+            # @debug m
+            # Parse date (common to all)
+            year  = parse(Int32, m[1])
+            month = parse(Int32, m[2])
+            day   = parse(Int32, m[3])
 
-# function Epoch(year::Real, month::Real, day::Real, hour::Real, minute::Real, second::Real ; tsys="TAI"::String)
-#     status, jd, fd = iauDtf2d("TAI", year, month, day, hour, minute, second)
+            # Parse time (most have this)
+            if length(m.captures) >= 6
+                hour   = parse(Int32, m[4])
+                minute = parse(Int32, m[5])
+                second = parse(Float64, m[6])
+            end
 
-#     jd, fd = convert_time_system(jd, fd, tsys, "TAI")
+            # Parse additional types
+            if length(m.captures) == 7
+                nanoseconds = string_to_nanoseconds(m[7])
+            elseif length(m.captures) == 8
+                if m[7] != ""
+                    nanoseconds = string_to_nanoseconds(m[7])
+                end
+                tsys = Symbol(string(m[8]))
+            end
 
-#     new(jd, fd, 0.0)
-# end
+            # Exit early since a match has been found
+            break
+        end
+    end
 
-# function Base.show(io::IO, epc::Epoch)
-#     year, month, day, hour, minute, second = cal(epc, tsys="UTC")
-#     s = @sprintf "Epoch(%02d-%02d-%02dT%02d:%02d:%02.3fZ)" year month day hour minute second;
-#     print(io, s)
-# end
+    # No valid match found throw error
+    if m === nothing
+        error("Invalid Epoch string. Must be iso8061 compliant.")
+    end
 
-# function jd(epc::Epoch ; tsys="TAI"::String)
-#     jd, fd = convert_time_system(epc.jd, epc.fd, "TAI", tsys)
+    # @debug "regex parsed: $year $month $day $hour $minute $second $nanoseconds $(string(tsys))"
 
-#     return jd + fd
-# end
+    return Epoch(year, month, day, hour, minute, second, nanoseconds, tsys=tsys)
+end
 
-# function mjd(epc::Epoch ; tsys="TAI"::String)
-#     jd, fd = convert_time_system(epc.jd, epc.fd, "TAI", tsys)
+####################
+# Epoch Arithmetic #
+####################
 
-#     return (jd + fd - MJD_ZERO)
-# end
+function Base.:+(epc::Epoch, t::Real)
+    # Immidiately separate seconds and fractional seconds
+    fseconds, seconds = modf(t)
+    seconds = Int32(seconds) # Conver seconds to integer seconds
 
-# function cal(epc::Epoch ; tsys="TAI"::String)
-#     jd, fd = convert_time_system(epc.jd, epc.fd, "TAI", tsys)
+    # Compute time delta aligned 
+    dt_days        = div(seconds, 86400)
+    dt_seconds     = seconds % 86400
+    dt_nanoseconds = fseconds*1e9
 
-#     year, month, day, hour, minute, second, nanoseconds = jd_to_caldate(jd+fd)
+    # Perform additon to get new epoch
+    days        = epc.days + dt_days
+    seconds     = epc.seconds + dt_seconds
+    nanoseconds = epc.nanoseconds + dt_nanoseconds
 
-#     return year, month, day, hour, minute, second + nanoseconds
-# end
+    # Align to proper ranges in reverse order
+    days, seconds, nanoseconds = align_epoch_data(days, seconds, nanoseconds)
 
-# function day_of_year(epc::Epoch ; tsys="TAI"::String)
-#     jd, fd = convert_time_system(epc.jd, epc.fd, "TAI", tsys)
+    return Epoch(days, seconds, nanoseconds, epc.tsys)
+end
 
-#     year, month, day, hour, minute, second, = jd_to_caldate(jd+fd)
+function Base.:+(t::Real, epc::Epoch)
+    return epc + t
+end
 
-#     mjd0 = caldate_to_mjd(year, 1, 1)
-#     mjd  = caldate_to_mjd(year, month, day, hour, minute, second)
+function Base.:-(epc::Epoch, t::Real)
+    return epc + (-t)
+end
 
-#     # Get day of year
-#     doy = mjd - mjd0 + 1.0
+function Base.:-(epc_left::Epoch, epc_right::Epoch)
+    # Return difference in time between two epochs
+    return (epc_left.days - epc_right.days)*86400.0 + (epc_left.seconds - epc_right.seconds) + (epc_left.nanoseconds - epc_right.nanoseconds)/1e9
+end
 
-#     return doy
-# end
-
-# function gmst(epc::Epoch ; use_degrees=false::Bool)
-#     uta, utb = convert_time_system(epc.jd, epc.fd, "TAI", "UT1")
-#     tta, ttb = convert_time_system(epc.jd, epc.fd, "TAI", "TT")
-
-#     st = iauGmst06(uta, utb, tta, ttb)
-
-#     if use_degrees
-#         st *= 180.0/pi
-#     end
-
-#     return st
-# end
-
-# function gast(epc::Epoch ; use_degrees=false::Bool)
-#     uta, utb = convert_time_system(epc.jd, epc.fd, "TAI", "UT1")
-#     tta, ttb = convert_time_system(epc.jd, epc.fd, "TAI", "TT")
-
-#     st = iauGst06a(uta, utb, tta, ttb)
-
-#     if use_degrees
-#         st *= 180.0/pi
-#     end
-
-#     st = 0.0
-#     return st
-# end
-
-# # Comparison operators
-# function Base.:(==)(epc_left::Epoch, epc_right::Epoch)
-#     return (epc_left.jd == epc_right.jd) && (abs(epc_left.fd - epc_right.fd) < 10^-4)
-# end
-
-# function Base.:(!=)(epc_left::Epoch, epc_right::Epoch)
-#     return (epc_left.jd != epc_right.jd) || (abs(epc_left.fd - epc_right.fd) < 10^-4)
-# end
-
-# function Base.:(<)(epc_left::Epoch, epc_right::Epoch)
-#     return (epc_left.jd < epc_right.jd) || ((epc_left.jd == epc_right.jd) && (epc_left.fd < epc_right.fd)) 
-# end
-
-# Base.isless(epc_left::Epoch, epc_right::Epoch) = Base.:(<)(epc_left::Epoch, epc_right::Epoch)
+##########
+# Output #
+##########
 
 
-# function Base.:(<=)(epc_left::Epoch, epc_right::Epoch)
-#     return (epc_left.jd < epc_right.jd) || (epc_left.jd == epc_right.jd) && ((epc_left.fd < epc_right.fd) || (abs(epc_left.fd - epc_right.fd) < 10^-4))
-# end
+function Base.show(io::IO, epc::Epoch)
+    year, month, day, hour, minute, second = caldate(epc, tsys=:UTC)
 
-# function Base.:(>)(epc_left::Epoch, epc_right::Epoch)
-#     return (epc_left.jd > epc_right.jd) || ((epc_left.jd == epc_right.jd) && (epc_left.fd > epc_right.fd))
-# end
+    s = @sprintf "Epoch(%02d-%02d-%02dT%02d:%02d:%02.3fZ)" year month day hour minute second;
 
-# Base.isgreater(epc_left::Epoch, epc_right::Epoch) = Base.:(>)(epc_left::Epoch, epc_right::Epoch)
+    print(io, s)
+end
 
-# function Base.:(>=)(epc_left::Epoch, epc_right::Epoch)
-#     return (epc_left.jd > epc_right.jd) || (epc_left.jd == epc_right.jd) && ((epc_left.fd > epc_right.fd) || (abs(epc_left.fd - epc_right.fd) < 10^-4))
-# end
+export epoch_to_jdfd
+"""
+Compute the two-part date format used by SOFA.jl functions forr a given Epoch.
 
-# # Arithmetic operators
-# function Base.:+(epc::Epoch, t::Real)
-#     y        = t/86400.0 - epc.kahan_c
-#     _t       = epc.fd + y
-#     kahan_c  = (_t - epc.fd) - y
-#     fd       = _t
+Arguments:
+- `epc::Epoch`: Epoch
+- `tsys::Symbol`: Time system to return output in
+
+Returns:
+- `d1::Real`: First part of two part date. [days]
+- `d2::Real`: Second part of two part date. [days]
+"""
+function epoch_to_jdfd(epc::Epoch; tsys::Symbol=epc.tsys)
+    offset = time_system_offset(epc, :TAI, tsys)
+
+    return epc.days, (epc.seconds + offset + epc.nanoseconds/1.0e9)/86400.0
+end
+
+export caldate
+"""
+Return the Gregorian calendar date for a specific 
+
+Arguments:
+- `epc::Epoch`: Input epoch
+- `tsys::Symbol`: Time system to compute output in.
+
+Returns:
+- `year::Int`: Year of epoch
+- `month::Int`: Month of epoch
+- `day::Int`: Day of epoch
+- `hour::Int`: Hour of epoch
+- `minute::Int`: Minute of epoch
+- `second::Int`: Second of epoch
+- `nanoseconds::Int`: Year of epoch
+"""
+function caldate(epc::Epoch; tsys::Symbol=epc.tsys)
+    offset = time_system_offset(epc, :TAI, tsys)
+
+    status, iy, im, id, ihmsf = iauD2dtf("TAI", 9, 
+                                    epc.days, 
+                                    (epc.seconds + offset + epc.nanoseconds/1.0e9)/86400.0)
+
+    return iy, im, id, ihmsf[1], ihmsf[2], ihmsf[3], ihmsf[4]
+end
+
+export jd
+"""
+Compute the Julian Date for a specific epoch
+
+Arguments:
+- `epc::Epoch`: Epoch
+- `tsys::Symbol`: Time system to return output in
+
+Returns:
+- `jd::Real`: Julian date of the epoch in the requested time system
+"""
+function jd(epc::Epoch; tsys::Symbol=epc.tsys)
+    offset = time_system_offset(epc, :TAI, tsys)
+
+    return (epc.days + (epc.seconds + epc.nanoseconds/1.0e9 + offset)/86400.0)
+end
+
+export mjd
+"""
+Compute the Modified Julian Date for a specific epoch
+
+Arguments:
+- `epc::Epoch`: Epoch
+- `tsys::Symbol`: Time system to return output in
+
+Returns:
+- `mjd::Real`: Julian date of the epoch in the requested time system
+"""
+function mjd(epc::Epoch; tsys::Symbol=epc.tsys)
+    offset = time_system_offset(epc, :TAI, tsys)
+
+    return (epc.days + (epc.seconds + epc.nanoseconds/1.0e9 + offset)/86400.0) - Constants.MJD_ZERO
+end
+
+
+export day_of_year
+"""
+Return the day-of-year number for a given `Epoch`. 
+
+January 1 0h of each year will return 1.
+
+Arguments:
+- `epc::Epoch`: Epoch
+- `tsys::Symbol`: Time system to return output in
+
+Returns:
+- `doy::Real`: Day of year number. 
+"""
+function day_of_year(epc::Epoch; tsys::Symbol=epc.tsys)
+    # Compute MJD of first day of yearr
+    year, month, day, hour, minute, second, = caldate(epc, tsys=tsys)
+    mjd0 = caldate_to_mjd(year, 1, 1)
+
+    # Compute MJD of current day
+    offset = time_system_offset(epc, :TAI, tsys)
+    mjd = (epc.days + (epc.seconds + epc.nanoseconds/1.0e9 + offset)/86400.0) - Constants.MJD_ZERO
+
+    # Get day of year is the difference
+    doy = mjd - mjd0 + 1.0
+
+    return doy
+end
+
+export gmst
+"""
+Compute the Greenwich Mean Sidereal Time for the given Epoch.
+
+Arguments:
+- `epc::Epoch`: Epoch
+- `use_degrees::Bool`: Return output in degrees (Default: false)
+
+Returns:
+- `gmst::Real`: Greenwich Mean Sidereal Time [rad/deg]
+"""
+function gmst(epc::Epoch; use_degrees=false::Bool)
+    uta, utb = epoch_to_jdfd(epc, tsys=:UT1)
+    tta, ttb = epoch_to_jdfd(epc, tsys=:TT)
+
+    gmst = iauGmst06(uta, utb, tta, ttb)
+
     
-#     jd, fd = epc.jd, fd
-#     while abs(fd) >= 1.0
-#         jd, fd = align_jd_fd(jd, fd)
-#     end
+    return use_degrees ? gmst*180.0/pi : gmst
+end
 
-#     return Epoch(jd, fd, kahan_c)
-# end
+export gast
+"""
+Compute the Greenwich Mean Sidereal Time for the given Epoch.
 
-# function Base.:+(t::Real, epc::Epoch)
-#     return epc + t
-# end
+Arguments:
+- `epc::Epoch`: Epoch
+- `use_degrees::Bool`: Return output in degrees (Default: false)
 
-# function Base.:-(epc::Epoch, t::Real)
-#     return epc + (-t)
-# end
+Returns:
+- `gast::Real`: Greenwich Apparent Sidereal Time [rad/deg]
+"""
+function gast(epc::Epoch; use_degrees=false::Bool)
+    uta, utb = epoch_to_jdfd(epc, tsys=:UT1)
+    tta, ttb = epoch_to_jdfd(epc, tsys=:TT)
 
-# function Base.:-(epc_left::Epoch, epc_right::Epoch)
-#     # Return difference in time between two epochs
-#     return (epc_left.jd - epc_right.jd)*86400.0 +(epc_left.fd - epc_right.fd)*86400.0
-# end
+    gast = iauGst06a(uta, utb, tta, ttb)
+
+    return use_degrees ? gast*180.0/pi : gast
+end
+
+# Comparison operators
+function Base.:(==)(epc_left::Epoch, epc_right::Epoch)
+    return ((epc_left.days == epc_right.days) &&
+            (epc_left.seconds == epc_right.seconds) &&
+            isapprox(epc_left.nanoseconds, epc_right.nanoseconds, atol=1e-3))
+end
+
+function Base.:(!=)(epc_left::Epoch, epc_right::Epoch)
+    return ((epc_left.days != epc_right.days) ||
+            (epc_left.seconds != epc_right.seconds) ||
+            !isapprox(epc_left.nanoseconds, epc_right.nanoseconds, atol=1e-3))
+end
+
+function Base.:(<)(epc_left::Epoch, epc_right::Epoch)
+    return ((epc_left.days < epc_right.days) ||
+            ((epc_left.days == epc_right.days) &&
+             (epc_left.seconds < epc_right.seconds)) ||
+             ((epc_left.days == epc_right.days) &&
+             (epc_left.seconds == epc_right.seconds) &&
+             (epc_left.nanoseconds < epc_right.nanoseconds)))
+end
+
+Base.isless(epc_left::Epoch, epc_right::Epoch) = Base.:(<)(epc_left::Epoch, epc_right::Epoch)
+
+function Base.:(<=)(epc_left::Epoch, epc_right::Epoch)
+    return ((epc_left.days < epc_right.days) ||
+            ((epc_left.days == epc_right.days) &&
+            (epc_left.seconds < epc_right.seconds)) ||
+            ((epc_left.days == epc_right.days) &&
+            (epc_left.seconds == epc_right.seconds) &&
+            (epc_left.nanoseconds <= epc_right.nanoseconds)))
+end
+
+function Base.:(>)(epc_left::Epoch, epc_right::Epoch)
+    return ((epc_left.days > epc_right.days) ||
+            ((epc_left.days == epc_right.days) &&
+             (epc_left.seconds > epc_right.seconds)) ||
+             ((epc_left.days == epc_right.days) &&
+             (epc_left.seconds == epc_right.seconds) &&
+             (epc_left.nanoseconds > epc_right.nanoseconds)))
+
+end
+
+Base.isgreater(epc_left::Epoch, epc_right::Epoch) = Base.:(>)(epc_left::Epoch, epc_right::Epoch)
+
+function Base.:(>=)(epc_left::Epoch, epc_right::Epoch)
+    return ((epc_left.days > epc_right.days) ||
+            ((epc_left.days == epc_right.days) &&
+            (epc_left.seconds > epc_right.seconds)) ||
+            ((epc_left.days == epc_right.days) &&
+            (epc_left.seconds == epc_right.seconds) &&
+            (epc_left.nanoseconds >= epc_right.nanoseconds)))
+end
+
+#######################
+# Time System Offsets #
+#######################
+
+export time_system_offset
+"""
+Compute the offset between two time systems at a given Epoch.
+
+The offset (in seconds) is computed as:
+
+    time_system_offset = tsys_dest - tsys_src
+
+The value returned is the number of seconds that musted be added to the source time system given the input epoch, to get the equivalent epoch.
+
+Conversions are accomplished using SOFA C library calls.
+Epoch.
+
+Arguments:
+- `jd::Real`: Part 1 of two-part date (Julian days)
+- `fd::Real`: Part 2 of two-part date (Fractional days)
+- `tsys_src::Symbol`: Base time system
+- `tsys_dest::Symbol`: Destination time system
+
+Returns:
+- `offset::Float`: Offset between soruce and destination time systems in seconds.
+"""
+function time_system_offset(jd, fd, tsys_src::Symbol, tsys_dest::Symbol)
+    # If no transformation is needed needed return early
+    if tsys_src == tsys_dest
+        return 0.0
+    end
+    
+    offset = 0.0
+
+    # Convert To TAI 
+    if tsys_src == :GPS
+        offset += TAI_GPS
+    elseif tsys_src == :TT
+        offset += TAI_TT
+    elseif tsys_src == :UTC
+        status, iy, im, id, ihmsf = iauD2dtf("UTC", 6, jd, fd) # Returns TAI-UTC
+        status, dutc = iauDat(iy, im, id, (ihmsf[1]*3600 + ihmsf[2]*60 + ihmsf[3] + ihmsf[4]/1e6)/86400.0)
+        offset += dutc
+    elseif tsys_src == :UT1
+        # Convert UT1 -> UTC
+        offset -= UT1_UTC((jd - Constants.MJD_ZERO) + fd)
+
+        # Convert UTC -> TAI
+        status, iy, im, id, ihmsf = iauD2dtf("UTC", 6, jd, fd + offset) # Returns TAI-UTC
+        status, dutc = iauDat(iy, im, id, (ihmsf[1]*3600 + ihmsf[2]*60 + ihmsf[3] + ihmsf[4]/1e6)/86400.0)
+        offset += dutc
+    elseif tsys_src == :TAI
+        # Do nothing in this case
+    end
+
+    # Covert from TAI to source
+    if tsys_dest == :GPS
+        offset += GPS_TAI
+    elseif tsys_dest == :TT
+        offset += TT_TAI
+    elseif tsys_dest == :UTC
+        # Initial UTC guess
+        u1, u2 = jd, fd + offset/86400.0
+
+        # Iterate to get the UTC time
+        for i in 1:3
+            status, d1, d2 = iauUtctai(u1, u2)
+
+            # Adjust UTC guess
+            u1 += jd - d1
+            u2 += fd + offset/86400.0 - d2
+        end
+
+        # Compute Caldate from two-part date
+        status, iy, im, id, ihmsf = iauD2dtf("UTC", 6, u1, u2)
+
+        status, dutc = iauDat(iy, im, id, (ihmsf[1]*3600 + ihmsf[2]*60 + ihmsf[3] + ihmsf[4]/1e6)/86400.0)
+        offset -= dutc
+    elseif tsys_dest == :UT1
+        # Initial UTC guess
+        u1, u2 = jd, fd + offset/86400.0
+
+        # Iterate to get the UTC time
+        for i in 1:3
+            status, d1, d2 = iauUtctai(u1, u2)
+
+            # Adjust UTC guess
+            u1 += jd - d1
+            u2 += fd + offset/86400.0 - d2
+        end
+
+        # Compute Caldate from two-part date
+        status, iy, im, id, ihmsf = iauD2dtf("UTC", 6, u1, u2)
+
+        status, dutc = iauDat(iy, im, id, (ihmsf[1]*3600 + ihmsf[2]*60 + ihmsf[3] + ihmsf[4]/1e6)/86400.0)
+        offset -= dutc
+
+        # Convert UTC to UT1
+        offset += UT1_UTC(u1 + u2 + offset/86400.0 - Constants.MJD_ZERO)
+    elseif tsys_dest == :TAI
+        # Do nothing in this case
+    end
+
+    return offset
+end
+
+function time_system_offset(epc::Epoch, tsys_src::Symbol, tsys_dest::Symbol)
+    jd = epc.days
+    fd = (epc.seconds + epc.nanoseconds/1.0e9)/86400.0
+    return time_system_offset(jd, fd, tsys_src, tsys_dest)
+end
 
 end

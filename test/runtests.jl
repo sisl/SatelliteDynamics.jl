@@ -16,7 +16,7 @@ Random.seed!(0)
     @time @testset "SatelliteDynamics.Contants" begin
         include(joinpath(testdir, "test_constants.jl"))
     end
-    @time @testset "SatelliteDynamicsUniverse" begin
+    @time @testset "SatelliteDynamics.Universe" begin
         include(joinpath(testdir, "test_univ.jl"))
     end
     @time @testset "SatelliteDynamics.Time" begin
