@@ -445,7 +445,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Time",
     "title": "SatelliteDynamics.Time.caldate_to_mjd",
     "category": "function",
-    "text": "Convert a Gregorian calendar date to the equivalent Modified Julian Date representation of that time instant.\n\nAguments:\n\nyear::Int Year\nyear::Int Month\nyear::Int Day\nhour::Int Hour\nminute::Int Minute \nsecond::Real Seconds\nnanoseconds::Real Microseconds\n\nReturns:\n\nmjd::Float64 Modified Julian Date of Epoch\n\n\n\n\n\n"
+    "text": "Convert a Gregorian calendar date to the equivalent Modified Julian Date representation of that time instant.\n\nAguments:\n\nyear::Integer Year\nyear::Integer Month\nyear::Integer Day\nhour::Integer Hour\nminute::Integer Minute \nsecond::Real Seconds\nnanoseconds::Real Nanoseconds\n\nReturns:\n\nmjd::Float64 Modified Julian Date of Epoch\n\n\n\n\n\n"
 },
 
 {
@@ -453,7 +453,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Time",
     "title": "SatelliteDynamics.Time.mjd_to_caldate",
     "category": "function",
-    "text": "Convert a Modified Julian Date to the equivalent Gregorian calendar date representation of the same instant in time.\n\nAguments:\n\nmjd::Real: Modified Julian Date of Epoch\n\nReturns:\n\nyear::Int32: Year\nyear::Int32: Month\nyear::Int32: Day\nhour::Int32: Hour\nminute::Int32: Minute \nsecond::Float64: Seconds\nnanoseconds::Float64: nanosecondss\n\n\n\n\n\n"
+    "text": "Convert a Modified Julian Date to the equivalent Gregorian calendar date representation of the same instant in time.\n\nAguments:\n\nmjd::Real: Modified Julian Date of Epoch\n\nReturns:\n\nyear::Int32: Year\nyear::Int32: Month\nyear::Int32: Day\nhour::Int32: Hour\nminute::Int32: Minute \nsecond::Float64: Seconds\nnanoseconds::Float64: Nanoseconds\n\n\n\n\n\n"
 },
 
 {
@@ -461,7 +461,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Time",
     "title": "SatelliteDynamics.Time.caldate_to_jd",
     "category": "function",
-    "text": "Convert a Gregorian calendar date to the equivalent Julian Date representation of that time instant.\n\nAguments:\n\nyear::Int: Year\nyear::Int: Month\nyear::Int: Day\nhour::Int: Hour\nminute::Int: Minute \nsecond::Real: Seconds\nnanoseconds::Real: nanosecondss\n\nReturns:\n\nmjd::Float64: Julian Date of Epoch\n\n\n\n\n\n"
+    "text": "Convert a Gregorian calendar date to the equivalent Julian Date representation of that time instant.\n\nAguments:\n\nyear::Integer: Year\nyear::Integer: Month\nyear::Integer: Day\nhour::Integer: Hour\nminute::Integer: Minute \nsecond::Real: Seconds\nnanoseconds::Real: Nanoseconds\n\nReturns:\n\nmjd::Float64: Julian Date of Epoch\n\n\n\n\n\n"
 },
 
 {
@@ -469,7 +469,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Time",
     "title": "SatelliteDynamics.Time.jd_to_caldate",
     "category": "function",
-    "text": "Convert a Julian Date to the equivalent Gregorian calendar date representation of the same instant in time.\n\nAguments:\n\nmjd::Real: Julian Date of Epoch\n\nReturns:\n\nyear::Int32: Year\nyear::Int32: Month\nyear::Int32: Day\nhour::Int32: Hour\nminute::Int32: Minute \nsecond::Float64: Seconds\nmicrosecond::Float64: Microseconds\n\n\n\n\n\n"
+    "text": "Convert a Julian Date to the equivalent Gregorian calendar date representation of the same instant in time.\n\nAguments:\n\njd::Real: Julian Date of Epoch\n\nReturns:\n\nyear::Int32: Year\nyear::Int32: Month\nyear::Int32: Day\nhour::Int32: Hour\nminute::Int32: Minute \nsecond::Float64: Seconds\nmicrosecond::Float64: Nanoseconds\n\n\n\n\n\n"
 },
 
 {
@@ -489,11 +489,83 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modules/time/#SatelliteDynamics.Time.time_system_offset",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.time_system_offset",
+    "category": "function",
+    "text": "Compute the offset between two time systems at a given Epoch.\n\nThe offset (in seconds) is computed as:\n\ntime_system_offset = tsys_dest - tsys_src\n\nThe value returned is the number of seconds that musted be added to the source time system given the input epoch, to get the equivalent epoch.\n\nConversions are accomplished using SOFA C library calls. Epoch.\n\nArguments:\n\njd::Real: Part 1 of two-part date (Julian days)\nfd::Real: Part 2 of two-part date (Fractional days)\ntsys_src::Symbol: Base time system\ntsys_dest::Symbol: Destination time system\n\nReturns:\n\noffset::Float: Offset between soruce and destination time systems in seconds.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.Epoch",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.Epoch",
+    "category": "type",
+    "text": "The Epoch type represents a single instant in time. It is used throughout the SatelliteDynamics module. It is meant to provide a clear definition of moments in time and provide a convenient interface display time in various representations as well as in differrent time systems. The internal data members are also chosen such that the representation maintains nanosecond-precision in reprersenation of time and doesn\'t accumulate floating-point arithmetic errors larger than nanoseconds even after centuries.\n\nSupports +, +=, -, and -= operators. Two Epoch\'s can be differenced to return the time difference between two Epochs. If adding a Real number it is interpreted as an offset in seconds to add to the Epoch.\n\nThe class also supports all arithmetic operators: ==, !=, <, <=, >, >=\n\nArguments:\n\nyear::Int Year\nyear::Int Month\nyear::Int Day\nhour::Int Hour (optional)\nminute::Int Minute (optional)\nsecond::Real Seconds (optional)\nnanoseconds::Real Nanoseconds (optional)\ntsys::Symbol: Time system of the epoch at initialization\n\nThe Epoch class can be also be initialized from a string. Examples of Valid String constructors are: \n\nepc = Epoch(\"2018-12-20\")\nepc = Epoch(\"2018-12-20T16:22:19.0Z\")\nepc = Epoch(\"2018-12-20T16:22:19.123Z\")\nepc = Epoch(\"2018-12-20T16:22:19.123456789Z\")\nepc = Epoch(\"2018-12-20T16:22:19Z\")\nepc = Epoch(\"20181220T162219Z\")\nepc = Epoch(\"2018-12-01 16:22:19 GPS\")\nepc = Epoch(\"2018-12-01 16:22:19.0 GPS\")\nepc = Epoch(\"2018-12-01 16:22:19.123 GPS\")\nepc = Epoch(\"2018-12-01 16:22:19.123456789 GPS\")\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.caldate",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.caldate",
+    "category": "function",
+    "text": "Return the Gregorian calendar date for a specific \n\nArguments:\n\nepc::Epoch: Input epoch\ntsys::Symbol: Time system to compute output in.\n\nReturns:\n\nyear::Int: Year of epoch\nmonth::Int: Month of epoch\nday::Int: Day of epoch\nhour::Int: Hour of epoch\nminute::Int: Minute of epoch\nsecond::Int: Second of epoch\nnanoseconds::Int: Year of epoch\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.jd",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.jd",
+    "category": "function",
+    "text": "Compute the Julian Date for a specific epoch\n\nArguments:\n\nepc::Epoch: Epoch\ntsys::Symbol: Time system to return output in\n\nReturns:\n\njd::Real: Julian date of the epoch in the requested time system\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.mjd",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.mjd",
+    "category": "function",
+    "text": "Compute the Modified Julian Date for a specific epoch\n\nArguments:\n\nepc::Epoch: Epoch\ntsys::Symbol: Time system to return output in\n\nReturns:\n\nmjd::Real: Julian date of the epoch in the requested time system\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.day_of_year",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.day_of_year",
+    "category": "function",
+    "text": "Return the day-of-year number for a given Epoch. \n\nJanuary 1 0h of each year will return 1.\n\nArguments:\n\nepc::Epoch: Epoch\ntsys::Symbol: Time system to return output in\n\nReturns:\n\ndoy::Real: Day of year number. \n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.gmst",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.gmst",
+    "category": "function",
+    "text": "Compute the Greenwich Mean Sidereal Time for the given Epoch.\n\nArguments:\n\nepc::Epoch: Epoch\nuse_degrees::Bool: Return output in degrees (Default: false)\n\nReturns:\n\ngmst::Real: Greenwich Mean Sidereal Time [rad/deg]\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.gast",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.gast",
+    "category": "function",
+    "text": "Compute the Greenwich Mean Sidereal Time for the given Epoch.\n\nArguments:\n\nepc::Epoch: Epoch\nuse_degrees::Bool: Return output in degrees (Default: false)\n\nReturns:\n\ngast::Real: Greenwich Apparent Sidereal Time [rad/deg]\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/time/#SatelliteDynamics.Time.epoch_to_jdfd",
+    "page": "Time",
+    "title": "SatelliteDynamics.Time.epoch_to_jdfd",
+    "category": "function",
+    "text": "Compute the two-part date format used by SOFA.jl functions forr a given Epoch.\n\nArguments:\n\nepc::Epoch: Epoch\ntsys::Symbol: Time system to return output in\n\nReturns:\n\nd1::Real: First part of two part date. [days]\nd2::Real: Second part of two part date. [days]\n\n\n\n\n\n"
+},
+
+{
     "location": "modules/time/#Time-1",
     "page": "Time",
     "title": "Time",
     "category": "section",
-    "text": "The Time submodule contains common time transformations such as converting between different date representations or converting a specific instant in time between different time systems.The module also defines the Epoch class which pMost of the transformations are make backend calls to the SOFA C-library functions provide the package SOFA.jlcaldate_to_mjd\nmjd_to_caldate\ncaldate_to_jd\njd_to_caldate\nelapsed_from_epoch\ndays_from_elapsed"
+    "text": "The Time submodule contains common time transformations such as converting between different date representations or converting a specific instant in time between different time systems.The module also defines the Epoch class which pMost of the transformations are make backend calls to the SOFA C-library functions provide the package SOFA.jlcaldate_to_mjd\nmjd_to_caldate\ncaldate_to_jd\njd_to_caldate\nelapsed_from_epoch\ndays_from_elapsed\ntime_system_offset\nEpoch\ncaldate\njd\nmjd\nday_of_year\ngmst\ngast\nepoch_to_jdfd"
 },
 
 {
