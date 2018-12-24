@@ -41,6 +41,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "#Contributing-1",
+    "page": "Home",
+    "title": "Contributing",
+    "category": "section",
+    "text": "Contributions are always welcome! For feature requests, questions, or if a bug is found please create a github issue."
+},
+
+{
     "location": "modules/constants/#",
     "page": "Constants",
     "title": "Constants",
@@ -561,7 +569,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "modules/refsys/#",
+    "location": "modules/reference_systems/#",
     "page": "ReferenceSystems",
     "title": "ReferenceSystems",
     "category": "page",
@@ -569,7 +577,95 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "modules/refsys/#ReferenceSystems-1",
+    "location": "modules/reference_systems/#SatelliteDynamics.ReferenceSystems.rotation_rtn_to_eci",
+    "page": "ReferenceSystems",
+    "title": "SatelliteDynamics.ReferenceSystems.rotation_rtn_to_eci",
+    "category": "function",
+    "text": "Compute the radial, along-track, cross-track (RTN) rotation matrix. Which, if applied to a position vector in the RTN frame, will transform that vector to beinto the equivalent relative position in the ECI frame.\n\nThe RTN frame is also commonly refered to as the local-vertical, local-horizontal (LVLH) frame.\n\nArguments:\n\nx::Array{<:Real, 1}: Inertial state (position and velocity) of primary (observing) satellite\nxt::Array{<:Real, 1}: Inertial state (position and velocity) of the target satellite\n\nReturns:\n\nR_rtn_to_eci::Array{<:Real, 1}: Rotation matrix transforming from the RTN frame to the ECI frame.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/reference_systems/#SatelliteDynamics.ReferenceSystems.rotation_eci_to_rtn",
+    "page": "ReferenceSystems",
+    "title": "SatelliteDynamics.ReferenceSystems.rotation_eci_to_rtn",
+    "category": "function",
+    "text": "Compute the Earth-centered inertial to radial, along-track, cross-track (RTN)  rotation matrix. Which, if applied to a position vector in the ECI frame, will  transform that vector into the equivalent position vector in the RTN frame.\n\nThe RTN frame is also commonly refered to as the local-vertical, local-horizontal (LVLH) frame.\n\nArguments:\n\nx::Array{<:Real, 1}: Inertial state (position and velocity) of primary (observing) satellite\nxt::Array{<:Real, 1}: Inertial state (position and velocity) of the target satellite\n\nReturns:\n\nR_eci_to_rtn::Array{<:Real, 1}: Rotation matrix transforming from the ECI frame to the RTN frame.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/reference_systems/#SatelliteDynamics.ReferenceSystems.state_eci_to_rtn",
+    "page": "ReferenceSystems",
+    "title": "SatelliteDynamics.ReferenceSystems.state_eci_to_rtn",
+    "category": "function",
+    "text": "Compute the radial, along-track, cross-track (RTN) coordinates of a target satellite in the primary satellites RTN frame.\n\nThe RTN frame is also commonly refered to as the local-vertical, local-horizontal (LVLH) frame.\n\nArguments:\n\nx::Array{<:Real, 1}: Inertial state (position and velocity) of primary (observing) satellite\nxt::Array{<:Real, 1}: Inertial state (position and velocity) of the target satellite\n\nReturns:\n\nrtn::Array{<:Real, 1}: Position and velocity of the target relative of the observing satellite in the RTN.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/reference_systems/#SatelliteDynamics.ReferenceSystems.state_rtn_to_eci",
+    "page": "ReferenceSystems",
+    "title": "SatelliteDynamics.ReferenceSystems.state_rtn_to_eci",
+    "category": "function",
+    "text": "Compute the Earth-center\n\nThe RTN frame is also commonly refered to as the local-vertical, local-horizontal (LVLH) frame.\n\nArguments:\n\nx::Array{<:Real, 1}: Inertial state (position and velocity) of primary (observing) satellite\nxt::Array{<:Real, 1}: Inertial state (position and velocity) of the target satellite\n\nReturns:\n\nrtn::Array{<:Real, 1}: Position and velocity of the target relative of the observing satellite in the RTN.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/reference_systems/#SatelliteDynamics.ReferenceSystems.bias_precession_nutation",
+    "page": "ReferenceSystems",
+    "title": "SatelliteDynamics.ReferenceSystems.bias_precession_nutation",
+    "category": "function",
+    "text": "Computes the Bias-Precession-Nutation matrix transforming the GCRS to the  CIRS intermediate reference frame. This transformation corrects for the  bias, precession, and nutation of Celestial Intermediate Origin (CIO) with respect to inertial space.\n\nArguments:\n\nepc::Epoch: Epoch of transformation\n\nReturns:\n\nrc2i::Array{<:Real, 2}: 3x3 Rotation matrix transforming GCRS -> CIRS\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/reference_systems/#SatelliteDynamics.ReferenceSystems.earth_rotation",
+    "page": "ReferenceSystems",
+    "title": "SatelliteDynamics.ReferenceSystems.earth_rotation",
+    "category": "function",
+    "text": "Computes the Earth rotation matrix transforming the CIRS to the TIRS intermediate reference frame. This transformation corrects for the Earth rotation.\n\nArguments:\n\nepc::Epoch: Epoch of transformation\n\nReturns:\n\nr::Array{<:Real, 2}: 3x3 Rotation matrix transforming CIRS -> TIRS\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/reference_systems/#SatelliteDynamics.ReferenceSystems.polar_motion",
+    "page": "ReferenceSystems",
+    "title": "SatelliteDynamics.ReferenceSystems.polar_motion",
+    "category": "function",
+    "text": "Computes the Earth rotation matrix transforming the TIRS to the ITRF reference  frame.\n\nArguments\n\nepc::Epoch: Epoch of transformation\n\nReturns\n\nrpm::Array{<:Real, 2}: 3x3 Rotation matrix transforming TIRS -> ITRF\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/reference_systems/#SatelliteDynamics.ReferenceSystems.rotation_eci_ecef",
+    "page": "ReferenceSystems",
+    "title": "SatelliteDynamics.ReferenceSystems.rotation_eci_ecef",
+    "category": "function",
+    "text": "Computes the combined rotation matrix from the inertial to the Earth-fixed reference frame. Applies corrections for bias, precession, nutation, Earth-rotation, and polar motion.\n\nThe transformation is accomplished using the IAU 2006/2000A, CIO-based  theory using classical angles. The method as described in section 5.5 of  the SOFA C transformation cookbook.\n\nArguments\n\nepc::Epoch: Epoch of transformation\n\nReturns\n\nr::Array{<:Real, 2}: 3x3 Rotation matrix transforming GCRF -> ITRF\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/reference_systems/#SatelliteDynamics.ReferenceSystems.rotation_ecef_eci",
+    "page": "ReferenceSystems",
+    "title": "SatelliteDynamics.ReferenceSystems.rotation_ecef_eci",
+    "category": "function",
+    "text": "Computes the combined rotation matrix from the Earth-fixed to the inertial reference frame. Applies corrections for bias, precession, nutation, Earth-rotation, and polar motion.\n\nThe transformation is accomplished using the IAU 2006/2000A, CIO-based  theory using classical angles. The method as described in section 5.5 of  the SOFA C transformation cookbook.\n\nArguments\n\nepc::Epoch: Epoch of transformation\n\nReturns\n\nr::Array{<:Real, 1}: 3x3 Rotation matrix transforming ITRF -> GCRF\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/reference_systems/#SatelliteDynamics.ReferenceSystems.state_eci_to_ecef",
+    "page": "ReferenceSystems",
+    "title": "SatelliteDynamics.ReferenceSystems.state_eci_to_ecef",
+    "category": "function",
+    "text": "Transforms an Earth inertial state into an Earth fixed state\n\nThe transformation is accomplished using the IAU 2006/2000A, CIO-based  theory using classical angles. The method as described in section 5.5 of  the SOFA C transformation cookbook.\n\nArguments\n\nepc::Epoch: Epoch of transformation\nx::Array{<:Real, 1}: Inertial state (position, velocity) [m; m/s]\n\nReturns\n\nx_ecef::Array{<:Real, 1}: Earth-fixed state (position, velocity)\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/reference_systems/#SatelliteDynamics.ReferenceSystems.state_ecef_to_eci",
+    "page": "ReferenceSystems",
+    "title": "SatelliteDynamics.ReferenceSystems.state_ecef_to_eci",
+    "category": "function",
+    "text": "Transforms an Earth fixed state into an Inertial state\n\nThe transformation is accomplished using the IAU 2006/2000A, CIO-based  theory using classical angles. The method as described in section 5.5 of  the SOFA C transformation cookbook.\n\nArguments\n\nepc::Epoch: Epoch of transformation\nx::Array{<:Real, 1}: Earth-fixed state (position, velocity) [m; m/s]\n\nReturns\n\nx_ecef::Array{<:Real, 1}: Inertial state (position, velocity)\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/reference_systems/#ReferenceSystems-1",
     "page": "ReferenceSystems",
     "title": "ReferenceSystems",
     "category": "section",
@@ -589,7 +685,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Attitude",
     "title": "SatelliteDynamics.Attitude.Rx",
     "category": "function",
-    "text": "Rotation matrix, for a rotation about the x-axis.\n\nArguments:\n\nangle::Real: Counter-clockwise angle of rotation as viewed looking back along the postive direction of the rotation axis.\nuse_degrees:Bool: If true interpret input as being in degrees.\n\nReturns:\n\nr::Array{<:Real, 2}: Rotation matrix\n\nReferences:\n\nO. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and \n\nApplications_, 2012, p.27.\n\n\n\n\n\n"
+    "text": "Rotation matrix, for a rotation about the x-axis.\n\nArguments:\n\nangle::Real: Counter-clockwise angle of rotation as viewed looking back along the postive direction of the rotation axis.\nuse_degrees:Bool: If true interpret input as being in degrees.\n\nReturns:\n\nr::Array{<:Real, 2}: Rotation matrix\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.27.\n\n\n\n\n\n"
 },
 
 {
@@ -597,7 +693,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Attitude",
     "title": "SatelliteDynamics.Attitude.Ry",
     "category": "function",
-    "text": "Rotation matrix, for a rotation about the y-axis.\n\nArguments:\n\nangle::Real: Counter-clockwise angle of rotation as viewed looking back along the postive direction of the rotation axis.\nuse_degrees:Bool: If true interpret input as being in degrees.\n\nReturns:\n\nr::Array{<:Real, 2}: Rotation matrix\n\nReferences:\n\nO. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and \n\nApplications_, 2012, p.27.\n\n\n\n\n\n"
+    "text": "Rotation matrix, for a rotation about the y-axis.\n\nArguments:\n\nangle::Real: Counter-clockwise angle of rotation as viewed looking back along the postive direction of the rotation axis.\nuse_degrees:Bool: If true interpret input as being in degrees.\n\nReturns:\n\nr::Array{<:Real, 2}: Rotation matrix\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.27.\n\n\n\n\n\n"
 },
 
 {
@@ -605,7 +701,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Attitude",
     "title": "SatelliteDynamics.Attitude.Rz",
     "category": "function",
-    "text": "Rotation matrix, for a rotation about the z-axis.\n\nArguments:\n\nangle::Real: Counter-clockwise angle of rotation as viewed looking back along the postive direction of the rotation axis.\nuse_degrees:Bool: If true interpret input as being in degrees.\n\nReturns:\n\nr::Array{<:Real, 2}: Rotation matrix\n\nReferences:\n\nO. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and \n\nApplications_, 2012, p.27.\n\n\n\n\n\n"
+    "text": "Rotation matrix, for a rotation about the z-axis.\n\nArguments:\n\nangle::Real: Counter-clockwise angle of rotation as viewed looking back along the postive direction of the rotation axis.\nuse_degrees:Bool: If true interpret input as being in degrees.\n\nReturns:\n\nr::Array{<:Real, 2}: Rotation matrix\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.27.\n\n\n\n\n\n"
 },
 
 {
@@ -625,11 +721,123 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.geocentric_to_ecef",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.geocentric_to_ecef",
+    "category": "function",
+    "text": "Convert geocentric position to equivalent Earth-fixed position.\n\nArguments:\n\ngeoc::Array{<:Real, 1}: Geocentric coordinates (lon, lat, altitude) [rad] / [deg]\nuse_degrees:Bool: If true interpret input as being in degrees.\n\nReturns:\n\necef::Array{<:Real, 1}: Earth-fixed coordinates [m]\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.ecef_to_geocentric",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.ecef_to_geocentric",
+    "category": "function",
+    "text": "Convert Earth-fixed position to geocentric location.\n\nArguments:\n\necef::Array{<:Real, 1}: Earth-fixed coordinated [m]\nuse_degrees:Bool: If true returns result in units of degrees\n\nReturns:\n\ngeoc: Geocentric coordinates (lon, lat, altitude) [rad] / [deg]\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.geodetic_to_ecef",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.geodetic_to_ecef",
+    "category": "function",
+    "text": "Convert geodetic position to equivalent Earth-fixed position.\n\nArguments:\n\ngeod::Array{<:Real, 1}: Geodetic coordinates (lon, lat, altitude) [rad] / [deg]\nuse_degrees:Bool: If true interpret input as being in degrees.\n\nReturns:\n\necef::Array{<:Real, 1}: Earth-fixed coordinates [m]\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.ecef_to_geodetic",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.ecef_to_geodetic",
+    "category": "function",
+    "text": "Convert geodetic coordinaties to Earth-fixed position\n\nArguments:\n\necef::Array{<:Real, 1}: Earth-fixed position [m]\nuse_degrees:Bool: If true returns result in units of degrees\n\nReturns:\n\ngeod::Array{<:Real, 1}: Geocentric coordinates (lon, lat, altitude) [rad] / [deg]\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.rotation_ecef_to_enz",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.rotation_ecef_to_enz",
+    "category": "function",
+    "text": "Compute the rotation matrix from the Earth-fixed to the East-North-Up coorindate basis.\n\nArguments:\n\nstation_ecef::Array{<:Real, 1}: Earth-fixed cartesian station coordinates\nconversion::Bool: Conversion type to use. Can be \"geocentric\" or \"geodetic\"\n\nReturns:\n\nE::Array{Real, 2}: Topocentric rotation matrix\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.rotation_enz_to_ecef",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.rotation_enz_to_ecef",
+    "category": "function",
+    "text": "Compute the rotation matrix from the Earth-fixed to the South-East-Zenith  coorindate basis.\n\nArguments:\n\nstation_ecef::Array{<:Real, 1}: Earth-fixed cartesian station coordinates\nconversion::Bool: Conversion type to use. Can be \"geocentric\" or \"geodetic\"\n\nReturns:\n\nE::Array{Float64, 2}: Topocentric rotation matrix\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.state_ecef_to_enz",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.state_ecef_to_enz",
+    "category": "function",
+    "text": "Compute the coordinates of an object in the topocentric frame of an Earth-fixed frame\n\nArguments:\n\nstation_ecef::Array{<:Real, 1}: Earth-fixed cartesian station coordinates\necef::Array{<:Real, 1}: Coordinates of the object in Earth-fixed station\nconversion::Bool: Conversion type to use. Can be \"geocentric\" or \"geodetic\"\n\nReturns:\n\nE::Array{Float64, 2}: Topocentric rotation matrix\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.state_enz_to_ecef",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.state_enz_to_ecef",
+    "category": "function",
+    "text": "Compute the coordinates of an object in the topocentric frame of an Earth-fixed frame\n\nArguments:\n\nstation_ecef::Array{<:Real, 1}: Earth-fixed cartesian station coordinates\nsez::Array{<:Real, 1}: SEZ coordinates of the object\nconversion::Bool: Conversion type to use. Can be \"geocentric\" or \"geodetic\"\n\nReturns:\n\nE::Array{Float64, 2}: Topocentric rotation matrix\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.rotation_ecef_to_sez",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.rotation_ecef_to_sez",
+    "category": "function",
+    "text": "Compute the rotation matrix from the Earth-fixed to the South-East-Zenith  coorindate basis.\n\nArguments:\n\nstation_ecef::Array{<:Real, 1}: Earth-fixed cartesian station coordinates\nconversion::Bool: Conversion type to use. Can be \"geocentric\" or \"geodetic\"\n\nReturns:\n\nE::Array{Float64, 2}: Topocentric rotation matrix\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.rotation_sez_to_ecef",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.rotation_sez_to_ecef",
+    "category": "function",
+    "text": "Compute the rotation matrix from the Earth-fixed to the South-East-Zenith  coorindate basis.\n\nArguments:\n\nstation_ecef::Array{<:Real, 1}: Earth-fixed cartesian station coordinates\nconversion::Bool: Conversion type to use. Can be \"geocentric\" or \"geodetic\"\n\nReturns:\n\nE::Array{Float64, 2}: Topocentric rotation matrix\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.state_ecef_to_sez",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.state_ecef_to_sez",
+    "category": "function",
+    "text": "Compute the coordinates of an object in the topocentric frame of an Earth-fixed frame\n\nArguments:\n\nstation_ecef::Array{<:Real, 1}: Earth-fixed cartesian station coordinates\necef::Array{<:Real, 1}: Coordinates of the object in Earth-fixed station\nconversion::Bool: Conversion type to use. Can be \"geocentric\" or \"geodetic\"\n\nReturns:\n\nE::Array{Float64, 2}: Topocentric rotation matrix\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.state_sez_to_ecef",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.state_sez_to_ecef",
+    "category": "function",
+    "text": "Compute the coordinates of an object in the topocentric frame of an Earth-fixed frame\n\nArguments:\n\nstation_ecef::Array{<:Real, 1}: Earth-fixed cartesian station coordinates\nsez::Array{<:Real, 1}: SEZ coordinates of the object\nconversion::Bool: Conversion type to use. Can be \"geocentric\" or \"geodetic\"\n\nReturns:\n\nE::Array{Float64, 2}: Topocentric rotation matrix\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.enz_to_azel",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.enz_to_azel",
+    "category": "function",
+    "text": "Convert East-North-Zenith topocentric state to azimuth, elevation, and range.\n\nArguments:\n\nx::Array{<:Real, 1}: East-North-Up state\nuse_degrees:Bool: If true returns result in units of degrees\n\nReturns:\n\nazel::Array{<:Real, 1}: Azimuth, elevation and range [rad; rad; m]\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/coordinates/#SatelliteDynamics.Coordinates.sez_to_azel",
+    "page": "Coordinates",
+    "title": "SatelliteDynamics.Coordinates.sez_to_azel",
+    "category": "function",
+    "text": "Convert South-East-Zenith topocentric state to azimuth, elevation, and range.\n\nArguments:\n\nx::Array{<:Real, 1}: South-East-Zenith state\nuse_degrees:Bool: If true returns result in units of degrees\n\nReturns:\n\nazel::Array{<:Real, 1}: Azimuth, elevation and range [rad; rad; m]\n\n\n\n\n\n"
+},
+
+{
     "location": "modules/coordinates/#Coordinates-1",
     "page": "Coordinates",
     "title": "Coordinates",
     "category": "section",
-    "text": "The coordiantes module provides functionatiy for transforming between various body-fixed reference frame coordinate systems. In particular, geodetic and geocentric transformations are included. Topocentric transformations are also included."
+    "text": "The coordiantes module provides functionatiy for transforming between various body-fixed reference frame coordinate systems. In particular, geodetic and geocentric transformations are included. Topocentric transformations are also included.geocentric_to_ecef\necef_to_geocentric\ngeodetic_to_ecef\necef_to_geodetic\nrotation_ecef_to_enz\nrotation_enz_to_ecef\nstate_ecef_to_enz\nstate_enz_to_ecef\nrotation_ecef_to_sez\nrotation_sez_to_ecef\nstate_ecef_to_sez\nstate_sez_to_ecef\nenz_to_azel\nsez_to_azel"
 },
 
 {
@@ -729,6 +937,126 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modules/orbit_dynamics/#",
+    "page": "OrbitDynamics",
+    "title": "OrbitDynamics",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.deriv_orbit_earth",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.deriv_orbit_earth",
+    "category": "function",
+    "text": "Compute the state derivative.\n\nArguments:\n\nepc::Epoch: Current epoch\nx::Array{<:Real, 1}: Satellite state vector\nmass::Real: Satellite mass [kg]\narea_drag: Velocity-facing area affected by drag. [m^2]\ncoef_drag: Coefficient of drag [dimensionless]\narea_srp: Velocity-facing area affected by drag. [m^2]\ncoef_srp: Coefficient of reflectivity [dimensionless]  \nn_grav::Integer: Gravity model degree (Default: 20)\nm_grav::Integer: Gravity model order (Default: 20)\ndrag::Bool: Include cannonball atomospheric drag in force model (Default: true)\nsrp::Bool: Include flat-plate solar radiation pressure in force model (Default: true)\nmoon::Bool: Include thridbody lunar gravity in force model (Default: true)\nsun::Bool: Include thirdbody solar in force model (Default: true)\nrelativity::Bool: Include relativistic effects in force model (Default: true)\n\nReturns:\n\ndx::Array{<:Float64, 1}: Satellite state derivative, velocity and accelerations [m; m/s]\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_point_mass",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.accel_point_mass",
+    "category": "function",
+    "text": "Computes the acceleration of a satellite caused by a point-mass approximation  of the central body. Returns the acceleration vector of the satellite.\n\nAssumes the satellite is much, much less massive than the central body.\n\nArguments:\n\nr_sat::Array{<:Real, 1}: satellite position in a commonn inertial frame [m]\nr_body::Array{<:Real, 1}: position of body in a commonn inertial frame [m]\nGM::Array{<:Real, 1}: gravitational coeffient of attracting body m^3/s^2\n\nReturn:\n\na::Array{<:Real, 1}: Acceleration in X, Y, and Z inertial directions [m/s^2]\n\n\n\n\n\nComputes the acceleration on a satellite caused by a point-mass approximation  of a massive body. Returns the acceleration vector of the satellite.\n\nArguments:\n\nr_sat::Array{<:Real, 1}: satellite position in the inertial frame [m]\nGM::Array{<:Real, 1}: gravitational coeffient of attracting body m^3/s^2\n\nReturn:\n\na::Array{<:Real, 1}: Acceleration in X, Y, and Z inertial directions [m/s^2]\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_gravity",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.accel_gravity",
+    "category": "function",
+    "text": "Computes the accleration caused by Earth gravity as modeled by a spherical  harmonic gravity field.\n\nArguments:\n\nr_sat::Array{<:Real, 1}: Satellite position in the inertial frame [m]\nR_eci_ecef::Array{<:Real, 2}: Rotation matrix transforming a vector from the inertial to body-fixed reference frames. \nn_max::Integer: Maximum degree coefficient to use in expansion\nm_max::Integer: Maximum order coefficient to use in the expansion. Must be less than the degree.\n\nReturn:\n\na::Array{<:Real, 1}: Gravitational acceleration in X, Y, and Z inertial directions [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.56-68.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.sun_position",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.sun_position",
+    "category": "function",
+    "text": "Compute the Sun\'s position in the EME2000 inertial frame through the use of low-precision analytical functions.\n\nArgument:\n\nepc::Epoch: Epoch\n\nReturns:\n\nr_sun::Array{<:Real, 1}: Position vector of the Sun in the Earth-centered inertial fame.\n\nNotes:\n\nThe EME2000 inertial frame is for most purposes equivalent to the GCRF frame.\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.70-73.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.moon_position",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.moon_position",
+    "category": "function",
+    "text": "Compute the Moon\'s position in the EME2000 inertial frame through the use of low-precision analytical functions.\n\nArgument:\n\nepc::Epoch: Epoch\n\nReturns:\n\nr_moon::Array{<:Real, 1}: Position vector of the Moon in the Earth-centered inertial fame.\n\nNotes:\n\nThe EME2000 inertial frame is for most purposes equivalent to the GCRF frame.\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.70-73.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_thirdbody_sun",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.accel_thirdbody_sun",
+    "category": "function",
+    "text": "Computes the acceleration of a satellite in the inertial frame due to the gravitational attraction of the Sun.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nr_sun::Array{<:Real, 1}: Position of sun in inertial frame.\n\nReturn:\n\na::Array{<:Real, 1}: Acceleration due to the Sun\'s gravity in the inertial frame [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.69-70.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_thirdbody_moon",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.accel_thirdbody_moon",
+    "category": "function",
+    "text": "Computes the acceleration of a satellite in the inertial frame due to the gravitational attraction of the Moon.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nr_moon::Array{<:Real, 1}: Position of moon in inertial frame.\n\nReturns:\n\na::Array{<:Real, 1}: Acceleration due to the Moon\'s gravity in the inertial frame [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.69-70.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.density_harris_priester",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.density_harris_priester",
+    "category": "function",
+    "text": "Computes the local density using the Harris-Priester density model.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nr_sun::Array{<:Real, 1}: Position of sun in inertial frame.\n\nReturns:\n\nrho:Float64: Local atmospheric density [kg/m^3]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.89-91.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_drag",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.accel_drag",
+    "category": "function",
+    "text": "Computes the perturbing, non-conservative acceleration caused by atmospheric drag assuming that the ballistic properties of the spacecraft are captured by the coefficient of drag.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nrho::Real: atmospheric density [kg/m^3]\nmass::Real: Spacecraft mass [kg]\narea::Real: Wind-facing cross-sectional area [m^2]\nCd::Real: coefficient of drag [dimensionless]\nT::Array{<:Real, 2}: Rotation matrix from the inertial to the true-of-date frame\n\nReturn:\n\na::Array{<:Real, 1}: Acceleration due to drag in the X, Y, and Z inertial directions. [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.83-86.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.eclipse_cylindrical",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.eclipse_cylindrical",
+    "category": "function",
+    "text": "Computes the illumination fraction of a satellite in Earth orbit using a cylindrical Earth shadow model.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nr_sun::Array{<:Real, 1}: Position of sun in inertial frame.\n\nReturn:\n\nnu::Float64: Illumination fraction (0 <= nu <= 1). nu = 0 means spacecraft in complete shadow, nu = 1 mean spacecraft fully illuminated by sun.\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.80-83.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.eclipse_conical",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.eclipse_conical",
+    "category": "function",
+    "text": "Computes the illumination fraction of a satellite in Earth orbit using a conical Earth shadow model.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nr_sun::Array{<:Real, 1}: Position of sun in inertial frame.\n\nReturn:\n\nnu::Float64: Illumination fraction (0 <= nu <= 1). nu = 0 means spacecraft in complete shadow, nu = 1 mean spacecraft fully illuminated by sun.\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.80-83.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_srp",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.accel_srp",
+    "category": "function",
+    "text": "Computes the perturbing acceleration due to direct solar radiation  pressure assuming the reflecting surface is a flat plate pointed directly at the Sun.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\n\nReturns:\n\na::Array{<:Real, 1}: Satellite acceleration due to solar radiation pressure [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.77-79.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_relativity",
+    "page": "OrbitDynamics",
+    "title": "SatelliteDynamics.OrbitDynamics.accel_relativity",
+    "category": "function",
+    "text": "Computes perturbation accleration of a satellite in the Inertial frame due to the combined effects of special and general relativity.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\n\nReturns:\n\na::Array{<:Real, 1}: Satellite acceleration due to relativity. [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.110-112.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/orbit_dynamics/#OrbitDynamics-1",
+    "page": "OrbitDynamics",
+    "title": "OrbitDynamics",
+    "category": "section",
+    "text": "The OrbitDynamics module provides implementations of various force and orbit perturbation models used in orbit simulation.deriv_orbit_earth\naccel_point_mass\naccel_gravity\nsun_position\nmoon_position\naccel_thirdbody_sun\naccel_thirdbody_moon\ndensity_harris_priester\naccel_drag\neclipse_cylindrical\neclipse_conical\naccel_srp\naccel_relativity"
+},
+
+{
     "location": "modules/function_index/#",
     "page": "Function Index",
     "title": "Function Index",
@@ -798,6 +1126,14 @@ var documenterSearchIndex = {"docs": [
     "title": "Astrodynamics",
     "category": "section",
     "text": "Modules = [SatelliteDynamics.Astrodynamics]"
+},
+
+{
+    "location": "modules/function_index/#OrbitDynamics-1",
+    "page": "Function Index",
+    "title": "OrbitDynamics",
+    "category": "section",
+    "text": "Modules = [SatelliteDynamics.OrbitDynamics]"
 },
 
 ]}
