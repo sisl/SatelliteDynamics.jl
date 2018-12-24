@@ -8,7 +8,7 @@ using Reexport
 include("constants.jl")
 include("universe.jl")
 include("time.jl")
-# include("refsys.jl")
+include("refsys.jl")
 # include("coordinates.jl")
 include("astrodynamics.jl")
 # include("orbit_dynamics.jl")
@@ -19,7 +19,7 @@ include("astrodynamics.jl")
 @reexport using SatelliteDynamics.Constants
 @reexport using SatelliteDynamics.Universe
 @reexport using SatelliteDynamics.Time
-# @reexport using SatelliteDynamics.ReferenceSystems
+@reexport using SatelliteDynamics.ReferenceSystems
 # @reexport using SatelliteDynamics.Coordinates
 @reexport using SatelliteDynamics.Astrodynamics
 # @reexport using SatelliteDynamics.OrbitDynamics

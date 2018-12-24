@@ -15,10 +15,10 @@ Modules = [SatelliteDynamics.Universe]
 Modules = [SatelliteDynamics.Time]
 ```
 
-<!-- ## ReferenceSystems
+## ReferenceSystems
 ```@index
 Modules = [SatelliteDynamics.ReferenceSystems]
-``` -->
+```
 
 ## Astrodynamics
 ```@index

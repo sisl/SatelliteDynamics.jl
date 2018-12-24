@@ -22,9 +22,9 @@ Random.seed!(0)
     @time @testset "SatelliteDynamics.Time" begin
         include(joinpath(testdir, "test_time.jl"))
     end
-    # @time @testset "SatelliteDynamics.Refsys" begin
-    #     include(joinpath(testdir, "test_refsys.jl"))
-    # end
+    @time @testset "SatelliteDynamics.Refsys" begin
+        include(joinpath(testdir, "test_refsys.jl"))
+    end
     # @time @testset "SatelliteDynamics.Coordinates" begin
     #     include(joinpath(testdir, "test_coordinates.jl"))
     # end
