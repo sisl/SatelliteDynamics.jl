@@ -577,6 +577,62 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modules/attitude/#",
+    "page": "Attitude",
+    "title": "Attitude",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/attitude/#SatelliteDynamics.Attitude.Rx",
+    "page": "Attitude",
+    "title": "SatelliteDynamics.Attitude.Rx",
+    "category": "function",
+    "text": "Rotation matrix, for a rotation about the x-axis.\n\nArguments:\n\nangle::Real: Counter-clockwise angle of rotation as viewed looking back along the postive direction of the rotation axis.\nuse_degrees:Bool: If true interpret input as being in degrees.\n\nReturns:\n\nr::Array{<:Real, 2}: Rotation matrix\n\nReferences:\n\nO. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and \n\nApplications_, 2012, p.27.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/attitude/#SatelliteDynamics.Attitude.Ry",
+    "page": "Attitude",
+    "title": "SatelliteDynamics.Attitude.Ry",
+    "category": "function",
+    "text": "Rotation matrix, for a rotation about the y-axis.\n\nArguments:\n\nangle::Real: Counter-clockwise angle of rotation as viewed looking back along the postive direction of the rotation axis.\nuse_degrees:Bool: If true interpret input as being in degrees.\n\nReturns:\n\nr::Array{<:Real, 2}: Rotation matrix\n\nReferences:\n\nO. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and \n\nApplications_, 2012, p.27.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/attitude/#SatelliteDynamics.Attitude.Rz",
+    "page": "Attitude",
+    "title": "SatelliteDynamics.Attitude.Rz",
+    "category": "function",
+    "text": "Rotation matrix, for a rotation about the z-axis.\n\nArguments:\n\nangle::Real: Counter-clockwise angle of rotation as viewed looking back along the postive direction of the rotation axis.\nuse_degrees:Bool: If true interpret input as being in degrees.\n\nReturns:\n\nr::Array{<:Real, 2}: Rotation matrix\n\nReferences:\n\nO. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and \n\nApplications_, 2012, p.27.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/attitude/#Attitude-1",
+    "page": "Attitude",
+    "title": "Attitude",
+    "category": "section",
+    "text": "The attitude module contains function for common attitude operations, different attitude representations (Quaternions, Euler Angles, Euler Axis & Angle, Rotation  Matrices), and transformations between different attitude representations.Rx\nRy\nRz"
+},
+
+{
+    "location": "modules/coordinates/#",
+    "page": "Coordinates",
+    "title": "Coordinates",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/coordinates/#Coordinates-1",
+    "page": "Coordinates",
+    "title": "Coordinates",
+    "category": "section",
+    "text": "The coordiantes module provides functionatiy for transforming between various body-fixed reference frame coordinate systems. In particular, geodetic and geocentric transformations are included. Topocentric transformations are also included."
+},
+
+{
     "location": "modules/astrodynamics/#",
     "page": "Astrodynamics",
     "title": "Astrodynamics",
@@ -718,6 +774,22 @@ var documenterSearchIndex = {"docs": [
     "title": "ReferenceSystems",
     "category": "section",
     "text": "Modules = [SatelliteDynamics.ReferenceSystems]"
+},
+
+{
+    "location": "modules/function_index/#Attitude-1",
+    "page": "Function Index",
+    "title": "Attitude",
+    "category": "section",
+    "text": "Modules = [SatelliteDynamics.Attitude]"
+},
+
+{
+    "location": "modules/function_index/#Coordinates-1",
+    "page": "Function Index",
+    "title": "Coordinates",
+    "category": "section",
+    "text": "Modules = [SatelliteDynamics.Coordinates]"
 },
 
 {
