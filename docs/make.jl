@@ -15,6 +15,8 @@ makedocs(
             "modules/universe.md",
             "modules/time.md",
             "modules/refsys.md",
+            "modules/attitude.md",
+            "modules/coordinates.md",
             "modules/astrodynamics.md",
             "Function Index" => "modules/function_index.md",
         ],

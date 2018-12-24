@@ -20,6 +20,16 @@ Modules = [SatelliteDynamics.Time]
 Modules = [SatelliteDynamics.ReferenceSystems]
 ```
 
+## Attitude
+```@index
+Modules = [SatelliteDynamics.Attitude]
+```
+
+## Coordinates
+```@index
+Modules = [SatelliteDynamics.Coordinates]
+```
+
 ## Astrodynamics
 ```@index
 Modules = [SatelliteDynamics.Astrodynamics]
