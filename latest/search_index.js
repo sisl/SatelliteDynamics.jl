@@ -561,6 +561,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modules/refsys/#",
+    "page": "ReferenceSystems",
+    "title": "ReferenceSystems",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/refsys/#ReferenceSystems-1",
+    "page": "ReferenceSystems",
+    "title": "ReferenceSystems",
+    "category": "section",
+    "text": "The ReferenceSystems submodule contains precision transformations between common standard reference systems.Currently only Earth-based reference systems are supported.Most of the transformations are make backend calls to the SOFA C-library functions provide the package SOFA.jlrotation_rtn_to_eci\nrotation_eci_to_rtn\nstate_eci_to_rtn\nstate_rtn_to_eci\nbias_precession_nutation\nearth_rotation\npolar_motion\nrotation_eci_ecef\nrotation_ecef_eci\nstate_eci_to_ecef\nstate_ecef_to_eci"
+},
+
+{
     "location": "modules/astrodynamics/#",
     "page": "Astrodynamics",
     "title": "Astrodynamics",
