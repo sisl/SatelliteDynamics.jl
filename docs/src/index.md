@@ -34,7 +34,7 @@ Pages = [
 Depth = 2
 ```
 
-## Examples
+<!-- ## Examples
 
 The best way to learn how to use any software is to 
 
@@ -45,7 +45,7 @@ Pages = [
     "tutorials/epoch_example.md",
 ]
 Depth = 2
-```
+``` -->
 
 ## Citing
 
