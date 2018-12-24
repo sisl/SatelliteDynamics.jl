@@ -14,10 +14,11 @@ makedocs(
             "modules/constants.md",
             "modules/universe.md",
             "modules/time.md",
-            "modules/refsys.md",
+            "modules/reference_systems.md",
             "modules/attitude.md",
             "modules/coordinates.md",
             "modules/astrodynamics.md",
+            "modules/orbit_dynamics.md",
             "Function Index" => "modules/function_index.md",
         ],
         # "Tutorials" => Any[

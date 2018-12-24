@@ -13,6 +13,20 @@ using SatelliteDynamics.Time: Epoch, mjd
 ##############
 
 export rotation_rtn_to_eci
+"""
+Compute the radial, along-track, cross-track (RTN) rotation matrix. Which,
+if applied to a position vector in the RTN frame, will transform that vector to
+beinto the equivalent relative position in the ECI frame.
+
+The RTN frame is also commonly refered to as the local-vertical, local-horizontal (LVLH) frame.
+
+Arguments:
+- `x::Array{<:Real, 1}`: Inertial state (position and velocity) of primary (observing) satellite
+- `xt::Array{<:Real, 1}`: Inertial state (position and velocity) of the target satellite
+
+Returns:
+- `R_rtn_to_eci::Array{<:Real, 1}`: Rotation matrix transforming _from_ the RTN frame _to_ the ECI frame.
+"""
 function rotation_rtn_to_eci(x::Array{<:Real, 1})
     r = x[1:3]
     v = x[4:6]
@@ -27,6 +41,20 @@ function rotation_rtn_to_eci(x::Array{<:Real, 1})
 end
 
 export rotation_eci_to_rtn
+"""
+Compute the Earth-centered inertial to radial, along-track, cross-track (RTN) 
+rotation matrix. Which, if applied to a position vector in the ECI frame, will 
+transform that vector into the equivalent position vector in the RTN frame.
+
+The RTN frame is also commonly refered to as the local-vertical, local-horizontal (LVLH) frame.
+
+Arguments:
+- `x::Array{<:Real, 1}`: Inertial state (position and velocity) of primary (observing) satellite
+- `xt::Array{<:Real, 1}`: Inertial state (position and velocity) of the target satellite
+
+Returns:
+- `R_eci_to_rtn::Array{<:Real, 1}`: Rotation matrix transforming _from_ the ECI frame _to_ the RTN frame.
+"""
 function rotation_eci_to_rtn(x::Array{<:Real, 1})
     return rotation_rtn_to_eci(x)'
 end

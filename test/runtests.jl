@@ -23,7 +23,7 @@ Random.seed!(0)
         include(joinpath(testdir, "test_time.jl"))
     end
     @time @testset "SatelliteDynamics.Refsys" begin
-        include(joinpath(testdir, "test_refsys.jl"))
+        include(joinpath(testdir, "test_reference_systems.jl"))
     end
     @time @testset "SatelliteDynamics.Attitude" begin
         include(joinpath(testdir, "test_attitude.jl"))
@@ -34,9 +34,9 @@ Random.seed!(0)
     @time @testset "SatelliteDynamics.Astrodynamics" begin
         include(joinpath(testdir, "test_astrodynamics.jl"))
     end
-    # @time @testset "SatelliteDynamics.OrbitDynamics" begin
-    #     include(joinpath(testdir, "test_orbit_dynamics.jl"))
-    # end
+    @time @testset "SatelliteDynamics.OrbitDynamics" begin
+        include(joinpath(testdir, "test_orbitdynamics.jl"))
+    end
     # @time @testset "SatelliteDynamics.Simulation" begin
     #     include(joinpath(testdir, "test_simulation.jl"))
     # end

@@ -17,8 +17,7 @@ Returns:
 - `r::Array{<:Real, 2}`: Rotation matrix
 
 References:
-1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and 
-Applications_, 2012, p.27.
+1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.27.
 """
 function Rx(angle::Real ; use_degrees=false::Bool)
     
@@ -46,8 +45,7 @@ Returns:
 - `r::Array{<:Real, 2}`: Rotation matrix
 
 References:
-1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and 
-Applications_, 2012, p.27.
+1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.27.
 """
 function Ry(angle::Real ; use_degrees=false::Bool)
     
@@ -75,8 +73,7 @@ Returns:
 - `r::Array{<:Real, 2}`: Rotation matrix
 
 References:
-1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and 
-Applications_, 2012, p.27.
+1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.27.
 """
 function Rz(angle::Real ; use_degrees=false::Bool)
     

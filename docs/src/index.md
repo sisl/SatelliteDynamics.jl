@@ -54,3 +54,7 @@ If you would like to help support it, please star the repository as such metrics
 usage help guage interest and secure funding. If you use the software as part of
 your research, teaching, or other activities, we would be grateful if you could
 cite our work.
+
+## Contributing
+
+Contributions are always welcome! For feature requests, questions, or if a bug is found please create a github issue.

@@ -34,3 +34,8 @@ Modules = [SatelliteDynamics.Coordinates]
 ```@index
 Modules = [SatelliteDynamics.Astrodynamics]
 ```
+
+## OrbitDynamics
+```@index
+Modules = [SatelliteDynamics.OrbitDynamics]
+```
