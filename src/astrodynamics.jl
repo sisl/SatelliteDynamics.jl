@@ -203,9 +203,7 @@ function sOSCtoCART(x_oe::Array{<:Real, 1}; use_degrees=false::Bool, GM=GM_EARTH
     if use_degrees
         # Copy and convert input from degrees to radians if necessary
         oe = deepcopy(x_oe)
-        for i in 3:6
-            oe[i] *= pi/180.0
-        end
+        oe[3:6] = oe[3:6]*pi/180.0
     else
         oe = x_oe
     end
@@ -284,20 +282,20 @@ function sCARTtoOSC(x::Array{<:Real, 1}; use_degrees=false::Bool, GM=GM_EARTH::R
     omega = u - nu                                     # Argument of perigee
 
     # Correct angles to run from 0 to 2PI
-    OMEGA = OMEGA + 2*pi
-    omega = omega + 2*pi
-    M     = M     + 2*pi
+    OMEGA = OMEGA + 2.0*pi
+    omega = omega + 2.0*pi
+    M     = M     + 2.0*pi
 
-    OMEGA = mod(OMEGA, 2*pi)
-    omega = mod(omega, 2*pi)
-    M     = mod(M, 2*pi)
+    OMEGA = mod(OMEGA, 2.0*pi)
+    omega = mod(omega, 2.0*pi)
+    M     = mod(M, 2.0*pi)
 
     # Create Orbital Element Vector
     x_oe = [a, e, i, OMEGA, omega, M]
 
     # Convert output to degrees if necessary
     if use_degrees
-        x_oe[2:6] = x_oe[2:6]*180.0/pi
+        x_oe[3:6] = x_oe[3:6]*180.0/pi
     end
 
     return x_oe

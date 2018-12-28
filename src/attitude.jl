@@ -28,9 +28,9 @@ function Rx(angle::Real ; use_degrees=false::Bool)
     c = cos(angle)
     s = sin(angle)
 
-    return [ +1  0  0 ;
-              0 +c +s ;
-              0 -s +c]
+    return [ +1.0  0.0  0.0;
+              0.0 +c   +s;
+              0.0 -s   +c]
 end
 
 export Ry
@@ -56,9 +56,9 @@ function Ry(angle::Real ; use_degrees=false::Bool)
     c = cos(angle)
     s = sin(angle)
 
-    return [ +c  0 -s ;
-              0 +1  0 ;
-             +s  0 +c]
+    return [ +c    0.0 -s;
+              0.0 +1.0  0.0;
+             +s    0.0 +c]
 end
 
 export Rz
@@ -84,9 +84,9 @@ function Rz(angle::Real ; use_degrees=false::Bool)
     c = cos(angle)
     s = sin(angle)
 
-    return [ +c +s  0 ;
-             -s +c  0 ;
-              0  0 +1]
+    return [ +c    +s   0.0;
+             -s    +c   0.0;
+              0.0  0.0 +1.0]
 end
 
 ##############

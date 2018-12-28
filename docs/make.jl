@@ -21,6 +21,7 @@ makedocs(
             "modules/coordinates.md",
             "modules/astrodynamics.md",
             "Orbit Dynamics" => "modules/orbit_dynamics.md",
+            "Simulation" => "modules/simulation.md",
             "Function Index" => "modules/function_index.md",
         ],
         "Tutorials" => Any[

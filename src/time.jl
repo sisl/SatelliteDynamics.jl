@@ -275,7 +275,7 @@ function Epoch(year::Real, month::Real, day::Real, hour::Real=0, minute::Real=0,
     fd          = fd + fdays
 
     # Convert fractional days into total seconds still retaining fractional part
-    seconds = fd * 86400
+    seconds = fd * 86400.0
     fsecs, secs = modf(seconds)
 
     # @debug "seconds: $seconds"
@@ -326,7 +326,7 @@ function Epoch(str::String)
     day         = 0
     hour        = 0
     minute      = 0
-    second      = 0
+    second      = 0.0
     nanoseconds = 0.0
     tsys        = :UTC
 
@@ -417,9 +417,9 @@ end
 
 
 function Base.show(io::IO, epc::Epoch)
-    year, month, day, hour, minute, second = caldate(epc, tsys=:UTC)
+    year, month, day, hour, minute, second, nanodseconds = caldate(epc, tsys=:UTC)
 
-    s = @sprintf "Epoch(%02d-%02d-%02dT%02d:%02d:%02.3fZ)" year month day hour minute second;
+    s = @sprintf "Epoch(%02d-%02d-%02dT%02d:%02d:%02d.%03dZ)" year month day hour minute second floor(nanodseconds/1.0e6);
 
     print(io, s)
 end

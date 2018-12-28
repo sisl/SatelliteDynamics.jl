@@ -13,8 +13,7 @@ include("attitude.jl")
 include("coordinates.jl")
 include("astrodynamics.jl")
 include("orbit_dynamics.jl")
-# include("simulation.jl")
-# include("data_structures.jl")
+include("simulation.jl")
 
 # Export Values
 @reexport using SatelliteDynamics.Constants
@@ -25,7 +24,6 @@ include("orbit_dynamics.jl")
 @reexport using SatelliteDynamics.Coordinates
 @reexport using SatelliteDynamics.Astrodynamics
 @reexport using SatelliteDynamics.OrbitDynamics
-# @reexport using SatelliteDynamics.Simulation
-# @reexport using SatelliteDynamics.DataStructures
+@reexport using SatelliteDynamics.Simulation
 
 end # module
