@@ -23,6 +23,28 @@ let
     @test isapprox(ecef3[2], 0, atol=tol)
     @test isapprox(ecef3[3], WGS84_a, atol=tol)
 
+    # Test two-input format 
+    geoc = [0.0, 0.0]
+    ecef = sGEOCtoECEF(geoc)
+
+    @test isapprox(ecef[1], WGS84_a, atol=tol)
+    @test isapprox(ecef[2], 0, atol=tol)
+    @test isapprox(ecef[3], 0, atol=tol)
+
+    geoc = [90.0, 0.0]
+    ecef = sGEOCtoECEF(geoc, use_degrees=true)
+
+    @test isapprox(ecef[1], 0, atol=tol)
+    @test isapprox(ecef[2], WGS84_a, atol=tol)
+    @test isapprox(ecef[3], 0, atol=tol)
+
+    geoc = [0.0, 90.0]
+    ecef = sGEOCtoECEF(geoc, use_degrees=true)
+
+    @test isapprox(ecef[1], 0, atol=tol)
+    @test isapprox(ecef[2], 0, atol=tol)
+    @test isapprox(ecef[3], WGS84_a, atol=tol)
+
     # Test circularity
     geoc4 = sECEFtoGEOC(ecef1, use_degrees=true)
     geoc5 = sECEFtoGEOC(ecef2, use_degrees=true)
@@ -48,49 +70,74 @@ let
     @test isapprox(geoc[2], geocc[2], atol=tol)
     @test isapprox(geoc[3], geocc[3], atol=tol)
 
+    # Test Error Condition
+    @test_throws ErrorException sGEOCtoECEF([0.0,  90.1], use_degrees=true)
+    @test_throws ErrorException sGEOCtoECEF([0.0, -90.1], use_degrees=true)    
 end
 
 let 
     tol = 1.0e-7
 
     # Test known position conversions
-    geoc1 = [0, 0, 0]
-    ecef1 = sGEODtoECEF(geoc1)
+    geod1 = [0, 0, 0]
+    ecef1 = sGEODtoECEF(geod1)
 
     @test isapprox(ecef1[1], WGS84_a, atol=tol)
     @test isapprox(ecef1[2], 0, atol=tol)
     @test isapprox(ecef1[3], 0, atol=tol)
 
-    geoc2 = [90.0, 0.0, 0.0]
-    ecef2 = sGEODtoECEF(geoc2, use_degrees=true)
+    geod2 = [90.0, 0.0, 0.0]
+    ecef2 = sGEODtoECEF(geod2, use_degrees=true)
 
     @test isapprox(ecef2[1], 0, atol=tol)
     @test isapprox(ecef2[2], WGS84_a, atol=tol)
     @test isapprox(ecef2[3], 0, atol=tol)
 
-    geoc3 = [0, 90.0, 0]
-    ecef3 = sGEODtoECEF(geoc3, use_degrees=true)
+    geod3 = [0, 90.0, 0]
+    ecef3 = sGEODtoECEF(geod3, use_degrees=true)
 
     @test isapprox(ecef3[1], 0, atol=tol)
     @test isapprox(ecef3[2], 0, atol=tol)
     @test isapprox(ecef3[3], WGS84_a*(1.0-WGS84_f), atol=tol)
 
+    # Test two input format
+    geod = [0.0, 0.0]
+    ecef = sGEODtoECEF(geod)
+
+    @test isapprox(ecef[1], WGS84_a, atol=tol)
+    @test isapprox(ecef[2], 0, atol=tol)
+    @test isapprox(ecef[3], 0, atol=tol)
+
+    geod = [90.0, 0.0]
+    ecef = sGEODtoECEF(geod, use_degrees=true)
+
+    @test isapprox(ecef[1], 0, atol=tol)
+    @test isapprox(ecef[2], WGS84_a, atol=tol)
+    @test isapprox(ecef[3], 0, atol=tol)
+
+    geod = [0.0, 90.0]
+    ecef = sGEODtoECEF(geod, use_degrees=true)
+
+    @test isapprox(ecef[1], 0, atol=tol)
+    @test isapprox(ecef[2], 0, atol=tol)
+    @test isapprox(ecef[3], WGS84_a*(1.0-WGS84_f), atol=tol)
+
     # Test circularity
-    geoc4 = sECEFtoGEOD(ecef1, use_degrees=true)
-    geoc5 = sECEFtoGEOD(ecef2, use_degrees=true)
-    geoc6 = sECEFtoGEOD(ecef3, use_degrees=true)
+    geod4 = sECEFtoGEOD(ecef1, use_degrees=true)
+    geod5 = sECEFtoGEOD(ecef2, use_degrees=true)
+    geod6 = sECEFtoGEOD(ecef3, use_degrees=true)
 
-    @test isapprox(geoc4[1], geoc1[1], atol=tol)
-    @test isapprox(geoc4[2], geoc1[2], atol=tol)
-    @test isapprox(geoc4[3], geoc1[3], atol=tol)
+    @test isapprox(geod4[1], geod1[1], atol=tol)
+    @test isapprox(geod4[2], geod1[2], atol=tol)
+    @test isapprox(geod4[3], geod1[3], atol=tol)
 
-    @test isapprox(geoc5[1], geoc2[1], atol=tol)
-    @test isapprox(geoc5[2], geoc2[2], atol=tol)
-    @test isapprox(geoc5[3], geoc2[3], atol=tol)
+    @test isapprox(geod5[1], geod2[1], atol=tol)
+    @test isapprox(geod5[2], geod2[2], atol=tol)
+    @test isapprox(geod5[3], geod2[3], atol=tol)
 
-    @test isapprox(geoc6[1], geoc3[1], atol=tol)
-    @test isapprox(geoc6[2], geoc3[2], atol=tol)
-    @test isapprox(geoc6[3], geoc3[3], atol=tol)
+    @test isapprox(geod6[1], geod3[1], atol=tol)
+    @test isapprox(geod6[2], geod3[2], atol=tol)
+    @test isapprox(geod6[3], geod3[3], atol=tol)
 
     geod  = [77.875000,    20.975200,     0.000000]
     ecef  = sGEODtoECEF(geod, use_degrees=true)
@@ -98,6 +145,10 @@ let
     @test isapprox(geod[1], geodc[1], atol=tol)
     @test isapprox(geod[2], geodc[2], atol=tol)
     @test isapprox(geod[3], geodc[3], atol=tol)
+
+    # Test Error Condition
+    @test_throws ErrorException sGEODtoECEF([0.0,  90.1], use_degrees=true)
+    @test_throws ErrorException sGEODtoECEF([0.0, -90.1], use_degrees=true)    
 end
 
 let
@@ -106,7 +157,6 @@ let
     station_ecef = [0, R_EARTH, 0]
 
     R_ecef_enz = rECEFtoENZ(station_ecef, conversion="geocentric")
-
     R_enz_ecef = rENZtoECEF(station_ecef, conversion="geocentric")
 
     @test R_ecef_enz == R_enz_ecef'
@@ -137,6 +187,19 @@ let
     @test isapprox(ecef[1], ecef2[1], atol=tol)
     @test isapprox(ecef[2], ecef2[2], atol=tol)
     @test isapprox(ecef[3], ecef2[3], atol=tol)
+
+    # Test ENZ Error Conditions
+    @test_throws ErrorException rECEFtoENZ([R_EARTH, 0.0])
+    @test_throws ErrorException rECEFtoENZ([R_EARTH, 0.0, 0.0], conversion="unknown")
+    @test_throws ErrorException rENZtoECEF([R_EARTH, 0.0])
+    @test_throws ErrorException sECEFtoENZ([R_EARTH, 0.0], [R_EARTH + 100.0, 0.0, 0.0])
+    @test_throws ErrorException sECEFtoENZ([R_EARTH, 0.0, 0.0], [R_EARTH + 100.0, 0.0])
+    @test_throws ErrorException sENZtoECEF([R_EARTH, 0.0], [0.0, 0.0, 0.0])
+    @test_throws ErrorException sENZtoECEF([R_EARTH, 0.0, 0.0], [0.0, 0.0])
+
+    # Test length of return is 3
+    enz = sECEFtoENZ(station_ecef, ecef[1:3], conversion="geocentric")
+    @test length(enz) == 3
 end
 
 let
@@ -144,7 +207,6 @@ let
     station_ecef = [0, R_EARTH, 0]
 
     R_ecef_sez = rECEFtoSEZ(station_ecef, conversion="geocentric")
-
     R_sez_ecef = rSEZtoECEF(station_ecef, conversion="geocentric")
 
     @test isapprox(R_ecef_sez[1, 1], R_sez_ecef[1, 1], atol=tol)
@@ -185,6 +247,19 @@ let
     @test isapprox(ecef[1], ecef2[1], atol=tol)
     @test isapprox(ecef[2], ecef2[2], atol=tol)
     @test isapprox(ecef[3], ecef2[3], atol=tol)
+
+    # Test SEZ Error Conditions
+    @test_throws ErrorException rECEFtoSEZ([R_EARTH, 0.0])
+    @test_throws ErrorException rECEFtoSEZ([R_EARTH, 0.0, 0.0], conversion="unknown")
+    @test_throws ErrorException rSEZtoECEF([R_EARTH, 0.0])
+    @test_throws ErrorException sECEFtoSEZ([R_EARTH, 0.0], [R_EARTH + 100.0, 0.0, 0.0])
+    @test_throws ErrorException sECEFtoSEZ([R_EARTH, 0.0, 0.0], [R_EARTH + 100.0, 0.0])
+    @test_throws ErrorException sSEZtoECEF([R_EARTH, 0.0], [0.0, 0.0, 0.0])
+    @test_throws ErrorException sSEZtoECEF([R_EARTH, 0.0, 0.0], [0.0, 0.0])
+
+    # Test length of return is 3
+    sez = sECEFtoSEZ(station_ecef, ecef[1:3], conversion="geocentric")
+    @test length(sez) == 3
 end
 
 let
@@ -246,4 +321,40 @@ let
     @test azel_enz[4] == azel_sez[4]
     @test azel_enz[5] == azel_sez[5]
     @test azel_enz[6] == azel_sez[6]
+end
+
+let 
+    # Test Error Conditions
+    enz = [0.0, 0.0, 100, 90.0, 0.0, 0.0]
+
+    # Non-standard input length
+    @test_throws ErrorException sENZtoAZEL(enz[1:2])
+
+    # Cant resolve azimuth without range information
+    azel = sENZtoAZEL(enz[1:3])
+    @test azel[1] == 0.0
+
+    # Test ability to resolve azimuth ambiguity
+    azel = sENZtoAZEL(enz)
+    @test azel[1] != 0
+    @test azel[2] != 0
+    @test azel[2] != 0
+end
+
+let 
+    # Test Error Conditions
+    sez = [0.0, 0.0, 100, 90.0, 0.0, 0.0]
+
+    # Non-standard input length
+    @test_throws ErrorException sSEZtoAZEL(sez[1:2])
+
+    # Cant resolve azimuth without range information
+    azel = sSEZtoAZEL(sez[1:3])
+    @test azel[1] == 0.0
+
+    # Test ability to resolve azimuth ambiguity
+    azel = sSEZtoAZEL(sez)
+    @test azel[1] != 0
+    @test azel[2] != 0
+    @test azel[2] != 0
 end

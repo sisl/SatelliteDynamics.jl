@@ -88,7 +88,7 @@ function sun_sync_inclination(a::Real, e::Real; use_degrees=false::Bool)
     # Inclination required for sun-synchronous orbits
     i_ss = acos(-2*a^(7/2)*OMEGA_DOT_SS*(1-e^2)^2/(3*(R_EARTH^2)*J2_EARTH*sqrt(GM_EARTH)))
 
-    if use_degrees
+    if use_degrees == true
         i_ss *= 180.0/pi
     end
 
@@ -109,7 +109,7 @@ Returns:
 """
 function anomaly_eccentric_to_mean(E::Real, e::Real; use_degrees=false::Bool)
     # Convert degree input
-    if use_degrees
+    if use_degrees == true
         E *= pi/180.0
     end
 
@@ -117,7 +117,7 @@ function anomaly_eccentric_to_mean(E::Real, e::Real; use_degrees=false::Bool)
     M = E - e*sin(E)
 
     # Convert degree output
-    if use_degrees
+    if use_degrees == true
         M *= 180.0/pi
     end
 
@@ -138,7 +138,7 @@ Returns:
 """
 function anomaly_mean_to_eccentric(M::Real, e::Real; use_degrees=false::Bool)
     # Convert degree input
-    if use_degrees
+    if use_degrees == true
         M *= pi/180.0
     end
 
@@ -160,8 +160,8 @@ function anomaly_mean_to_eccentric(M::Real, e::Real; use_degrees=false::Bool)
 
     # Iterate until convergence
     while abs(f) > epsilson
-        f  = E - e*sin(E) - M
-        E  = E - f / (1.0 - e*cos(E))
+        f = E - e*sin(E) - M
+        E = E - f / (1.0 - e*cos(E))
 
         # Increase iteration counter
         i += 1
@@ -171,7 +171,7 @@ function anomaly_mean_to_eccentric(M::Real, e::Real; use_degrees=false::Bool)
     end
 
     # Convert degree output
-    if use_degrees
+    if use_degrees == true
         E *= 180.0/pi
     end
 
@@ -200,7 +200,7 @@ The osculating elements are assumed to be (in order):
 """
 function sOSCtoCART(x_oe::Array{<:Real, 1}; use_degrees=false::Bool, GM=GM_EARTH::Real)
 
-    if use_degrees
+    if use_degrees == true
         # Copy and convert input from degrees to radians if necessary
         oe = deepcopy(x_oe)
         oe[3:6] = oe[3:6]*pi/180.0
@@ -294,7 +294,7 @@ function sCARTtoOSC(x::Array{<:Real, 1}; use_degrees=false::Bool, GM=GM_EARTH::R
     x_oe = [a, e, i, OMEGA, omega, M]
 
     # Convert output to degrees if necessary
-    if use_degrees
+    if use_degrees == true
         x_oe[3:6] = x_oe[3:6]*180.0/pi
     end
 

@@ -71,6 +71,13 @@ let
 
     E = anomaly_mean_to_eccentric(180.0, 0.0, use_degrees=true)
     @test E == 180.0
+
+    # Large Eccentricities
+    E = anomaly_mean_to_eccentric(180.0, 0.9, use_degrees=true)
+    @test E == 180.0
+
+    # Max Iteration exit on hyperbolic trajectory
+    # @test_throws ErrorException anomaly_mean_to_eccentric(pi, 2.0)
 end
 
 let
@@ -86,7 +93,21 @@ let
     @test isapprox(eci[6], sqrt(GM_EARTH/(R_EARTH + 500e3)), atol=tol)
 end
 
-let
+let 
+    # Using radians
+    oe   = [R_EARTH + 500e3, 0, pi/2.0, 0, 0, 0]
+    eci  = sOSCtoCART(oe, use_degrees=false)
+    eci2 = sOSCtoCART(oe, use_degrees=false)
+
+    tol = 1e-6
+    @test isapprox(eci[1], eci2[1], atol=tol)
+    @test isapprox(eci[2], eci2[2], atol=tol)
+    @test isapprox(eci[3], eci2[3], atol=tol)
+    @test isapprox(eci[4], eci2[4], atol=tol)
+    @test isapprox(eci[5], eci2[5], atol=tol)
+    @test isapprox(eci[6], eci2[6], atol=tol)  
+
+    # Using degrees
     oe   = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
     eci  = sOSCtoCART(oe, use_degrees=true)
     eci2 = sOSCtoCART(oe, use_degrees=true)
@@ -97,7 +118,7 @@ let
     @test isapprox(eci[3], eci2[3], atol=tol)
     @test isapprox(eci[4], eci2[4], atol=tol)
     @test isapprox(eci[5], eci2[5], atol=tol)
-    @test isapprox(eci[6], eci2[6], atol=tol)    
+    @test isapprox(eci[6], eci2[6], atol=tol)
 end
 
 let 
@@ -122,4 +143,19 @@ let
     @test isapprox(oe[1], a,     atol=tol)
     @test isapprox(oe[2], e,     atol=tol)
     @test isapprox(oe[3], 90.0,  atol=tol)
+end
+
+let
+    # Test near-circular conversions
+    a   = R_EARTH + 500e3
+    eci = [a, 0.0, 0.0, 0.0, 0.0, sqrt(GM_EARTH/a)]
+    oe  = sCARTtoOSC(eci, use_degrees=true)
+
+    tol = 1e-6
+    @test isapprox(oe[1], a, atol=tol)
+    @test isapprox(oe[2], 0.0, atol=tol)
+    @test isapprox(oe[3], 90.0, atol=tol)
+    @test isapprox(oe[4], 0.0, atol=tol)
+    @test isapprox(oe[5], 0.0, atol=tol)
+    @test isapprox(oe[6], 0.0, atol=tol)
 end

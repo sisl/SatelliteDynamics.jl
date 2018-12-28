@@ -5,6 +5,13 @@ using LinearAlgebra
 
 using SatelliteDynamics.Constants: WGS84_a, WGS84_f
 
+####################
+# Helper Constants #
+####################
+
+# Intermidiate calculations calculations
+const ECC2 = WGS84_f * (2.0 - WGS84_f) # Square of eccentricisty
+
 ##############
 # Geocentric #
 ##############
@@ -119,14 +126,11 @@ function sGEODtoECEF(geod::Array{<:Real, 1} ; use_degrees=false::Bool)
         error("Lattiude, $lat, out of range. Must be between -90 and 90 degrees.")
     end
 
-    # Intermidiate calculations calculations
-    e2      = WGS84_f * (2.0 - WGS84_f) # Square of eccentricisty
-
     # Compute Earth-fixed position vector
-    N = WGS84_a / sqrt(1.0 - e2*sin(lat)^2)
+    N = WGS84_a / sqrt(1.0 - ECC2*sin(lat)^2)
     x =           (N+alt)*cos(lat)*cos(lon)
     y =           (N+alt)*cos(lat)*sin(lon)
-    z =  ((1.0-e2)*N+alt)*sin(lat)
+    z =  ((1.0-ECC2)*N+alt)*sin(lat)
     
     return [x, y, z]
 end
@@ -150,8 +154,7 @@ function sECEFtoGEOD(ecef::Array{<:Real, 1} ; use_degrees=false::Bool)
     # Compute intermediate quantities
     epsilon  = eps(Float64) * 1.0e3 * WGS84_a # Convergence requirement as function of machine precision
     rho2 = x^2 + y^2                      # Square of the distance from the z-axis
-    e2   = WGS84_f * (2.0 - WGS84_f)      # Square of Earth eccentricity
-    dz   = e2 * z
+    dz   = ECC2 * z
     N    = 0.0
 
     # Iteratively compute refine coordinates
@@ -159,8 +162,8 @@ function sECEFtoGEOD(ecef::Array{<:Real, 1} ; use_degrees=false::Bool)
         zdz    = z + dz
         Nh     = sqrt(rho2 + zdz^2)
         sinphi = zdz / Nh
-        N      = WGS84_a / sqrt(1.0 - e2 * sinphi^2)
-        dz_new = N * e2 * sinphi
+        N      = WGS84_a / sqrt(1.0 - ECC2 * sinphi^2)
+        dz_new = N * ECC2 * sinphi
 
         # Check convergence requirement
         if abs(dz - dz_new) < epsilon
@@ -528,16 +531,16 @@ function sENZtoAZEL(x::Array{<:Real, 1} ; use_degrees=false::Bool)
     el = atan(rZ, sqrt(rE^2 + rN^2))
 
     # Azimuth
-    az = 0
-    if el != pi/2
+    az = 0.0
+    if el != pi/2 # Non-singular azimuth 
         az = atan(rE, rN)
         if az < 0
             az += 2*pi
         end
-    else
-        if length(x) == 6
-            az = 0
-            @warn "Could not resolve singularity calculating azimuth."
+    else # Azimuth may be singular for 90 deg elevation
+        if length(x) != 6
+            az = 0.0
+            # @warn "Could not resolve singularity calculating azimuth."
         else
             # Use rate information to get azimuth if there is a singularity
             # in the position
@@ -609,16 +612,16 @@ function sSEZtoAZEL(x::Array{<:Real, 1} ; use_degrees=false::Bool)
     el = atan(rZ, sqrt(rS^2 + rE^2))
 
     # Azimuth
-    az = 0
+    az = 0.0
     if el != pi/2
         az = atan(rE, -rS)
         if az < 0
             az += 2*pi
         end
     else
-        if length(x) == 6
-            az = 0
-            @warn ("Could not resolve singularity calculating azimuth.")
+        if length(x) != 6
+            az = 0.0
+            # @warn "Could not resolve singularity calculating azimuth."
         else
             # Use rate information to get azimuth if there is a singularity
             # in the position
