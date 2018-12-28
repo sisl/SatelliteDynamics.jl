@@ -857,75 +857,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "modules/astrodynamics/#SatelliteDynamics.Astrodynamics.mean_motion",
-    "page": "Astrodynamics",
-    "title": "SatelliteDynamics.Astrodynamics.mean_motion",
-    "category": "function",
-    "text": "Compute the mean motion given a semi-major axis.\n\nArguments:\n\na::Real: Semi-major axis. [m]\nuse_degrees:Bool: If true returns result in units of degrees\nGM::Real: Gravitational constant of central body. Defaults to SatelliteDynamics.Constants.GM_EARTH if none is provided.\n\nReturns:\n\nn::Real: Orbital mean motion. [rad/s] or [deg/s]\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/astrodynamics/#SatelliteDynamics.Astrodynamics.semimajor_axis",
-    "page": "Astrodynamics",
-    "title": "SatelliteDynamics.Astrodynamics.semimajor_axis",
-    "category": "function",
-    "text": "Calculate semi-major axis given mean-motion.\n\nArguments:\n\nn::Real: Orbital mean motion. [rad/s] or [deg/s]\nuse_degrees:Bool: If true interpret input as being in degrees.\nGM::Real: Gravitational constant of central body. Defaults to SatelliteDynamics.Constants.GM_EARTH if none is provided.\n\nReturns:\n\na::Real: Semi-major axis. [m]\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/astrodynamics/#SatelliteDynamics.Astrodynamics.orbit_period",
-    "page": "Astrodynamics",
-    "title": "SatelliteDynamics.Astrodynamics.orbit_period",
-    "category": "function",
-    "text": "Compute the satellite orbital period given the semi-major axis.\n\nArguments:\n\na::Real: Semi-major axis. [m]\nGM::Real: Gravitational constant of central body. Defaults to SatelliteDynamics.Constants.GM_EARTH if none is provided.\n\nReturns:\n\nT::Real: Orbital period. [s]\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/astrodynamics/#SatelliteDynamics.Astrodynamics.sun_sync_inclination",
-    "page": "Astrodynamics",
-    "title": "SatelliteDynamics.Astrodynamics.sun_sync_inclination",
-    "category": "function",
-    "text": "Compute the required inclination for a Sun-synchronous Earth orbit.\n\nAlgorithm assumes the nodal precession is entirely due to the J2 perturbation, and no other perturbations are considered.\n\nThe inclination is computed using a first-order, non-iterative approximation.\n\nArguments:\n\na::Real: Semi-major axis. [m]\ne::Real: Eccentricity. [dimensionless]\nuse_degrees:Bool: If true interpret output will be returned in degrees.\n\nReturns:\n\niss::Real: Requierd inclination for a sun-synchronous orbit. [rad] or [deg]\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/astrodynamics/#SatelliteDynamics.Astrodynamics.anomaly_eccentric_to_mean",
-    "page": "Astrodynamics",
-    "title": "SatelliteDynamics.Astrodynamics.anomaly_eccentric_to_mean",
-    "category": "function",
-    "text": "Convert eccentric anomaly into mean anomaly.\n\nArguments:\n\nE::Real: Eccentric anomaly. [rad] or [deg]\ne::Real: Eccentricity. [dimensionless]\nuse_degrees:Bool: If true interpret input will be interpreted as being in degrees, and output will be returned in degrees.\n\nReturns:\n\nM::Real: Mean anomaly. [rad] or [deg]\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/astrodynamics/#SatelliteDynamics.Astrodynamics.anomaly_mean_to_eccentric",
-    "page": "Astrodynamics",
-    "title": "SatelliteDynamics.Astrodynamics.anomaly_mean_to_eccentric",
-    "category": "function",
-    "text": "Convert mean anomaly into eccentric anomaly.\n\nArguments:\n\nM::Real: Mean anomaly. [deg] or [deg]\ne::Real: Eccentricity. [dimensionless]\nuse_degrees:Bool: If true interpret input will be interpreted as being in degrees, and output will be returned in degrees.\n\nReturns:\n\nE::Real: Eccentric anomaly. [rad] or [deg]\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/astrodynamics/#SatelliteDynamics.Astrodynamics.sOSCtoCART",
-    "page": "Astrodynamics",
-    "title": "SatelliteDynamics.Astrodynamics.sOSCtoCART",
-    "category": "function",
-    "text": "Given an orbital state expressed in osculating orbital elements compute the equivalent Cartesean position and velocity of the inertial state.\n\nThe osculating elements are assumed to be (in order):\n\na, Semi-major axis [m]\ne, Eccentricity [dimensionless]\ni, Inclination [rad]\nΩ, Right Ascension of the Ascending Node (RAAN) [rad]\nω, Argument of Perigee [ramd]\nM, Mean anomaly [rad]\n\nArguments:\n\nx_oe x::Array{<:Real, 1}: Osculating orbital elements. See above for desription of the elements and their required order.\nuse_degrees:Bool: If true interpret input will be interpreted as being in degrees, and output will be returned in degrees.\nGM::Real: Gravitational constant of central body. Defaults to SatelliteDynamics.Constants.GM_EARTH if none is provided.\n\nReturns\n\nx x::Array{<:Real, 1}: Cartesean inertial state. Returns position and velocity. [m; m/s]\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/astrodynamics/#SatelliteDynamics.Astrodynamics.sCARTtoOSC",
-    "page": "Astrodynamics",
-    "title": "SatelliteDynamics.Astrodynamics.sCARTtoOSC",
-    "category": "function",
-    "text": "Given a Cartesean position and velocity in the inertial frame, return the  state expressed in terms of  osculating orbital elements.\n\nThe osculating elements are assumed to be (in order):\n\na, Semi-major axis [m]\ne, Eccentricity [dimensionless]\ni, Inclination [rad]\nΩ, Right Ascension of the Ascending Node (RAAN) [rad]\nω, Argument of Perigee [ramd]\nM, Mean anomaly [rad]\n\nArguments:\n\nx x::Array{<:Real, 1}: Cartesean inertial state. Returns position and velocity. [m; m/s]\nuse_degrees:Bool: If true interpret input will be interpreted as being in degrees, and output will be returned in degrees.\nGM::Real: Gravitational constant of central body. Defaults to SatelliteDynamics.Constants.GM_EARTH if none is provided.\n\nReturns\n\nx_oe x::Array{<:Real, 1}: Osculating orbital elements. See above for desription of the elements and their required order.\n\n\n\n\n\n"
-},
-
-{
     "location": "modules/astrodynamics/#Astrodynamics-1",
     "page": "Astrodynamics",
     "title": "Astrodynamics",
     "category": "section",
-    "text": "The Astrodynamics submodule provides functions, state representations, and  transformations common to the field of astrodynamics.mean_motion\nsemimajor_axis\norbit_period\nsun_sync_inclination\nanomaly_eccentric_to_mean\nanomaly_mean_to_eccentric\nsOSCtoCART\nsCARTtoOSC"
+    "text": "The Astrodynamics submodule provides functions, state representations, and  transformations common to the field of astrodynamics.mean_motion\nsemimajor_axis\norbit_period\nsun_sync_inclination\nanomaly_eccentric_to_mean\nanomaly_mean_to_eccentric\nsOSCtoCART\nos_osc_to_cart\nsCARTtoOSC\nos_cart_to_osc"
 },
 
 {
