@@ -985,6 +985,30 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modules/simulation/#",
+    "page": "Simulation",
+    "title": "Simulation",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/simulation/#SatelliteDynamics.Simulation.propagate_orbit",
+    "page": "Simulation",
+    "title": "SatelliteDynamics.Simulation.propagate_orbit",
+    "category": "function",
+    "text": "Simulate orbit dynamics\n\nArguments:\n\nepc0::Epoch: Propagation start Epoch\neci0::Epoch: Initial Cartesean inertial state [m; m/s]\nepcf::Epoch: Final to simulate to.\ntimestep::Real: Timestep to use for simulation (Default: 5.0)\nsolver: Solver to use to solve ODEProblem\natol::Real: Absolute tolerate limit for differential equation solution (Default: 1.0e-9)\natol::Real: Absolute tolerate limit for differential equation solution (Default: 1.0e-9)\nmass::Real: Satellite mass kg\narea_drag::Real: Area of drag (cannon-ball model) m^2\ncoef_drag::Real: Coefficient of drag dimensionless\narear_srp::Real: Area of solar radiation prerssure m^2\ncoef_srp::Real: Coefficient of reflectivity dimensionless\nn_grav::Integer: Degree of gravity field dimensionless\nm_grav::Integer: Order of gravity field dimensionless\ndrag::Bool: Apply drag perturbation (Default: false)\nsrp::Bool: Apply solar radiation pressure perturbation (Default: false)\nmoon::Bool: Apply third-body lunar gravity perturbation (Default: false)\nsun::Bool: Apply third-body solar gravity perturbation (Default: false)\nrelativity::Bool: Apply relativistic perturbations (Default: false)\n\nReturns:\n\nt::Array{Float64, 1}: Simulation output times at elapsed seconds from initial Epoch\nepc::Array{Epoch, 1}: Simulation output times as absolute Epochs\neci::Array{Float64, 2}: Propgated inertial state. Time is aligned with column dimension.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/simulation/#Simulation-1",
+    "page": "Simulation",
+    "title": "Simulation",
+    "category": "section",
+    "text": "The Simulation module provides the capability to simulate satellite orbit and  attitude dynamics by combining the dynamics functions provided in this module  with the numerical integration capabilities of DifferentialEquations.jl.The goal is to provide straight forward, and easily customizable interfaces for simulations of orbit and attitude dynamics.propagate_orbit"
+},
+
+{
     "location": "modules/function_index/#",
     "page": "Function Index",
     "title": "Function Index",
@@ -1065,6 +1089,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modules/function_index/#Simulation-1",
+    "page": "Function Index",
+    "title": "Simulation",
+    "category": "section",
+    "text": "Modules = [SatelliteDynamics.Simulation]"
+},
+
+{
     "location": "tutorials/orbit_propagation_example/#",
     "page": "Orbit Propagation",
     "title": "Orbit Propagation",
@@ -1077,7 +1109,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Orbit Propagation",
     "title": "Orbit Propagation",
     "category": "section",
-    "text": "One of the core features of the "
+    "text": "One of the primary features that SatelliteDynamics.jl aims to make easily accessible to users, is the ability to perform high-fidelity orbit propagation in an easy and customizable manner. In the example we will show how to simulate a satellite orbits using the tools provided in this module.To start out we will perform an orbit propagation using the most basic orbit  model possible: a point-mass approximation of Earth\'s gravity without any  other perturbation models added on. First, we must declare the initial conditions for the simulation. This entails  declaring an initial Epoch as well as the inertial Cartesean state of the  statellite at that Epoch. # Declare simulation initial Epoch\nepc0 = Epoch(2019, 1, 1, 12, 0, 0, 0.0) \n\n# Declare initial state in terms of osculating orbital elements\noe0  = [R_EARTH + 500e3, 0.0, 90.0, 0, 0, 0]\n\n# Convert osculating elements to Cartesean state\neci0 = sOSCtoCART(oe0, use_degrees=true)Next, simulate the orbit:# Set the propagation end time to one orbit period after the start\nepcf = epc0 + orbit_period(oe0[1])\n\n# Propagate the orbit\nt, epc, eci = simulate(orb, epcf, timestep=1, dtmax=1)Putting it all together we have:# Declare simulation initial Epoch\nepc0 = Epoch(2019, 1, 1, 12, 0, 0, 0.0) \n\n# Declare initial state in terms of osculating orbital elements\noe0  = [R_EARTH + 500e3, 0.0, 90.0, 0, 0, 0]\n\n# Convert osculating elements to Cartesean state\neci0 = sOSCtoCART(oe0, use_degrees=true)\n\n# Set the propagation end time to one orbit period after the start\nepcf = epc0 + orbit_period(oe0[1])\n\n# Propagate the orbit\nt, epc, eci = simulate(epc0, eci0, epcf, timestep=1, dtmax=1)And that\'s it! All it took was 5 lines of code with the SatelliteDynamics  module to propagate an orbit. "
 },
 
 ]}
