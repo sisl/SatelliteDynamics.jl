@@ -3,7 +3,7 @@ module Simulation
 
 using SatelliteDynamics.Time: Epoch
 using SatelliteDynamics.OrbitDynamics: deriv_orbit_earth, accel_point_mass
-using DifferentialEquations
+using OrdinaryDiffEq # Don't use all of DifferentialEquations due to long precompile time
 
 """
 f_orbit_dynamics is an internal helper function used to interface the OrbitDynamics module with DifferentialEquations.jl solvers.
