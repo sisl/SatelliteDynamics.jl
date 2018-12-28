@@ -114,7 +114,7 @@ let
     # State conversion
     epc  = Epoch(2018,1,1,12,0,0)
     oe   = [R_EARTH + 500e3, 1e-3, 97.8, 75, 25, 45]
-    ecef = sECItoECEF(epc, os_osc_to_cart(oe, use_degrees=true))
+    ecef = sECItoECEF(epc, sOSCtoCART(oe, use_degrees=true))
 
     station_ecef = sGEODtoECEF([-122.4056, 37.7716, 0.0], use_degrees=true)
 
@@ -162,7 +162,7 @@ let
     # State conversion
     epc  = Epoch(2018,1,1,12,0,0)
     oe   = [R_EARTH + 500e3, 1e-3, 97.8, 75, 25, 45]
-    ecef = sECItoECEF(epc, os_osc_to_cart(oe, use_degrees=true))
+    ecef = sECItoECEF(epc, sOSCtoCART(oe, use_degrees=true))
 
     station_ecef = sGEODtoECEF([-122.4056, 37.7716, 0.0], use_degrees=true)
 
@@ -199,7 +199,7 @@ let
     n = mean_motion(oe[1], use_degrees=true)
     oe[6] += n*dt
 
-    sat_eci = os_osc_to_cart(oe, use_degrees=true)
+    sat_eci = sOSCtoCART(oe, use_degrees=true)
 
     # Low precision ECEF transform
     d = (dt/86400.0 + mjd(epc) - 51544.5)
@@ -229,7 +229,7 @@ let
     # State conversion
     epc  = Epoch(2018,1,1,12,0,0)
     oe   = [R_EARTH + 500e3, 1e-3, 97.8, 75, 25, 45]
-    ecef = sECItoECEF(epc, os_osc_to_cart(oe, use_degrees=true))
+    ecef = sECItoECEF(epc, sOSCtoCART(oe, use_degrees=true))
 
     station_ecef = sGEODtoECEF([-122.4056, 37.7716, 0.0], use_degrees=true)
 

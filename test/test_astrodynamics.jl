@@ -89,7 +89,7 @@ end
 let
     oe   = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
     eci  = sOSCtoCART(oe, use_degrees=true)
-    eci2 = os_osc_to_cart(oe, use_degrees=true)
+    eci2 = sOSCtoCART(oe, use_degrees=true)
 
     tol = 1e-6
     @test isapprox(eci[1], eci2[1], atol=tol)
