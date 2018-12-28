@@ -11,7 +11,5 @@ sun_sync_inclination
 anomaly_eccentric_to_mean
 anomaly_mean_to_eccentric
 sOSCtoCART
-os_osc_to_cart
 sCARTtoOSC
-os_cart_to_osc
 ```
