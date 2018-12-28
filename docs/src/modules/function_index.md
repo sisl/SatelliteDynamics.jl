@@ -15,7 +15,7 @@ Modules = [SatelliteDynamics.Universe]
 Modules = [SatelliteDynamics.Time]
 ```
 
-## ReferenceSystems
+## Reference Systems
 ```@index
 Modules = [SatelliteDynamics.ReferenceSystems]
 ```
@@ -35,7 +35,7 @@ Modules = [SatelliteDynamics.Coordinates]
 Modules = [SatelliteDynamics.Astrodynamics]
 ```
 
-## OrbitDynamics
+## Orbit Dynamics
 ```@index
 Modules = [SatelliteDynamics.OrbitDynamics]
 ```

@@ -12,10 +12,10 @@ matrix:
     - os: linux
       dist: xenial
     - os: osx
-    - os: windows
+    # - os: windows # Travis does not currently support Julia on Windows
   allow_failures:
     - julia: nightly
-    - os: windows
+    # - os: windows
 
 script:
   - julia --project --check-bounds=yes -e 'import Pkg; Pkg.build(); Pkg.test("SatelliteDynamics"; coverage=true)'
