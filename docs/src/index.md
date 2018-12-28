@@ -34,18 +34,16 @@ Pages = [
 Depth = 2
 ```
 
-<!-- ## Examples
+## Examples
 
 The best way to learn how to use any software is to 
 
 ```@contents
 Pages = [
-    "tutorials/universe_example.md",
-    "tutorials/time_example.md",
-    "tutorials/epoch_example.md",
+    "tutorials/orbit_propagation.md",
 ]
 Depth = 2
-``` -->
+```
 
 ## Citing
 

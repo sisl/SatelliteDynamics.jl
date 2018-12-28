@@ -9,7 +9,7 @@ using SatelliteDynamics.Constants: WGS84_a, WGS84_f
 # Geocentric #
 ##############
 
-export geocentric_to_ecef
+export sGEOCtoECEF
 """
 Convert geocentric position to equivalent Earth-fixed position.
 
@@ -20,7 +20,7 @@ Arguments:
 Returns:
 - `ecef::Array{<:Real, 1}`: Earth-fixed coordinates [m]
 """
-function geocentric_to_ecef(geoc::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sGEOCtoECEF(geoc::Array{<:Real, 1} ; use_degrees=false::Bool)
     # Extract lat and lon
     lon = geoc[1]
     lat = geoc[2]
@@ -52,7 +52,7 @@ function geocentric_to_ecef(geoc::Array{<:Real, 1} ; use_degrees=false::Bool)
     return [x, y, z]
 end
 
-export ecef_to_geocentric
+export sECEFtoGEOC
 """
 Convert Earth-fixed position to geocentric location.
 
@@ -63,7 +63,7 @@ Arguments:
 Returns:
 - `geoc`: Geocentric coordinates (lon, lat, altitude) [rad] / [deg]
 """
-function ecef_to_geocentric(ecef::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sECEFtoGEOC(ecef::Array{<:Real, 1} ; use_degrees=false::Bool)
     # Expand ECEF coordinates
     x, y, z = ecef
 
@@ -85,7 +85,7 @@ end
 # Geodetic Convertions #
 ########################
 
-export geodetic_to_ecef
+export sGEODtoECEF
 """
 Convert geodetic position to equivalent Earth-fixed position.
 
@@ -96,7 +96,7 @@ Arguments:
 Returns:
 - `ecef::Array{<:Real, 1}`: Earth-fixed coordinates [m]
 """
-function geodetic_to_ecef(geod::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sGEODtoECEF(geod::Array{<:Real, 1} ; use_degrees=false::Bool)
     # Extract lat and lon
     lon = geod[1]
     lat = geod[2]
@@ -131,7 +131,7 @@ function geodetic_to_ecef(geod::Array{<:Real, 1} ; use_degrees=false::Bool)
     return [x, y, z]
 end
 
-export ecef_to_geodetic
+export sECEFtoGEOD
 """
 Convert geodetic coordinaties to Earth-fixed position
 
@@ -142,7 +142,7 @@ Arguments:
 Returns:
 - `geod::Array{<:Real, 1}`: Geocentric coordinates (lon, lat, altitude) [rad] / [deg]
 """
-function ecef_to_geodetic(ecef::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sECEFtoGEOD(ecef::Array{<:Real, 1} ; use_degrees=false::Bool)
     # Expand ECEF coordinates
     x, y, z = ecef
 
@@ -189,7 +189,7 @@ end
 # ENZ #
 #######
 
-export rotation_ecef_to_enz
+export rECEFtoENZ
 """
 Compute the rotation matrix from the Earth-fixed to the East-North-Up
 coorindate basis.
@@ -201,16 +201,16 @@ Arguments:
 Returns:
 - `E::Array{Real, 2}`: Topocentric rotation matrix
 """
-function rotation_ecef_to_enz(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)   
+function rECEFtoENZ(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)   
     if length(ecef) < 3
         error("Input coordinates must be length 3.")
     end
 
     # Compute Station Lat-Lon-Altitude
     if conversion == "geodetic"
-        lat, lon, = ecef_to_geodetic(ecef, use_degrees=true)
+        lat, lon, = sECEFtoGEOD(ecef, use_degrees=true)
     elseif conversion == "geocentric"
-        lat, lon, = ecef_to_geocentric(ecef, use_degrees=true)
+        lat, lon, = sECEFtoGEOC(ecef, use_degrees=true)
     else
         error("Unknown conversion method: $conversion")
     end
@@ -227,7 +227,7 @@ function rotation_ecef_to_enz(ecef::Array{<:Real, 1} ; conversion="geodetic"::St
     return E
 end
 
-export rotation_enz_to_ecef
+export rENZtoECEF
 """
 Compute the rotation matrix from the Earth-fixed to the South-East-Zenith 
 coorindate basis.
@@ -239,16 +239,16 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function rotation_enz_to_ecef(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
+function rENZtoECEF(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
     # Check input coordinates
     if length(ecef) < 3
         error("Input coordinates must be length 3.")
     end
 
-    return rotation_ecef_to_enz(ecef, conversion=conversion)'
+    return rECEFtoENZ(ecef, conversion=conversion)'
 end
 
-export state_ecef_to_enz
+export sECEFtoENZ
 """
 Compute the coordinates of an object in the topocentric frame of an
 Earth-fixed frame
@@ -261,7 +261,7 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function state_ecef_to_enz(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
+function sECEFtoENZ(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
     # Check input sizes
     if length(ecef) < 3
         error("Input ecef state must be at least length 3.")
@@ -272,7 +272,7 @@ function state_ecef_to_enz(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1
     end
 
     # Compute ENZ Rotation matrix
-    E = rotation_ecef_to_enz(station_ecef, conversion=conversion)
+    E = rECEFtoENZ(station_ecef, conversion=conversion)
 
     # Transform range
     range_ecef = ecef[1:3] - station_ecef
@@ -294,7 +294,7 @@ function state_ecef_to_enz(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1
     return sat_enz
 end
 
-export state_enz_to_ecef
+export sENZtoECEF
 """
 Compute the coordinates of an object in the topocentric frame of an
 Earth-fixed frame
@@ -307,7 +307,7 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function state_enz_to_ecef(station_ecef::Array{<:Real, 1}, enz::Array{<:Real, 1} ; conversion="geodetic"::String)
+function sENZtoECEF(station_ecef::Array{<:Real, 1}, enz::Array{<:Real, 1} ; conversion="geodetic"::String)
     # Check input sizes
     if length(enz) < 3
         error("Input ENZ state must be at least length 3.")
@@ -318,7 +318,7 @@ function state_enz_to_ecef(station_ecef::Array{<:Real, 1}, enz::Array{<:Real, 1}
     end
 
     # Compute ENZ Rotation matrix
-    E = rotation_enz_to_ecef(station_ecef, conversion=conversion)
+    E = rENZtoECEF(station_ecef, conversion=conversion)
 
     # Transform range
     range_enz  = enz[1:3]
@@ -344,7 +344,7 @@ end
 # SEZ #
 #######
 
-export rotation_ecef_to_sez
+export rECEFtoSEZ
 """
 Compute the rotation matrix from the Earth-fixed to the South-East-Zenith 
 coorindate basis.
@@ -356,16 +356,16 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function rotation_ecef_to_sez(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)    
+function rECEFtoSEZ(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)    
     if length(ecef) < 3
         error("Input coordinates must be length 3.")
     end
 
     # Compute Station Lat-Lon-Altitude
     if conversion == "geodetic"
-        lat, lon, = ecef_to_geodetic(ecef, use_degrees=true)
+        lat, lon, = sECEFtoGEOD(ecef, use_degrees=true)
     elseif conversion == "geocentric"
-        lat, lon, = ecef_to_geocentric(ecef, use_degrees=true)
+        lat, lon, = sECEFtoGEOC(ecef, use_degrees=true)
     else
         error("Unknown conversion method: $conversion")
     end
@@ -383,7 +383,7 @@ function rotation_ecef_to_sez(ecef::Array{<:Real, 1} ; conversion="geodetic"::St
 end
 
 
-export rotation_sez_to_ecef
+export rSEZtoECEF
 """
 Compute the rotation matrix from the Earth-fixed to the South-East-Zenith 
 coorindate basis.
@@ -395,17 +395,17 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function rotation_sez_to_ecef(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
+function rSEZtoECEF(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
     # Check input coordinates
     if length(ecef) < 3
         error("Input coordinates must be length 3.")
     end
 
-    return rotation_ecef_to_sez(ecef, conversion=conversion)'
+    return rECEFtoSEZ(ecef, conversion=conversion)'
 end
 
 
-export state_ecef_to_sez
+export sECEFtoSEZ
 """
 Compute the coordinates of an object in the topocentric frame of an
 Earth-fixed frame
@@ -418,7 +418,7 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function state_ecef_to_sez(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1} ; conversion="geodetic"::String)    
+function sECEFtoSEZ(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1} ; conversion="geodetic"::String)    
     # Check input sizes
     if length(ecef) < 3
         error("Input ecef state must be at least length 3.")
@@ -429,7 +429,7 @@ function state_ecef_to_sez(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1
     end
 
     # Construct SEZ Rotation matrix
-    E = rotation_ecef_to_sez(station_ecef, conversion=conversion)
+    E = rECEFtoSEZ(station_ecef, conversion=conversion)
 
     # Transform range
     range_ecef = ecef[1:3] - station_ecef
@@ -451,7 +451,7 @@ function state_ecef_to_sez(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1
     return sez
 end
 
-export state_sez_to_ecef
+export sSEZtoECEF
 """
 Compute the coordinates of an object in the topocentric frame of an
 Earth-fixed frame
@@ -464,7 +464,7 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function state_sez_to_ecef(station_ecef::Array{<:Real, 1}, sez::Array{<:Real, 1} ; conversion="geodetic"::String)
+function sSEZtoECEF(station_ecef::Array{<:Real, 1}, sez::Array{<:Real, 1} ; conversion="geodetic"::String)
     # Check input sizes
     if length(sez) < 3
         error("Input SEZ state must be at least length 3.")
@@ -475,7 +475,7 @@ function state_sez_to_ecef(station_ecef::Array{<:Real, 1}, sez::Array{<:Real, 1}
     end
 
     # Compute ENZ Rotation matrix
-    E = rotation_sez_to_ecef(station_ecef, conversion=conversion)
+    E = rSEZtoECEF(station_ecef, conversion=conversion)
 
     # Transform range
     range_sez  = sez[1:3]
@@ -501,7 +501,7 @@ end
 # Topocentric #
 ###############
 
-export enz_to_azel
+export sENZtoAZEL
 """
 Convert East-North-Zenith topocentric state to azimuth, elevation, and range.
 
@@ -512,7 +512,7 @@ Arguments:
 Returns:
 - `azel::Array{<:Real, 1}`: Azimuth, elevation and range [rad; rad; m]
 """
-function enz_to_azel(x::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sENZtoAZEL(x::Array{<:Real, 1} ; use_degrees=false::Bool)
     # Check inputs
     if !(length(x) == 3 || length(x) == 6)
         error("Input ENZ state must be length 3 or 6.")
@@ -582,7 +582,7 @@ function enz_to_azel(x::Array{<:Real, 1} ; use_degrees=false::Bool)
     end
 end
 
-export sez_to_azel
+export sSEZtoAZEL
 """
 Convert South-East-Zenith topocentric state to azimuth, elevation, and range.
 
@@ -593,10 +593,10 @@ Arguments:
 Returns:
 - `azel::Array{<:Real, 1}`: Azimuth, elevation and range [rad; rad; m]
 """
-function sez_to_azel(x::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sSEZtoAZEL(x::Array{<:Real, 1} ; use_degrees=false::Bool)
     # Check inputs
     if !(length(x) == 3 || length(x) == 6)
-        error("Input rotation_ecef_to_sez state must be length 3 or 6.")
+        error("Input rECEFtoSEZ state must be length 3 or 6.")
     end
 
     # Expand values

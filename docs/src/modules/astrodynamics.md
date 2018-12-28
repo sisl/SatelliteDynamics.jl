@@ -10,8 +10,8 @@ orbit_period
 sun_sync_inclination
 anomaly_eccentric_to_mean
 anomaly_mean_to_eccentric
-state_osculating_to_cartesean
+sOSCtoCART
 os_osc_to_cart
-state_cartesean_to_osculating
+sCARTtoOSC
 os_cart_to_osc
 ```

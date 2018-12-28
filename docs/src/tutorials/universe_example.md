@@ -1,1 +1,0 @@
-# Earth Orientation Parameters

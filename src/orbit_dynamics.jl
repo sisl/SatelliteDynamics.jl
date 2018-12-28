@@ -5,7 +5,7 @@ module OrbitDynamics
 using SatelliteDynamics.Constants
 using SatelliteDynamics.Universe
 using SatelliteDynamics.Time: Epoch, mjd
-using SatelliteDynamics.Coordinates: ecef_to_geodetic
+using SatelliteDynamics.Coordinates: sECEFtoGEOD
 using SatelliteDynamics.Attitude: Rx, Ry, Rz
 using SatelliteDynamics.ReferenceSystems
 using LinearAlgebra
@@ -554,7 +554,7 @@ function density_harris_priester(x::Array{<:Real, 1}, r_sun::Array{<:Real, 1})
                 2.360e-02, 1.810e-02]
 
     # Satellite height
-    geod   = ecef_to_geodetic(x[1:3], use_degrees=true)
+    geod   = sECEFtoGEOD(x[1:3], use_degrees=true)
     height = geod[3]/1.0e3 # height in [km]
 
     # Exit with zero density outside height model limits

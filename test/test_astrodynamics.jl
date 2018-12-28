@@ -75,7 +75,7 @@ end
 
 let
     oe  = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
-    eci = state_osculating_to_cartesean(oe, use_degrees=true)
+    eci = sOSCtoCART(oe, use_degrees=true)
 
     tol = 1e-6
     @test isapprox(eci[1], R_EARTH + 500e3, atol=tol)
@@ -88,7 +88,7 @@ end
 
 let
     oe   = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
-    eci  = state_osculating_to_cartesean(oe, use_degrees=true)
+    eci  = sOSCtoCART(oe, use_degrees=true)
     eci2 = os_osc_to_cart(oe, use_degrees=true)
 
     tol = 1e-6
@@ -102,7 +102,7 @@ end
 
 let 
     eci   = [R_EARTH + 500e3, 100e3, 575e3, 0, 0, 7300]
-    eci2  = state_osculating_to_cartesean(state_cartesean_to_osculating(eci))
+    eci2  = sOSCtoCART(sCARTtoOSC(eci))
 
     tol = 1e-6
     @test isapprox(eci[1], eci2[1], atol=tol)
@@ -116,7 +116,7 @@ let
     a   = R_EARTH + 1000e3
     e   = 0.0
     eci = [a, 0, 0, 0, 0, sqrt(GM_EARTH/a)]
-    oe  = state_cartesean_to_osculating(eci, use_degrees=true)
+    oe  = sCARTtoOSC(eci, use_degrees=true)
 
     tol = 1e-6
     @test isapprox(oe[1], a,     atol=tol)

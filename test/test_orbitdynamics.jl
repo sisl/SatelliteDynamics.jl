@@ -1,7 +1,7 @@
 let
     epc   = Epoch(2018, 3, 20, 16, 15, 0) # Test on Vernal equinox
     oe    = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
-    x     = state_osculating_to_cartesean(oe, use_degrees = true)
+    x     = sOSCtoCART(oe, use_degrees = true)
 
     dx = deriv_orbit_earth(epc, x, mass=50, area_drag=5, area_srp=5)
 end
@@ -9,8 +9,8 @@ end
 let
     epc   = Epoch(2018, 3, 20, 16, 15, 0) # Test on Vernal equinox
     oe    = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
-    x     = state_osculating_to_cartesean(oe, use_degrees = true)
-    R     = rotation_eci_ecef(epc)
+    x     = sOSCtoCART(oe, use_degrees = true)
+    R     = rECItoECEF(epc)
 
     a_grav_point = accel_point_mass(x[1:3])
 
@@ -29,7 +29,7 @@ let
     # Define Initial State
     epc   = Epoch(2018, 3, 20, 16, 15, 0) # Test on Vernal equinox
     oe    = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
-    x     = state_osculating_to_cartesean(oe, use_degrees = true)
+    x     = sOSCtoCART(oe, use_degrees = true)
     r_sun = sun_position(epc)
 
     # Call function
@@ -50,7 +50,7 @@ let
     # Define Initial State
     epc    = Epoch(2018, 3, 20, 16, 15, 0) # Test on Vernal equinox
     oe     = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
-    x      = state_osculating_to_cartesean(oe, use_degrees = true)
+    x      = sOSCtoCART(oe, use_degrees = true)
     r_moon = moon_position(epc)
 
     # Call function
@@ -72,8 +72,8 @@ let
     # Define Initial State
     epc   = Epoch(2018, 3, 20, 16, 15, 0) # Test on Vernal equinox
     oe    = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
-    x     = state_osculating_to_cartesean(oe, use_degrees = true)
-    T     = rotation_eci_ecef(epc)
+    x     = sOSCtoCART(oe, use_degrees = true)
+    T     = rECItoECEF(epc)
     
     # Call function
     rho    = density_harris_priester(epc, x)
@@ -88,7 +88,7 @@ let
     # Define Initial State
     epc   = Epoch(2018, 3, 20, 16, 15, 0) # Test on Vernal equinox
     oe    = [R_EARTH + 500e3, 0, 0, 0, 0, 0]
-    x     = state_osculating_to_cartesean(oe, use_degrees = true)
+    x     = sOSCtoCART(oe, use_degrees = true)
     r_sun = sun_position(epc)
     
     # Call function
@@ -97,7 +97,7 @@ let
     @test nu == eclipse_cylindrical(epc, x)
 
     oe    = [R_EARTH + 500e3, 0, 0, 180.0, 0, 0]
-    x     = state_osculating_to_cartesean(oe, use_degrees = true)
+    x     = sOSCtoCART(oe, use_degrees = true)
     nu = eclipse_cylindrical(x, r_sun)
     @test nu == 0.0
     @test nu == eclipse_cylindrical(epc, x)
@@ -107,7 +107,7 @@ let
     # Define Initial State
     epc   = Epoch(2018, 3, 20, 16, 15, 0) # Test on Vernal equinox
     oe    = [R_EARTH + 500e3, 0, 0, 0, 0, 0]
-    x     = state_osculating_to_cartesean(oe, use_degrees = true)
+    x     = sOSCtoCART(oe, use_degrees = true)
     r_sun = sun_position(epc)
     
     # Call function
@@ -116,7 +116,7 @@ let
     @test nu == eclipse_conical(epc, x)
 
     oe    = [R_EARTH + 500e3, 0, 0, 180.0, 0, 0]
-    x     = state_osculating_to_cartesean(oe, use_degrees = true)
+    x     = sOSCtoCART(oe, use_degrees = true)
     nu = eclipse_conical(x, r_sun)
     @test nu == 1.0
     @test nu == eclipse_conical(epc, x)
@@ -126,7 +126,7 @@ let
     # Define Initial State
     epc   = Epoch(2018, 1, 1, 0, 0, 0)
     oe    = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
-    x     = state_osculating_to_cartesean(oe, use_degrees = true)
+    x     = sOSCtoCART(oe, use_degrees = true)
     r_sun = sun_position(epc)
     
     # Call function
@@ -140,7 +140,7 @@ end
 let 
     # Define Initial State
     oe = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
-    x  = state_osculating_to_cartesean(oe, use_degrees=true)
+    x  = sOSCtoCART(oe, use_degrees=true)
     
     # Call function
     a_rel = accel_relativity(x)

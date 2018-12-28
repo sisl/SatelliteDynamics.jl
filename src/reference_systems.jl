@@ -12,7 +12,7 @@ using SatelliteDynamics.Time: Epoch, mjd
 # RTN | LVLH #
 ##############
 
-export rotation_rtn_to_eci
+export rRTNtoECI
 """
 Compute the radial, along-track, cross-track (RTN) rotation matrix. Which,
 if applied to a position vector in the RTN frame, will transform that vector to
@@ -27,7 +27,7 @@ Arguments:
 Returns:
 - `R_rtn_to_eci::Array{<:Real, 1}`: Rotation matrix transforming _from_ the RTN frame _to_ the ECI frame.
 """
-function rotation_rtn_to_eci(x::Array{<:Real, 1})
+function rRTNtoECI(x::Array{<:Real, 1})
     r = x[1:3]
     v = x[4:6]
 
@@ -40,7 +40,7 @@ function rotation_rtn_to_eci(x::Array{<:Real, 1})
     return R_rtn2eci
 end
 
-export rotation_eci_to_rtn
+export rECItoRTN
 """
 Compute the Earth-centered inertial to radial, along-track, cross-track (RTN) 
 rotation matrix. Which, if applied to a position vector in the ECI frame, will 
@@ -55,11 +55,11 @@ Arguments:
 Returns:
 - `R_eci_to_rtn::Array{<:Real, 1}`: Rotation matrix transforming _from_ the ECI frame _to_ the RTN frame.
 """
-function rotation_eci_to_rtn(x::Array{<:Real, 1})
-    return rotation_rtn_to_eci(x)'
+function rECItoRTN(x::Array{<:Real, 1})
+    return rRTNtoECI(x)'
 end
 
-export state_eci_to_rtn
+export sECItoRTN
 """
 Compute the radial, along-track, cross-track (RTN) coordinates of a target satellite in the primary satellites RTN frame.
 
@@ -72,9 +72,9 @@ Arguments:
 Returns:
 - `rtn::Array{<:Real, 1}`: Position and velocity of the target relative of the observing satellite in the RTN.
 """
-function state_eci_to_rtn(x::Array{<:Real, 1}, xt::Array{<:Real, 1}; is_relative=false::Bool)
+function sECItoRTN(x::Array{<:Real, 1}, xt::Array{<:Real, 1}; is_relative=false::Bool)
     # Create RTN rotation matrix
-    R_eci2rtn = rotation_eci_to_rtn(x)
+    R_eci2rtn = rECItoRTN(x)
 
     # Initialize output vector
     x_rtn = zeros(Float64, length(xt) >= 6 ? 6 : 3)
@@ -96,7 +96,7 @@ function state_eci_to_rtn(x::Array{<:Real, 1}, xt::Array{<:Real, 1}; is_relative
     return x_rtn
 end
 
-export state_rtn_to_eci
+export sRTNtoECI
 """
 Compute the Earth-center
 
@@ -109,9 +109,9 @@ Arguments:
 Returns:
 - `rtn::Array{<:Real, 1}`: Position and velocity of the target relative of the observing satellite in the RTN.
 """
-function state_rtn_to_eci(x::Array{<:Real, 1}, xrtn::Array{<:Real, 1})
+function sRTNtoECI(x::Array{<:Real, 1}, xrtn::Array{<:Real, 1})
     # Create RTN rotation matrix
-    R_rtn2eci = rotation_rtn_to_eci(x)
+    R_rtn2eci = rRTNtoECI(x)
 
     # Initialize output vector
     xt = zeros(Float64, length(xrtn) >= 6 ? 6 : 3)
@@ -213,7 +213,7 @@ function polar_motion(epc::Epoch)
     return rpm
 end
 
-export rotation_eci_ecef
+export rECItoECEF
 """
 Computes the combined rotation matrix from the inertial to the Earth-fixed
 reference frame. Applies corrections for bias, precession, nutation,
@@ -229,7 +229,7 @@ the SOFA C transformation cookbook.
 # Returns
 - `r::Array{<:Real, 2}`: 3x3 Rotation matrix transforming GCRF -> ITRF
 """
-function rotation_eci_ecef(epc::Epoch)
+function rECItoECEF(epc::Epoch)
     # Compute intermediate transformations
     rc2i = bias_precession_nutation(epc)
     r    = earth_rotation(epc)
@@ -238,7 +238,7 @@ function rotation_eci_ecef(epc::Epoch)
     return rpm * r * rc2i
 end
 
-export rotation_ecef_eci
+export rECEFtoECI
 """
 Computes the combined rotation matrix from the Earth-fixed to the inertial
 reference frame. Applies corrections for bias, precession, nutation,
@@ -254,7 +254,7 @@ the SOFA C transformation cookbook.
 # Returns
 - `r::Array{<:Real, 1}`: 3x3 Rotation matrix transforming ITRF -> GCRF
 """
-function rotation_ecef_eci(epc::Epoch)
+function rECEFtoECI(epc::Epoch)
     # Compute intermediate transformations
     rc2i = bias_precession_nutation(epc)
     r    = earth_rotation(epc)
@@ -264,7 +264,7 @@ function rotation_ecef_eci(epc::Epoch)
 end
 
 
-export state_eci_to_ecef
+export sECItoECEF
 """
 Transforms an Earth inertial state into an Earth fixed state
 
@@ -279,7 +279,7 @@ the SOFA C transformation cookbook.
 # Returns
 - `x_ecef::Array{<:Real, 1}`: Earth-fixed state (position, velocity)
 """
-function state_eci_to_ecef(epc::Epoch, x::Array{<:Real, 1})
+function sECItoECEF(epc::Epoch, x::Array{<:Real, 1})
     dim_x  = length(x)
     x_ecef = zeros(Float64, dim_x)
 
@@ -319,7 +319,7 @@ function state_eci_to_ecef(epc::Epoch, x::Array{<:Real, 1})
 
 end
 
-export state_ecef_to_eci
+export sECEFtoECI
 """
 Transforms an Earth fixed state into an Inertial state
 
@@ -334,7 +334,7 @@ the SOFA C transformation cookbook.
 # Returns
 - `x_ecef::Array{<:Real, 1}`: Inertial state (position, velocity)
 """
-function state_ecef_to_eci(epc::Epoch, x::Array{<:Real, 1})
+function sECEFtoECI(epc::Epoch, x::Array{<:Real, 1})
     # Set state variable size
     dim_x = length(x)
     x_eci = zeros(Float64, dim_x)

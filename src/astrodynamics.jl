@@ -178,7 +178,7 @@ function anomaly_mean_to_eccentric(M::Real, e::Real; use_degrees=false::Bool)
     return E
 end
 
-export state_osculating_to_cartesean
+export sOSCtoCART
 """
 Given an orbital state expressed in osculating orbital elements compute the equivalent Cartesean position and velocity of the inertial state.
 
@@ -198,7 +198,7 @@ The osculating elements are assumed to be (in order):
 # Returns
 - x `x::Array{<:Real, 1}`: Cartesean inertial state. Returns position and velocity. [m; m/s]
 """
-function state_osculating_to_cartesean(x_oe::Array{<:Real, 1}; use_degrees=false::Bool, GM=GM_EARTH::Real)
+function sOSCtoCART(x_oe::Array{<:Real, 1}; use_degrees=false::Bool, GM=GM_EARTH::Real)
 
     if use_degrees
         # Copy and convert input from degrees to radians if necessary
@@ -234,18 +234,7 @@ function state_osculating_to_cartesean(x_oe::Array{<:Real, 1}; use_degrees=false
     return x
 end
 
-export os_osc_to_cart
-"""
-Short hand function name to convert orbital state osculating elements to the equivalent Cartesean inertial state.
-
-See `state_osculating_to_cartesean` for details. 
-"""
-function os_osc_to_cart(x::Array{<:Real, 1} ; use_degrees=false::Bool, GM=GM_EARTH::Real)
-    return state_osculating_to_cartesean(x, use_degrees=use_degrees, GM=GM)
-end
-
-
-export state_cartesean_to_osculating
+export sCARTtoOSC
 """
 Given a Cartesean position and velocity in the inertial frame, return the 
 state expressed in terms of  osculating orbital elements.
@@ -266,7 +255,7 @@ The osculating elements are assumed to be (in order):
 # Returns
 - x_oe `x::Array{<:Real, 1}`: Osculating orbital elements. See above for desription of the elements and their required order.
 """
-function state_cartesean_to_osculating(x::Array{<:Real, 1}; use_degrees=false::Bool, GM=GM_EARTH::Real)
+function sCARTtoOSC(x::Array{<:Real, 1}; use_degrees=false::Bool, GM=GM_EARTH::Real)
 
     # Initialize Cartesian Polistion and Velocity
     r = x[1:3]
@@ -312,16 +301,6 @@ function state_cartesean_to_osculating(x::Array{<:Real, 1}; use_degrees=false::B
     end
 
     return x_oe
-end
-
-export os_cart_to_osc
-"""
-Short hand function name to convert Cartesean inertial orbital state to the equivalent osculating elements.
-
-See `state_cartesean_to_osculating` for details. 
-"""
-function os_cart_to_osc(x_oe::Array{<:Real, 1}; use_degrees=false::Bool, GM=GM_EARTH::Real)
-    return state_cartesean_to_osculating(x_oe, use_degrees=use_degrees, GM=GM)
 end
 
 end

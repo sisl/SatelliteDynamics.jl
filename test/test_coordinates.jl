@@ -3,30 +3,30 @@ let
 
     # Test known position conversions
     geoc1 = [0.0, 0.0, 0.0]
-    ecef1 = geocentric_to_ecef(geoc1)
+    ecef1 = sGEOCtoECEF(geoc1)
 
     @test isapprox(ecef1[1], WGS84_a, atol=tol)
     @test isapprox(ecef1[2], 0, atol=tol)
     @test isapprox(ecef1[3], 0, atol=tol)
 
     geoc2 = [90.0, 0.0, 0.0]
-    ecef2 = geocentric_to_ecef(geoc2, use_degrees=true)
+    ecef2 = sGEOCtoECEF(geoc2, use_degrees=true)
 
     @test isapprox(ecef2[1], 0, atol=tol)
     @test isapprox(ecef2[2], WGS84_a, atol=tol)
     @test isapprox(ecef2[3], 0, atol=tol)
 
     geoc3 = [0.0, 90.0, 0.0]
-    ecef3 = geocentric_to_ecef(geoc3, use_degrees=true)
+    ecef3 = sGEOCtoECEF(geoc3, use_degrees=true)
 
     @test isapprox(ecef3[1], 0, atol=tol)
     @test isapprox(ecef3[2], 0, atol=tol)
     @test isapprox(ecef3[3], WGS84_a, atol=tol)
 
     # Test circularity
-    geoc4 = ecef_to_geocentric(ecef1, use_degrees=true)
-    geoc5 = ecef_to_geocentric(ecef2, use_degrees=true)
-    geoc6 = ecef_to_geocentric(ecef3, use_degrees=true)
+    geoc4 = sECEFtoGEOC(ecef1, use_degrees=true)
+    geoc5 = sECEFtoGEOC(ecef2, use_degrees=true)
+    geoc6 = sECEFtoGEOC(ecef3, use_degrees=true)
 
     @test isapprox(geoc4[1], geoc1[1], atol=tol)
     @test isapprox(geoc4[2], geoc1[2], atol=tol)
@@ -42,8 +42,8 @@ let
 
     # Random point circularity
     geoc  = [77.875000,    20.975200,     0.000000]
-    ecef  = geocentric_to_ecef(geoc, use_degrees=true)
-    geocc = ecef_to_geocentric(ecef, use_degrees=true)
+    ecef  = sGEOCtoECEF(geoc, use_degrees=true)
+    geocc = sECEFtoGEOC(ecef, use_degrees=true)
     @test isapprox(geoc[1], geocc[1], atol=tol)
     @test isapprox(geoc[2], geocc[2], atol=tol)
     @test isapprox(geoc[3], geocc[3], atol=tol)
@@ -55,30 +55,30 @@ let
 
     # Test known position conversions
     geoc1 = [0, 0, 0]
-    ecef1 = geodetic_to_ecef(geoc1)
+    ecef1 = sGEODtoECEF(geoc1)
 
     @test isapprox(ecef1[1], WGS84_a, atol=tol)
     @test isapprox(ecef1[2], 0, atol=tol)
     @test isapprox(ecef1[3], 0, atol=tol)
 
     geoc2 = [90.0, 0.0, 0.0]
-    ecef2 = geodetic_to_ecef(geoc2, use_degrees=true)
+    ecef2 = sGEODtoECEF(geoc2, use_degrees=true)
 
     @test isapprox(ecef2[1], 0, atol=tol)
     @test isapprox(ecef2[2], WGS84_a, atol=tol)
     @test isapprox(ecef2[3], 0, atol=tol)
 
     geoc3 = [0, 90.0, 0]
-    ecef3 = geodetic_to_ecef(geoc3, use_degrees=true)
+    ecef3 = sGEODtoECEF(geoc3, use_degrees=true)
 
     @test isapprox(ecef3[1], 0, atol=tol)
     @test isapprox(ecef3[2], 0, atol=tol)
     @test isapprox(ecef3[3], WGS84_a*(1.0-WGS84_f), atol=tol)
 
     # Test circularity
-    geoc4 = ecef_to_geodetic(ecef1, use_degrees=true)
-    geoc5 = ecef_to_geodetic(ecef2, use_degrees=true)
-    geoc6 = ecef_to_geodetic(ecef3, use_degrees=true)
+    geoc4 = sECEFtoGEOD(ecef1, use_degrees=true)
+    geoc5 = sECEFtoGEOD(ecef2, use_degrees=true)
+    geoc6 = sECEFtoGEOD(ecef3, use_degrees=true)
 
     @test isapprox(geoc4[1], geoc1[1], atol=tol)
     @test isapprox(geoc4[2], geoc1[2], atol=tol)
@@ -93,8 +93,8 @@ let
     @test isapprox(geoc6[3], geoc3[3], atol=tol)
 
     geod  = [77.875000,    20.975200,     0.000000]
-    ecef  = geodetic_to_ecef(geod, use_degrees=true)
-    geodc = ecef_to_geodetic(ecef, use_degrees=true)
+    ecef  = sGEODtoECEF(geod, use_degrees=true)
+    geodc = sECEFtoGEOD(ecef, use_degrees=true)
     @test isapprox(geod[1], geodc[1], atol=tol)
     @test isapprox(geod[2], geodc[2], atol=tol)
     @test isapprox(geod[3], geodc[3], atol=tol)
@@ -105,21 +105,21 @@ let
 
     station_ecef = [0, R_EARTH, 0]
 
-    R_ecef_enz = rotation_ecef_to_enz(station_ecef, conversion="geocentric")
+    R_ecef_enz = rECEFtoENZ(station_ecef, conversion="geocentric")
 
-    R_enz_ecef = rotation_enz_to_ecef(station_ecef, conversion="geocentric")
+    R_enz_ecef = rENZtoECEF(station_ecef, conversion="geocentric")
 
     @test R_ecef_enz == R_enz_ecef'
 
     # State conversion
     epc  = Epoch(2018,1,1,12,0,0)
     oe   = [R_EARTH + 500e3, 1e-3, 97.8, 75, 25, 45]
-    ecef = state_eci_to_ecef(epc, os_osc_to_cart(oe, use_degrees=true))
+    ecef = sECItoECEF(epc, os_osc_to_cart(oe, use_degrees=true))
 
-    station_ecef = geodetic_to_ecef([-122.4056, 37.7716, 0.0], use_degrees=true)
+    station_ecef = sGEODtoECEF([-122.4056, 37.7716, 0.0], use_degrees=true)
 
-    enz   = state_ecef_to_enz(station_ecef, ecef)
-    ecef2 = state_enz_to_ecef(station_ecef, enz)
+    enz   = sECEFtoENZ(station_ecef, ecef)
+    ecef2 = sENZtoECEF(station_ecef, enz)
 
     @test isapprox(ecef[1], ecef2[1], atol=tol)
     @test isapprox(ecef[2], ecef2[2], atol=tol)
@@ -128,11 +128,11 @@ let
     @test isapprox(ecef[5], ecef2[5], atol=tol)
     @test isapprox(ecef[6], ecef2[6], atol=tol)
 
-    ecef         = geodetic_to_ecef([-122.4, 37.78, 200.0],    use_degrees=true)
-    station_ecef = geodetic_to_ecef([-122.4056, 37.7716, 0.0], use_degrees=true)
+    ecef         = sGEODtoECEF([-122.4, 37.78, 200.0],    use_degrees=true)
+    station_ecef = sGEODtoECEF([-122.4056, 37.7716, 0.0], use_degrees=true)
 
-    enz   = state_ecef_to_enz(station_ecef, ecef, conversion="geocentric")
-    ecef2 = state_enz_to_ecef(station_ecef, enz, conversion="geocentric")
+    enz   = sECEFtoENZ(station_ecef, ecef, conversion="geocentric")
+    ecef2 = sENZtoECEF(station_ecef, enz, conversion="geocentric")
 
     @test isapprox(ecef[1], ecef2[1], atol=tol)
     @test isapprox(ecef[2], ecef2[2], atol=tol)
@@ -143,9 +143,9 @@ let
     tol = 1.0e-8
     station_ecef = [0, R_EARTH, 0]
 
-    R_ecef_sez = rotation_ecef_to_sez(station_ecef, conversion="geocentric")
+    R_ecef_sez = rECEFtoSEZ(station_ecef, conversion="geocentric")
 
-    R_sez_ecef = rotation_sez_to_ecef(station_ecef, conversion="geocentric")
+    R_sez_ecef = rSEZtoECEF(station_ecef, conversion="geocentric")
 
     @test isapprox(R_ecef_sez[1, 1], R_sez_ecef[1, 1], atol=tol)
     @test isapprox(R_ecef_sez[2, 1], R_sez_ecef[1, 2], atol=tol)
@@ -162,12 +162,12 @@ let
     # State conversion
     epc  = Epoch(2018,1,1,12,0,0)
     oe   = [R_EARTH + 500e3, 1e-3, 97.8, 75, 25, 45]
-    ecef = state_eci_to_ecef(epc, os_osc_to_cart(oe, use_degrees=true))
+    ecef = sECItoECEF(epc, os_osc_to_cart(oe, use_degrees=true))
 
-    station_ecef = geodetic_to_ecef([-122.4056, 37.7716, 0.0], use_degrees=true)
+    station_ecef = sGEODtoECEF([-122.4056, 37.7716, 0.0], use_degrees=true)
 
-    sez   = state_ecef_to_sez(station_ecef, ecef)
-    ecef2 = state_sez_to_ecef(station_ecef, sez)
+    sez   = sECEFtoSEZ(station_ecef, ecef)
+    ecef2 = sSEZtoECEF(station_ecef, sez)
 
     @test isapprox(ecef[1], ecef2[1], atol=tol)
     @test isapprox(ecef[2], ecef2[2], atol=tol)
@@ -176,11 +176,11 @@ let
     @test isapprox(ecef[5], ecef2[5], atol=tol)
     @test isapprox(ecef[6], ecef2[6], atol=tol)
 
-    ecef         = geodetic_to_ecef([-122.4, 37.78, 200.0],    use_degrees=true)
-    station_ecef = geodetic_to_ecef([-122.4056, 37.7716, 0.0], use_degrees=true)
+    ecef         = sGEODtoECEF([-122.4, 37.78, 200.0],    use_degrees=true)
+    station_ecef = sGEODtoECEF([-122.4056, 37.7716, 0.0], use_degrees=true)
 
-    sez   = state_ecef_to_sez(station_ecef, ecef, conversion="geocentric")
-    ecef2 = state_sez_to_ecef(station_ecef, sez, conversion="geocentric")
+    sez   = sECEFtoSEZ(station_ecef, ecef, conversion="geocentric")
+    ecef2 = sSEZtoECEF(station_ecef, sez, conversion="geocentric")
 
     @test isapprox(ecef[1], ecef2[1], atol=tol)
     @test isapprox(ecef[2], ecef2[2], atol=tol)
@@ -208,17 +208,17 @@ let
     sat_ecef = Rz(0, use_degrees=false) * sat_eci[1:3]
 
     # Station coordinates
-    station_ecef = geodetic_to_ecef([48.0, 11.0, 0.0], use_degrees=true)
+    station_ecef = sGEODtoECEF([48.0, 11.0, 0.0], use_degrees=true)
 
 
     # Compute enz and sez state
-    enz   = state_ecef_to_enz(station_ecef, sat_ecef, conversion="geocentric")
-    sez   = state_ecef_to_sez(station_ecef, sat_ecef, conversion="geocentric")
+    enz   = sECEFtoENZ(station_ecef, sat_ecef, conversion="geocentric")
+    sez   = sECEFtoSEZ(station_ecef, sat_ecef, conversion="geocentric")
 
 
     # Compute azimuth and elevation from topocentric coordinates
-    azel_enz = enz_to_azel(enz, use_degrees=true)
-    azel_sez = sez_to_azel(sez, use_degrees=true)
+    azel_enz = sENZtoAZEL(enz, use_degrees=true)
+    azel_sez = sSEZtoAZEL(sez, use_degrees=true)
 
     @test azel_enz[1] == azel_sez[1]
     @test azel_enz[2] == azel_sez[2]
@@ -229,16 +229,16 @@ let
     # State conversion
     epc  = Epoch(2018,1,1,12,0,0)
     oe   = [R_EARTH + 500e3, 1e-3, 97.8, 75, 25, 45]
-    ecef = state_eci_to_ecef(epc, os_osc_to_cart(oe, use_degrees=true))
+    ecef = sECItoECEF(epc, os_osc_to_cart(oe, use_degrees=true))
 
-    station_ecef = geodetic_to_ecef([-122.4056, 37.7716, 0.0], use_degrees=true)
+    station_ecef = sGEODtoECEF([-122.4056, 37.7716, 0.0], use_degrees=true)
 
-    enz = state_ecef_to_enz(station_ecef, ecef)
-    sez = state_ecef_to_sez(station_ecef, ecef)
+    enz = sECEFtoENZ(station_ecef, ecef)
+    sez = sECEFtoSEZ(station_ecef, ecef)
 
     # Compute azimuth and elevation from topocentric coordinates
-    azel_enz = enz_to_azel(enz, use_degrees=true)
-    azel_sez = sez_to_azel(sez, use_degrees=true)
+    azel_enz = sENZtoAZEL(enz, use_degrees=true)
+    azel_sez = sSEZtoAZEL(sez, use_degrees=true)
 
     @test azel_enz[1] == azel_sez[1]
     @test azel_enz[2] == azel_sez[2]

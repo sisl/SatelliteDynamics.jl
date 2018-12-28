@@ -3,10 +3,10 @@ let
 
     a   = R_EARTH + 500e3
     oe  = [a, 0, 0, 0, 0, sqrt(GM_EARTH/a)]
-    eci = state_osculating_to_cartesean(oe, use_degrees=true)
+    eci = sOSCtoCART(oe, use_degrees=true)
 
-    r_rtn   = rotation_rtn_to_eci(eci)
-    r_rtn_t = rotation_eci_to_rtn(eci)
+    r_rtn   = rRTNtoECI(eci)
+    r_rtn_t = rECItoRTN(eci)
 
     r = r_rtn * r_rtn_t
     
@@ -28,11 +28,11 @@ let
     epc = Epoch(2018,1,1,12,0,0)
 
     oe  = [R_EARTH + 500e3, 0, 0, 0, 0, 0]
-    eci = state_osculating_to_cartesean(oe, use_degrees=true)
+    eci = sOSCtoCART(oe, use_degrees=true)
 
     xt = deepcopy(eci) + [100, 0, 0, 0, 0, 0]
 
-    x_rtn = state_eci_to_rtn(eci, xt)
+    x_rtn = sECItoRTN(eci, xt)
 
     tol = 1e-8
     @test isapprox(x_rtn[1], 100.0, atol=tol)
@@ -42,7 +42,7 @@ let
     @test isapprox(x_rtn[5], 0.0, atol=0.5)
     @test isapprox(x_rtn[6], 0.0, atol=tol)
 
-    xt2 = state_rtn_to_eci(eci, x_rtn)
+    xt2 = sRTNtoECI(eci, x_rtn)
 
     @test isapprox(xt[1], xt2[1], atol=tol)
     @test isapprox(xt[2], xt2[2], atol=tol)
@@ -99,7 +99,7 @@ let
 
     set_eop(54195.5, -0.072073685, 0.0349282, 0.4833163)
 
-    r = rotation_eci_ecef(epc)
+    r = rECItoECEF(epc)
 
     tol = 1e-8
     @test isapprox(r[1, 1], +0.973104317697535, atol=tol)
@@ -120,7 +120,7 @@ let
 
     set_eop(54195.5, -0.072073685, 0.0349282, 0.4833163)
 
-    r = rotation_ecef_eci(epc)
+    r = rECEFtoECI(epc)
 
     tol = 1e-8
     @test isapprox(r[1, 1], +0.973104317697535, atol=tol)
@@ -140,12 +140,12 @@ let
     epc = Epoch(2018,1,1,12,0,0)
 
     oe  = [R_EARTH + 500e3, 1e-3, 97.8, 75, 25, 45]
-    eci = state_osculating_to_cartesean(oe, use_degrees=true)
+    eci = sOSCtoCART(oe, use_degrees=true)
 
     # Perform circular transformations
-    ecef  = state_eci_to_ecef(epc, eci)
-    eci2  = state_ecef_to_eci(epc, ecef)
-    ecef2 = state_eci_to_ecef(epc, eci2)
+    ecef  = sECItoECEF(epc, eci)
+    eci2  = sECEFtoECI(epc, ecef)
+    ecef2 = sECItoECEF(epc, eci2)
 
     tol=1e-6
     # Check equivalence of ECI transforms
