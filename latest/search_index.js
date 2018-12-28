@@ -1113,9 +1113,9 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "modules/function_index/#ReferenceSystems-1",
+    "location": "modules/function_index/#Reference-Systems-1",
     "page": "Function Index",
-    "title": "ReferenceSystems",
+    "title": "Reference Systems",
     "category": "section",
     "text": "Modules = [SatelliteDynamics.ReferenceSystems]"
 },
@@ -1145,9 +1145,9 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "modules/function_index/#OrbitDynamics-1",
+    "location": "modules/function_index/#Orbit-Dynamics-1",
     "page": "Function Index",
-    "title": "OrbitDynamics",
+    "title": "Orbit Dynamics",
     "category": "section",
     "text": "Modules = [SatelliteDynamics.OrbitDynamics]"
 },
