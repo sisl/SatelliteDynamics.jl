@@ -24,7 +24,8 @@ function example_orbit_propagation_kepler(plot_dir)
                     xformatter=:scientific,
                     yformatter=:scientific,
                     zformatter=:scientific,
-                    linewidth=2)
+                    linewidth=2,
+                    legend=false)
 
     for i in 1:length(t)
         push!(plt, eci[1, i], eci[2, i], eci[3, i])
@@ -97,7 +98,8 @@ function example_orbit_propagation_fullforce(plot_dir)
                     xformatter=:scientific,
                     yformatter=:scientific,
                     zformatter=:scientific,
-                    linewidth=2)
+                    linewidth=2,
+                    legend=false)
 
     for i in 1:length(t)
         push!(plt, eci[1, i], eci[2, i], eci[3, i])
