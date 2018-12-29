@@ -1,9 +1,5 @@
 language: julia
 
-os:
-  - linux
-  - osx
-
 julia:
   - 1.0
   - nightly
@@ -23,8 +19,11 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export GKSwstype=svg; fi
 
   matrix:
+    include:
+      - os: linux
+      - os: osx
     allow_failures:
-    - julia: nightly
+      - julia: nightly
 
 script:
   - julia --project --check-bounds=yes -e 'import Pkg; Pkg.build(); Pkg.test("SatelliteDynamics"; coverage=true)'
