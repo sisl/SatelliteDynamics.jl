@@ -14,8 +14,9 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install mactex; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq qtbase4-dev qtdeclarative4-dev qtbase5-dev qtdeclarative5-dev libqtgui4 libqtgui5 libxt6 libxrender1 libxext6 libgl1-mesa-glx libqt5widgets5 qt5-qmake qtbase5-dev qtdeclarative5-dev libqt5webkit5-dev libsqlite3-dev; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq qtbase5-dev qtdeclarative5-dev libxt6 libxrender1 libxext6 libgl1-mesa-glx libqt5widgets5 qt5-qmake qtbase5-dev qtdeclarative5-dev libqt5webkit5-dev libsqlite3-dev; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y --no-install-recommends texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra dvipng texlive-latex-recommended; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then gksqt; fi
 
 matrix:
   include:
