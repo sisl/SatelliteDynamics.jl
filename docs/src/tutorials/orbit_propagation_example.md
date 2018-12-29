@@ -59,11 +59,11 @@ module to propagate an orbit.
 
 We can visualize the orbit in inertial space:
 
-![](../plots/keplerian_orbit.svg)
+![](../../plots/keplerian_orbit.svg)
 
 Or the evolution of the orbital elements:
 
-![](../plots/keplerian_elements.svg)
+![](../../plots/keplerian_elements.svg)
 
 ## Full Force Model
 
@@ -97,11 +97,11 @@ t, epc, eci = simulate(epc0, eci0, epcf, timestep=1, dtmax=1
 
 We can visualize the orbit in inertial space:
 
-![](../plots/fullforce_orbit.svg)
+![](../../plots/fullforce_orbit.svg)
 
 Or the evolution of the orbital elements:
 
-![](../plots/fullforce_elements.svg)
+![](../../plots/fullforce_elements.svg)
 
 From these plots we can see the effect of the orbit perturbations on each of the
 orbital elements.
