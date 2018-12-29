@@ -14,7 +14,7 @@ Arguments:
 - `t::Real`: Time offset from initial time
 
 Returns:
-- `du::Array{<:Real, 1}`: Curre]nt state derivative
+- `du::Array{<:Real, 1}`: Current state derivative
 
 Parameters:
 1. `epc0::Epoch`: Initial Epoch
@@ -53,10 +53,10 @@ Arguments:
 - `solver`: Solver to use to solve ODEProblem
 - `atol::Real`: Absolute tolerate limit for differential equation solution (Default: 1.0e-9)
 - `atol::Real`: Absolute tolerate limit for differential equation solution (Default: 1.0e-9)
-- `mass::Real`: Satellite mass [kg] (Default: 100.0)
+- `mass::Real`: Satellite mass (Default: 100.0) [kg]
 - `area_drag::Real`: Area of drag (cannon-ball model) (Default: 1.0) [m^2]
 - `coef_drag::Real`: Coefficient of drag (Default: 2.3) [dimensionless]
-- `arear_srp::Real`: Area of solar radiation prerssure (Default: 1.0) [m^2]
+- `area_srp::Real`: Area of solar radiation prerssure (Default: 1.0) [m^2]
 - `coef_srp::Real`: Coefficient of reflectivity (Default: 1.8) [dimensionless]
 - `n_grav::Integer`: Degree of gravity field (Default: 0.0) [dimensionless]
 - `m_grav::Integer`: Order of gravity field (Default: 0.0) [dimensionless]
@@ -71,9 +71,9 @@ Returns:
 - `epc::Array{Epoch, 1}`: Simulation output times as absolute Epochs
 - `eci::Array{Float64, 2}`: Propgated inertial state. Time is aligned with column dimension.
 """
-function propagate_orbit(epc0::Epoch, x0::Array{<:Real, 1}, epcf::Epoch; timestep=5.0, dtmax=60.0, solver=RK4(), rtol=1.0e-9::Real, atol=1.0e-9, mass=100.0::Real, area_drag=1.0::Real, coef_drag=2.3::Real, arear_srp=1.0::Real, coef_srp=1.8::Real, n_grav=0::Integer, m_grav=0::Integer, drag=false::Bool, srp=false::Bool, moon=false::Bool, sun=false::Bool, relativity=false::Bool)
+function propagate_orbit(epc0::Epoch, x0::Array{<:Real, 1}, epcf::Epoch; timestep=5.0, dtmax=60.0, solver=RK4(), rtol=1.0e-9::Real, atol=1.0e-9, mass=100.0::Real, area_drag=1.0::Real, coef_drag=2.3::Real, area_srp=1.0::Real, coef_srp=1.8::Real, n_grav=0::Integer, m_grav=0::Integer, drag=false::Bool, srp=false::Bool, moon=false::Bool, sun=false::Bool, relativity=false::Bool)
     tspan  = (0, epcf-epc0)
-    params = [epc0, mass, area_drag, coef_drag, arear_srp, coef_srp, n_grav, m_grav, drag, srp, moon, sun, relativity]
+    params = [epc0, mass, area_drag, coef_drag, area_srp, coef_srp, n_grav, m_grav, drag, srp, moon, sun, relativity]
     prob   = ODEProblem(f_orbit_dynamics, x0, tspan, params)
 
     sol = solve(prob, solver, rtol=rtol, atol=atol, save_start=true, save_end=true, saveat=timestep, dtmax=dtmax)

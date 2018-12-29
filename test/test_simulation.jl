@@ -45,5 +45,5 @@ let
     # Simulate orbit for one orbit
     epcf = epc0 + orbit_period(oe0[1])
     t, epc, eci = propagate_orbit(epc0, eci0, epcf, solver=Tsit5(), timestep=0.1, dtmax=1,
-    mass=100.0, area_drag=1.0, coef_drag=2.3, arear_srp=1.0, coef_srp=1.8, n_grav=20, m_grav=20, drag=true, srp=true, moon=true, sun=true, relativity=true)
+    mass=100.0, area_drag=1.0, coef_drag=2.3, area_srp=1.0, coef_srp=1.8, n_grav=20, m_grav=20, drag=true, srp=true, moon=true, sun=true, relativity=true)
 end

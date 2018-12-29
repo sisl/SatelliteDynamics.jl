@@ -2,6 +2,7 @@ using Documenter, SatelliteDynamics
 
 include("src/makeplots.jl")
 
+# Generate documents
 makedocs(
     modules   = [SatelliteDynamics],
     doctest   = false,
@@ -29,6 +30,9 @@ makedocs(
         ],
     ]
 )
+
+# Generate plots
+makeplots()
 
 deploydocs(
     repo = "github.com/sisl/SatelliteDynamics.jl",
