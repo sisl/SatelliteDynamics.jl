@@ -47,7 +47,7 @@ function sGEOCtoECEF(geoc::Array{<:Real, 1} ; use_degrees=false::Bool)
 
     # Check validity of input
     if lat < -pi/2 || lat > pi/2
-        error("Lattiude, $lat, out of range. Must be between -90 and 90 degrees.")
+        throw(ArgumentError("Lattiude, $lat, out of range. Must be between -90 and 90 degrees."))
     end
 
     # Compute Earth fixed coordinates
@@ -123,7 +123,7 @@ function sGEODtoECEF(geod::Array{<:Real, 1} ; use_degrees=false::Bool)
 
     # Check validity of input
     if lat < -pi/2 || lat > pi/2
-        error("Lattiude, $lat, out of range. Must be between -90 and 90 degrees.")
+        throw(ArgumentError("Lattiude, $lat, out of range. Must be between -90 and 90 degrees."))
     end
 
     # Compute Earth-fixed position vector
@@ -206,7 +206,7 @@ Returns:
 """
 function rECEFtoENZ(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)   
     if length(ecef) < 3
-        error("Input coordinates must be length 3.")
+        throw(ArgumentError("Input coordinates must be length 3."))
     end
 
     # Compute Station Lat-Lon-Altitude
@@ -215,7 +215,7 @@ function rECEFtoENZ(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
     elseif conversion == "geocentric"
         lat, lon, = sECEFtoGEOC(ecef, use_degrees=true)
     else
-        error("Unknown conversion method: $conversion")
+        throw(ArgumentError("Unknown conversion method: $conversion"))
     end
 
     # Compute ENZ basis vectors
@@ -245,7 +245,7 @@ Returns:
 function rENZtoECEF(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
     # Check input coordinates
     if length(ecef) < 3
-        error("Input coordinates must be length 3.")
+        throw(ArgumentError("Input coordinates must be length 3."))
     end
 
     return rECEFtoENZ(ecef, conversion=conversion)'
@@ -267,11 +267,11 @@ Returns:
 function sECEFtoENZ(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
     # Check input sizes
     if length(ecef) < 3
-        error("Input ecef state must be at least length 3.")
+        throw(ArgumentError("Input ecef state must be at least length 3."))
     end
 
     if length(station_ecef) < 3
-        error("Input station coordinates must be length 3.")
+        throw(ArgumentError("Input station coordinates must be length 3."))
     end
 
     # Compute ENZ Rotation matrix
@@ -313,11 +313,11 @@ Returns:
 function sENZtoECEF(station_ecef::Array{<:Real, 1}, enz::Array{<:Real, 1} ; conversion="geodetic"::String)
     # Check input sizes
     if length(enz) < 3
-        error("Input ENZ state must be at least length 3.")
+        throw(ArgumentError("Input ENZ state must be at least length 3."))
     end
 
     if length(station_ecef) < 3
-        error("Input station coordinates must be length 3.")
+        throw(ArgumentError("Input station coordinates must be length 3."))
     end
 
     # Compute ENZ Rotation matrix
@@ -361,7 +361,7 @@ Returns:
 """
 function rECEFtoSEZ(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)    
     if length(ecef) < 3
-        error("Input coordinates must be length 3.")
+        throw(ArgumentError("Input coordinates must be length 3."))
     end
 
     # Compute Station Lat-Lon-Altitude
@@ -370,7 +370,7 @@ function rECEFtoSEZ(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
     elseif conversion == "geocentric"
         lat, lon, = sECEFtoGEOC(ecef, use_degrees=true)
     else
-        error("Unknown conversion method: $conversion")
+        throw(ArgumentError("Unknown conversion method: $conversion"))
     end
 
     # Compute SEZ basis vectors
@@ -401,7 +401,7 @@ Returns:
 function rSEZtoECEF(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
     # Check input coordinates
     if length(ecef) < 3
-        error("Input coordinates must be length 3.")
+        throw(ArgumentError("Input coordinates must be length 3."))
     end
 
     return rECEFtoSEZ(ecef, conversion=conversion)'
@@ -424,11 +424,11 @@ Returns:
 function sECEFtoSEZ(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1} ; conversion="geodetic"::String)    
     # Check input sizes
     if length(ecef) < 3
-        error("Input ecef state must be at least length 3.")
+        throw(ArgumentError("Input ecef state must be at least length 3."))
     end
 
     if length(station_ecef) < 3
-        error("Input station coordinates must be length 3.")
+        throw(ArgumentError("Input station coordinates must be length 3."))
     end
 
     # Construct SEZ Rotation matrix
@@ -470,11 +470,11 @@ Returns:
 function sSEZtoECEF(station_ecef::Array{<:Real, 1}, sez::Array{<:Real, 1} ; conversion="geodetic"::String)
     # Check input sizes
     if length(sez) < 3
-        error("Input SEZ state must be at least length 3.")
+        throw(ArgumentError("Input SEZ state must be at least length 3."))
     end
 
     if length(station_ecef) < 3
-        error("Input station coordinates must be length 3.")
+        throw(ArgumentError("Input station coordinates must be length 3."))
     end
 
     # Compute ENZ Rotation matrix
@@ -518,7 +518,7 @@ Returns:
 function sENZtoAZEL(x::Array{<:Real, 1} ; use_degrees=false::Bool)
     # Check inputs
     if !(length(x) == 3 || length(x) == 6)
-        error("Input ENZ state must be length 3 or 6.")
+        throw(ArgumentError("Input ENZ state must be length 3 or 6."))
     end
 
     # Expand values
@@ -599,7 +599,7 @@ Returns:
 function sSEZtoAZEL(x::Array{<:Real, 1} ; use_degrees=false::Bool)
     # Check inputs
     if !(length(x) == 3 || length(x) == 6)
-        error("Input rECEFtoSEZ state must be length 3 or 6.")
+        throw(ArgumentError("Input rECEFtoSEZ state must be length 3 or 6."))
     end
 
     # Expand values

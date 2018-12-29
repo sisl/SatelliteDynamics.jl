@@ -54,3 +54,80 @@ let
     @test isapprox(r[3, 2], 0.0,       atol=tol)
     @test isapprox(r[3, 3], 1.0,       atol=tol)
 end
+
+####################
+# Quaternion Tests #
+####################
+
+let
+    # Vector initialization
+    q = Quaternion([1.1, 0.0, 0.0, 0.0])
+
+    tol = 1e-12
+    @test isapprox(q.q0, 1.0, atol=tol)
+    @test isapprox(q.q1, 0.0, atol=tol)
+    @test isapprox(q.q2, 0.0, atol=tol)
+    @test isapprox(q.q3, 0.0, atol=tol)
+
+    # Test vector initialization errors
+    @test_throws ArgumentError Quaternion([1 2 3 4 5])
+end
+
+let
+    # Matrix initialization Quaternion Fomulation 1
+    mat = [1.0 0.0 0.0;
+           0.0 1.0 0.0;
+           0.0 0.0 1.0]
+
+    q = Quaternion(mat)
+
+    tol = 1e-12
+    @test isapprox(q.q0, 1.0, atol=tol)
+    @test isapprox(q.q1, 0.0, atol=tol)
+    @test isapprox(q.q2, 0.0, atol=tol)
+    @test isapprox(q.q3, 0.0, atol=tol)
+
+    # Matrix initialization Quaternion Fomulation 2
+    mat = [1.0 0.0 0.0;
+           0.0 -1.0 0.0;
+           0.0 0.0 -1.0]
+
+    q = Quaternion(mat)
+
+    tol = 1e-12
+    @test isapprox(q.q0, 0.0, atol=tol)
+    @test isapprox(q.q1, 1.0, atol=tol)
+    @test isapprox(q.q2, 0.0, atol=tol)
+    @test isapprox(q.q3, 0.0, atol=tol)
+
+    # Matrix initialization Quaternion Fomulation 3
+    mat = [-1.0 0.0 0.0;
+           0.0 1.0 0.0;
+           0.0 0.0 -1.0]
+
+    q = Quaternion(mat)
+
+    tol = 1e-12
+    @test isapprox(q.q0, 0.0, atol=tol)
+    @test isapprox(q.q1, 0.0, atol=tol)
+    @test isapprox(q.q2, 1.0, atol=tol)
+    @test isapprox(q.q3, 0.0, atol=tol)
+
+    # Matrix initialization Quaternion Fomulation 4
+    mat = [-1.0 0.0 0.0;
+           0.0 -1.0 0.0;
+           0.0 0.0 1.0]
+
+    q = Quaternion(mat)
+
+    tol = 1e-12
+    @test isapprox(q.q0, 0.0, atol=tol)
+    @test isapprox(q.q1, 0.0, atol=tol)
+    @test isapprox(q.q2, 0.0, atol=tol)
+    @test isapprox(q.q3, 1.0, atol=tol)
+end
+
+let
+    q = Quaternion([1.0 2.0 3.0 4.0])
+    
+end

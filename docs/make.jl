@@ -38,5 +38,4 @@ deploydocs(
     repo = "github.com/sisl/SatelliteDynamics.jl",
     devbranch = "master",
     devurl = "latest",
-    deps = makeplots,
 )

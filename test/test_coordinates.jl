@@ -71,8 +71,8 @@ let
     @test isapprox(geoc[3], geocc[3], atol=tol)
 
     # Test Error Condition
-    @test_throws ErrorException sGEOCtoECEF([0.0,  90.1], use_degrees=true)
-    @test_throws ErrorException sGEOCtoECEF([0.0, -90.1], use_degrees=true)    
+    @test_throws ArgumentError sGEOCtoECEF([0.0,  90.1], use_degrees=true)
+    @test_throws ArgumentError sGEOCtoECEF([0.0, -90.1], use_degrees=true)    
 end
 
 let 
@@ -147,8 +147,8 @@ let
     @test isapprox(geod[3], geodc[3], atol=tol)
 
     # Test Error Condition
-    @test_throws ErrorException sGEODtoECEF([0.0,  90.1], use_degrees=true)
-    @test_throws ErrorException sGEODtoECEF([0.0, -90.1], use_degrees=true)    
+    @test_throws ArgumentError sGEODtoECEF([0.0,  90.1], use_degrees=true)
+    @test_throws ArgumentError sGEODtoECEF([0.0, -90.1], use_degrees=true)    
 end
 
 let
@@ -189,13 +189,13 @@ let
     @test isapprox(ecef[3], ecef2[3], atol=tol)
 
     # Test ENZ Error Conditions
-    @test_throws ErrorException rECEFtoENZ([R_EARTH, 0.0])
-    @test_throws ErrorException rECEFtoENZ([R_EARTH, 0.0, 0.0], conversion="unknown")
-    @test_throws ErrorException rENZtoECEF([R_EARTH, 0.0])
-    @test_throws ErrorException sECEFtoENZ([R_EARTH, 0.0], [R_EARTH + 100.0, 0.0, 0.0])
-    @test_throws ErrorException sECEFtoENZ([R_EARTH, 0.0, 0.0], [R_EARTH + 100.0, 0.0])
-    @test_throws ErrorException sENZtoECEF([R_EARTH, 0.0], [0.0, 0.0, 0.0])
-    @test_throws ErrorException sENZtoECEF([R_EARTH, 0.0, 0.0], [0.0, 0.0])
+    @test_throws ArgumentError rECEFtoENZ([R_EARTH, 0.0])
+    @test_throws ArgumentError rECEFtoENZ([R_EARTH, 0.0, 0.0], conversion="unknown")
+    @test_throws ArgumentError rENZtoECEF([R_EARTH, 0.0])
+    @test_throws ArgumentError sECEFtoENZ([R_EARTH, 0.0], [R_EARTH + 100.0, 0.0, 0.0])
+    @test_throws ArgumentError sECEFtoENZ([R_EARTH, 0.0, 0.0], [R_EARTH + 100.0, 0.0])
+    @test_throws ArgumentError sENZtoECEF([R_EARTH, 0.0], [0.0, 0.0, 0.0])
+    @test_throws ArgumentError sENZtoECEF([R_EARTH, 0.0, 0.0], [0.0, 0.0])
 
     # Test length of return is 3
     enz = sECEFtoENZ(station_ecef, ecef[1:3], conversion="geocentric")
@@ -249,13 +249,13 @@ let
     @test isapprox(ecef[3], ecef2[3], atol=tol)
 
     # Test SEZ Error Conditions
-    @test_throws ErrorException rECEFtoSEZ([R_EARTH, 0.0])
-    @test_throws ErrorException rECEFtoSEZ([R_EARTH, 0.0, 0.0], conversion="unknown")
-    @test_throws ErrorException rSEZtoECEF([R_EARTH, 0.0])
-    @test_throws ErrorException sECEFtoSEZ([R_EARTH, 0.0], [R_EARTH + 100.0, 0.0, 0.0])
-    @test_throws ErrorException sECEFtoSEZ([R_EARTH, 0.0, 0.0], [R_EARTH + 100.0, 0.0])
-    @test_throws ErrorException sSEZtoECEF([R_EARTH, 0.0], [0.0, 0.0, 0.0])
-    @test_throws ErrorException sSEZtoECEF([R_EARTH, 0.0, 0.0], [0.0, 0.0])
+    @test_throws ArgumentError rECEFtoSEZ([R_EARTH, 0.0])
+    @test_throws ArgumentError rECEFtoSEZ([R_EARTH, 0.0, 0.0], conversion="unknown")
+    @test_throws ArgumentError rSEZtoECEF([R_EARTH, 0.0])
+    @test_throws ArgumentError sECEFtoSEZ([R_EARTH, 0.0], [R_EARTH + 100.0, 0.0, 0.0])
+    @test_throws ArgumentError sECEFtoSEZ([R_EARTH, 0.0, 0.0], [R_EARTH + 100.0, 0.0])
+    @test_throws ArgumentError sSEZtoECEF([R_EARTH, 0.0], [0.0, 0.0, 0.0])
+    @test_throws ArgumentError sSEZtoECEF([R_EARTH, 0.0, 0.0], [0.0, 0.0])
 
     # Test length of return is 3
     sez = sECEFtoSEZ(station_ecef, ecef[1:3], conversion="geocentric")
@@ -328,7 +328,7 @@ let
     enz = [0.0, 0.0, 100, 90.0, 0.0, 0.0]
 
     # Non-standard input length
-    @test_throws ErrorException sENZtoAZEL(enz[1:2])
+    @test_throws ArgumentError sENZtoAZEL(enz[1:2])
 
     # Cant resolve azimuth without range information
     azel = sENZtoAZEL(enz[1:3])
@@ -346,7 +346,7 @@ let
     sez = [0.0, 0.0, 100, 90.0, 0.0, 0.0]
 
     # Non-standard input length
-    @test_throws ErrorException sSEZtoAZEL(sez[1:2])
+    @test_throws ArgumentError sSEZtoAZEL(sez[1:2])
 
     # Cant resolve azimuth without range information
     azel = sSEZtoAZEL(sez[1:3])
