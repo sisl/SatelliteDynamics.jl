@@ -122,45 +122,45 @@ mutable struct Quaternion
     end
 end
 
-# export EulerAngle
-# """
-# The `EulerAngle` type provides a represenation of EulerAngles for storing attitude
-# information.
+export EulerAngle
+"""
+The `EulerAngle` type provides a represenation of EulerAngles for storing attitude
+information.
 
-# Valid sequences are: `:121, :123, :131, :132, :212, :213, :231, :232, :312, :313, :321, :323`.
+Valid sequences are: `:121, :123, :131, :132, :212, :213, :231, :232, :312, :313, :321, :323`.
 
-# Data members:
-# - `seq::symbol`: Order of application of angles with respect to body axis.
-# - `phi::Float64`: First Euler angle
-# - `theta::Float64`: Second Euler angle
-# - `psi::Float64`: Third Euler angle
-#
-# References:
-# 1. J. Diebel, _Representing attitude: Euler angles, unit quaternions, and rotation vectors._ Matrix 58(15-16) (2006).
-# """
-# mutable struct EulerAngle
-#     seq::symbol
-#     phi::Float64
-#     theta::Float64
-#     psi::Float64
-# end
+Data members:
+- `seq::Symbol`: Order of application of angles with respect to body axis.
+- `phi::Float64`: First Euler angle
+- `theta::Float64`: Second Euler angle
+- `psi::Float64`: Third Euler angle
 
-# export EulerAxis
-# """
-# The `EulerAxis` type provides a representation of the Euler angle-and-axis attitude
-# representation.
+References:
+1. J. Diebel, _Representing attitude: Euler angles, unit quaternions, and rotation vectors._ Matrix 58(15-16) (2006).
+"""
+mutable struct EulerAngle
+    seq::Int32
+    phi::Float64
+    theta::Float64
+    psi::Float64
+end
 
-# Data members:
-# - `theta::Float64`: Angle of rotation
-# - `v::Array{Float64, 1}`: Axis of rotation
-# """
-# mutable struct EulerAxis
-#     theta::Float64
-#     v::Array{Float64, 1}
-#
-# References:
-# 1. J. Diebel, _Representing attitude: Euler angles, unit quaternions, and rotation vectors._ Matrix 58(15-16) (2006).
-# end
+export EulerAxis
+"""
+The `EulerAxis` type provides a representation of the Euler angle-and-axis attitude
+representation.
+
+Data members:
+- `theta::Float64`: Angle of rotation
+- `vec::Array{Float64, 1}`: Axis of rotation
+
+References:
+1. J. Diebel, _Representing attitude: Euler angles, unit quaternions, and rotation vectors._ Matrix 58(15-16) (2006).
+"""
+mutable struct EulerAxis
+    angle::Float64
+    axis::Array{Float64, 1}
+end
 
 ##############
 # Quaternion #
@@ -220,25 +220,454 @@ function Quaternion(mat::Array{<:Real, 2})
     return Quaternion(q0, q1, q2, q3)
 end
 
+function Quaternion(e::EulerAngle)
+    # Extract Quaternion components
+    q0, q1, q2, q3 = 0.0, 0.0, 0.0, 0.0
+
+    # Compute sine and cosine values for angles
+
+    # Get Quaternion components depending on Euler Angle sequence
+    # reduce number of trig calls
+    c1 = cos(e.phi/2.0)
+    c2 = cos(e.theta/2.0)
+    c3 = cos(e.psi/2.0)
+    s1 = sin(e.phi/2.0)
+    s2 = sin(e.theta/2.0)
+    s3 = sin(e.psi/2.0)
+
+    # Populate the quaternion
+    if e.seq == 121
+        q0 = c1*c2*c3 - s1*c2*s3
+        q1 = c1*c2*s3 + c2*c3*s1
+        q2 = c1*c3*s2 + s1*s2*s3
+        q3 = c1*s2*s3 - s1*c3*s2
+
+    elseif e.seq == 123
+        q0 =  c1*c2*c3 + s1*s2*s3
+        q1 = -c1*s2*s3 + c2*c3*s1
+        q2 =  c1*c3*s2 + s1*c2*s3
+        q3 =  c1*c2*s3 - s1*c3*s2
+
+    elseif e.seq == 131
+        q0 =  c1*c2*c3 - s1*c2*s3
+        q1 =  c1*c2*s3 + c2*c3*s1
+        q2 = -c1*s2*s3 + s1*c3*s2
+        q3 =  c1*c3*s2 + s1*s2*s3
+
+    elseif e.seq == 132
+        q0 =  c1*c2*c3 - s1*s2*s3
+        q1 =  c1*s2*s3 + c2*c3*s1
+        q2 =  c1*c2*s3 + s1*c3*s2
+        q3 =  c1*c3*s2 - s1*c2*s3
+
+    elseif e.seq == 212
+        q0 =  c1*c2*c3 - s1*c2*s3
+        q1 =  c1*c3*s2 + s1*s2*s3
+        q2 =  c1*c2*s3 + c2*c3*s1
+        q3 = -c1*s2*s3 + s1*c3*s2
+
+    elseif e.seq == 213
+        q0 =  c1*c2*c3 - s1*s2*s3
+        q1 =  c1*c3*s2 - s1*c2*s3
+        q2 =  c1*s2*s3 + c2*c3*s1
+        q3 =  c1*c2*s3 + s1*c3*s2
+
+    elseif e.seq == 231
+        q0 =  c1*c2*c3 + s1*s2*s3
+        q1 =  c1*c2*s3 - s1*c3*s2
+        q2 = -c1*s2*s3 + c2*c3*s1
+        q3 =  c1*c3*s2 + s1*c2*s3
+
+    elseif e.seq == 232
+        q0 =  c1*c2*c3 - s1*c2*s3
+        q1 =  c1*s2*s3 - s1*c3*s2
+        q2 =  c1*c2*s3 + c2*c3*s1
+        q3 =  c1*c3*s2 + s1*s2*s3
+
+    elseif e.seq == 312
+        q0 =  c1*c2*c3 + s1*s2*s3
+        q1 =  c1*c3*s2 + s1*c2*s3
+        q2 =  c1*c2*s3 - s1*c3*s2
+        q3 = -c1*s2*s3 + c2*c3*s1
+
+    elseif e.seq == 313
+        q0 =  c1*c2*c3 - s1*c2*s3
+        q1 =  c1*c3*s2 + s1*s2*s3
+        q2 =  c1*s2*s3 - s1*c3*s2
+        q3 =  c1*c2*s3 + c2*c3*s1
+
+    elseif e.seq == 321
+        q0 =  c1*c2*c3 - s1*s2*s3
+        q1 =  c1*c2*s3 + s1*c3*s2
+        q2 =  c1*c3*s2 - s1*c2*s3
+        q3 =  c1*s2*s3 + c2*c3*s1
+
+    elseif e.seq == 323
+        q0 =  c1*c2*c3 - s1*c2*s3
+        q1 = -c1*s2*s3 + s1*c3*s2
+        q2 =  c1*c3*s2 + s1*s2*s3
+        q3 =  c1*c2*s3 + c2*c3*s1
+    else
+        # Should get an invalid sequence, but it is possible if a user
+        # Directly sets the sequence number
+        throw(ArgumentError("Invalid EulerAngle sequence: $seq"))
+    end
+
+    return Quaternion(q0, q1, q2, q3)
+end
+
+function Quaternion(e::EulerAxis)
+    # Extract Quaternion components
+    q0 = cos(e.angle/2.0)
+    q1 = e.axis[1]*sin(e.angle/2.0)
+    q2 = e.axis[2]*sin(e.angle/2.0)
+    q3 = e.axis[3]*sin(e.angle/2.0)
+
+    return Quaternion(q0, q1, q2, q3)
+end
+
+#########################
+# Quaternion Operations #
+#########################
+
+Base.getindex(q::Quaternion, ::Colon) = [q.q0 q.q1 q.q2 q.q3]
+
+# Return quaternion as a vector
+export as_vector
+"""
+Return quaternion as a vector. 
+
+Equivalent to q[:]
+
+Arguments:
+- `q::Quaternion`: Quaternion
+
+Returns:
+- `vec::Array{Float64, 1}`: Quaternion as a (4,) vector
+"""
+function as_vector(q::Quaternion)
+    return q[:]
+end
+
 # Return quaternion as a matrix
-# function as_matrix(q::Quaternion)
+export as_matrix
+"""
+Return the rotation matrix representation of a Quaternion.
 
-# end
+Arguments:
+- `q::Quaternion`: Quaternion
 
-# Quaternion Operators
-function norm(q::Quaternion)
+Returns:
+- `mat::Array{Float64, 2}`: Rotation Matrix on SO(3).
+"""
+function as_matrix(q::Quaternion)
+    # initialize Empty Matrix
+    mat = zeros(Float64, 3, 3)
+
+    # Construct matrix from Quaternion
+    mat[1, 1] = q.q0*q.q0 + q.q1*q.q1 - q.q2*q.q2 - q.q3*q.q3
+    mat[1, 2] = 2*q.q1*q.q2 + 2*q.q0*q.q3
+    mat[1, 3] = 2*q.q1*q.q3 - 2*q.q0*q.q2
+    mat[2, 1] = 2*q.q1*q.q2 - 2*q.q0*q.q3
+    mat[2, 2] = q.q0*q.q0 - q.q1*q.q1 + q.q2*q.q2 - q.q3*q.q3
+    mat[2, 3] = 2*q.q2*q.q3 + 2*q.q0*q.q1
+    mat[3, 1] = 2*q.q1*q.q3 + 2*q.q0*q.q2
+    mat[3, 2] = 2*q.q2*q.q3 - 2*q.q0*q.q1
+    mat[3, 3] = q.q0*q.q0 - q.q1*q.q1 - q.q2*q.q2 + q.q3*q.q3
+
+    return mat
+end
+
+function Base.copy(q::Quaternion)
+    return Quaternion(q.q0, q.q1, q.q2, q.q3)
+end
+
+function Base.deepcopy(q::Quaternion)
+    return Quaternion(q.q0, q.q1, q.q2, q.q3)
+end
+
+"""
+Compute the norm of a Quaternion.
+
+Equivalent to `sqrt(q0^2 + q1^2 + q2^2 + q3^2)`
+
+Arguments:
+- `q::Quaternion`: Quaternion
+
+Returns:
+- `q_norm::Float64`: Norm of quaternion.
+"""
+function LinearAlgebra.norm(q::Quaternion)
     return sqrt(q.q0^2 + q.q1^2 + q.q2^2 + q.q3^2)
 end
 
-# Type conversions
+"""
+Normalize a Quaternion in-place.
 
+Equivalent to q=q/norm(q)
+
+Arguments:
+- `q::Quaternion`: Quaternion
+
+Returns:
+- `q_norm::Float64`: Norm of quaternion.
+"""
+function LinearAlgebra.normalize(q::Quaternion)
+    # Get Quaternion norm
+    q_norm = norm(q)
+
+    # Normalize q in-place
+    q.q0 = q.q0/q_norm
+    q.q1 = q.q1/q_norm
+    q.q2 = q.q2/q_norm
+    q.q3 = q.q3/q_norm
+
+    # Ensure return value is nothing
+    nothing
+end
+
+"""
+Get conjugate Quaternion.
+
+Arguments:
+- `q::Quaternion`: Input Quaternion
+
+Returns:
+- `q_conj::Quaternion`: Conjugate Quaternion of input
+"""
+function Base.conj(q::Quaternion)
+    return Quaternion(q.q0, -q.q1, -q.q2, -q.q3)
+end
+
+"""
+Get Quaternion inverse.
+
+Arguments:
+- `q::Quaternion`: Input Quaternion
+
+Returns:
+- `q_inv::Quaternion`: Inverse Quaternion of input
+"""
+function Base.inv(q::Quaternion)
+    # Same as Quaternion conjugate since all quaternions are normalized to have
+    # unit norm on construction
+    return conj(q)
+end
+
+function Base.:-(q::Quaternion)
+    return Quaternion(-q.q0, -q.q1, -q.q2, -q.q3)
+end
+
+function Base.:-(qa::Quaternion, qb::Quaternion)
+    return [qa.q0 - qb.q0
+            qa.q1 - qb.q1
+            qa.q2 - qb.q2
+            qa,q3 - qb.q3]
+end
+
+function Base.:+(qa::Quaternion, qb::Quaternion)
+    return [qa.q0 + qb.q0
+            qa.q1 + qb.q1
+            qa.q2 + qb.q2
+            qa,q3 + qb.q3]
+end
+
+function Base.:+(q::Quaternion, n::Real)
+    return [q.q0 + n
+            q.q1 + n
+            q.q2 + n
+            q,q3 + n]
+end
+
+function Base.:+(n::Real, q::Quaternion)
+    return q+n
+end
+
+function Base.:*(qa::Quaternion, qb::Quaternion)
+    # # Quaternion Multiplication
+    # qcos = self.data[0]*other.data[0] - np.dot(self.data[1:4], other.data[1:4])
+    # qvec = self.data[0]*other.data[1:4] + other.data[0]*self.data[1:4] + np.cross(self.data[1:4], other.data[1:4])
+
+    # Quaternion Multiplication
+    qcos = qa.q0*qb.q0 - dot(qa[2:4], qb[2:4])
+    qvec = qa.q0*qb[2:4] + qb.q0*qa[2:4] + cross(qa[2:4], qb[2:4])
+
+
+    return Quaternion(qcos, qvec...)
+end
+
+function Base.:*(q::Quaternion, n::Real)
+    return q[:]*n
+end
+
+function Base.:*(n::Real, q::Quaternion)
+    return q*n
+end
+
+export slerp
+"""
+Perform spherical linear interpolation (SLERP) on two quaternions. Interpolatles 
+from quaternion, `q1`, to quaternion, `q2`, at normalized interpolation time, `t`.
+
+Interpolation time must be in the range `[0, 1]` a value of `0` will return `q1`,
+while a value of `1` will return `q2`.
+
+Arguments:
+- `q1::Quaternion`: Starting Quaternion
+- `q2::Quaternion`: Ending Quaternion
+- `t::Real`: Normalized interpolation time. [0, 1]
+
+Returns:
+- `q:Quaternion`: Quaternion attitude interpolation from q1 toward q2 at time t.
+"""
+function slerp(q0::Quaternion, q1::Quaternion, t::Real)
+    # Check Range on t
+    if t < 0.0 || t > 1.0
+        throw(ArgumentError("Invalid interpolation time $t. t must be in the range [0, 1]."))
+    end
+
+    # Extract vectors and normalize
+    q0 = copy(q0)
+    q1 = copy(q1)
+
+    # Compute cosine of the angle between the two vectors
+    dot = dot(q0[:], q1[:])
+
+    # If the dot product is negative, the quaternions have opposite handed-ness 
+    # and slerp won't take the shortest path. Fix by reversing one quaternion.
+    if dot < 0.0
+        q1  = -q1
+        dot = -dot
+    end
+
+    # If the inputs are too close we use linear interpolation instead
+    if dot > 0.9995
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 return Quaternion(q0 + (q1 - q0)*t)
+    end
+
+    theta0 = acos(dot) # Angle between input vectors
+    theta  = theta0*t  # Angle between q0 and result quaternion
+
+    s0 = cos(theta) - dot*sin(theta)/sin(theta0)
+    s1 = sin(theta) / sin(theta0)
+
+    return Quaternion((s0 * q0) + (s1 * q1))
+end
 
 ##############
 # EulerAngle #
 ##############
 
+function EulerAngle(seq::Integer, mat::Array{<:Real, 2})
+    if size(mat) != (3,3)
+        throw(ArgumentError("Invalid array for Quaternion initialization. Input size: $(size(mat)), Required size: (3,3)"))
+    end
+
+    # Extract elements out of rotation matrix
+    r11 = rot[1, 1]
+    r12 = rot[1, 2]
+    r13 = rot[1, 3]
+    r21 = rot[2, 1]
+    r22 = rot[2, 2]
+    r23 = rot[2, 3]
+    r31 = rot[3, 1]
+    r32 = rot[3, 2]
+    r33 = rot[3, 3]
+
+    # Select euler angle sequence
+    phi, theta, psi = 0.0, 0.0, 0.0
+    if seq == 121
+        phi   = atan2(r21, r31)
+        theta = acos(r11)
+        psi   = atan2(r12, -r13)
+    elseif seq == 123
+        phi   = atan2(r23, r33)
+        theta = -asin(r13)
+        psi   = atan2(r12, r11)
+    elseif seq == 131
+        phi   = atan2(r31, -r21)
+        theta = acos(r11)
+        psi   = atan2(r13, r12)
+    elseif seq == 132
+        phi   = atan2(-r32, r22)
+        theta = asin(r12)
+        psi   = atan2(-r13, r11)
+    elseif seq == 212
+        phi   = atan2(r12, -r32)
+        theta = acos(r22)
+        psi   = atan2(r21, r23)
+    elseif seq == 213
+        phi   = atan2(-r13, r33)
+        theta = asin(r23)
+        psi   = atan2(-r21, r22)
+    elseif seq == 231
+        phi   = atan2(r31, r11)
+        theta = -asin(r21)
+        psi   = atan2(r23, r22)
+    elseif seq == 232
+        phi   = atan2(r32, r12)
+        theta = acos(r22)
+        psi   = atan2(r23, -r21)
+    elseif seq == 312
+        phi   = atan2(r12, r22)
+        theta = -asin(r32)
+        psi   = atan2(r31, r33)
+    elseif seq == 313
+        phi   = atan2(r13, r23)
+        theta = acos(r33)
+        psi   = atan2(r31, -r32)
+    elseif seq == 321
+        phi   = atan2(-r21, r11)
+        theta = asin(r31)
+        psi   = atan2(-r32, r33)
+    elseif seq == 323
+        phi   = atan2(r23, -r13)
+        theta = acos(r33)
+        psi   = atan2(r32, r31)
+    else
+        throw(ArgumentError("Invalid EulerAngle sequence: $seq"))
+    end
+end
+
+function EulerAngle(q::Quaternion)
+    # Construct angle from Quaternion by going through a rotation matrix
+    return EulerAngle(as_matrix(q))
+end
+
+function EulerAngle(e::EulerAxis)
+    # Construct angle from EulerAxis by going through a rotation matrix
+    return EulerAngle(as_matrix(q))
+end
+
+function as_matrix(e::EulerAngle)
+    # Get EulerAngle as matrix by going through Quaternions
+    return as_matrix(Quaternion(e))
+end
+
 #############
 # EulerAxis #
 #############
+
+function EulerAxis(mat::Array{<:Real, 2})
+    if size(mat) != (3,3)
+        throw(ArgumentError("Invalid array for Quaternion initialization. Input size: $(size(mat)), Required size: (3,3)"))
+    end
+end
+
+function EulerAxis(q::Quaternion)
+
+end
+
+function EulerAxis(e::EulerAxis)
+
+end
+
+function as_matrix(e::EulerAxis)
+
+end
+
+####################
+# Type Conversions #
+####################
 
 end # End module Coordinates
