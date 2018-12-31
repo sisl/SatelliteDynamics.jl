@@ -272,16 +272,15 @@ let
     v = q[:]
 
     tol = 1e-12
-    @test isapprox(v[1], 0.5, atol=tol)
-    @test isapprox(v[2], 0.5, atol=tol)
-    @test isapprox(v[3], 0.5, atol=tol)
-    @test isapprox(v[4], 0.5, atol=tol)
+    array_isapprox(v, 0.5, atol=tol)
 
     # Test Access
-    # @test isapprox(q[1], 0.5, atol=tol)
-    # @test isapprox(q[2], 0.5, atol=tol)
-    # @test isapprox(q[3], 0.5, atol=tol)
-    # @test isapprox(q[4], 0.5, atol=tol)
+    @test isapprox(q[1], 0.5, atol=tol)
+    @test isapprox(q[2], 0.5, atol=tol)
+    @test isapprox(q[3], 0.5, atol=tol)
+    @test isapprox(q[4], 0.5, atol=tol)
+
+    @test length(q[2:3]) == 2
 end
 
 let
@@ -290,10 +289,7 @@ let
     v = as_vector(q)
 
     tol = 1e-12
-    @test isapprox(v[1], 0.5, atol=tol)
-    @test isapprox(v[2], 0.5, atol=tol)
-    @test isapprox(v[3], 0.5, atol=tol)
-    @test isapprox(v[4], 0.5, atol=tol)
+    array_isapprox(v, 0.5, atol=tol)
 end
 
 let
@@ -302,15 +298,7 @@ let
     mat = as_matrix(q)
 
     tol = 1.0e-12
-    @test isapprox(mat[1, 1], 1.0, atol=tol)
-    @test isapprox(mat[1, 2], 0.0, atol=tol)
-    @test isapprox(mat[1, 3], 0.0, atol=tol)
-    @test isapprox(mat[2, 1], 0.0, atol=tol)
-    @test isapprox(mat[2, 2], 1.0, atol=tol)
-    @test isapprox(mat[2, 3], 0.0, atol=tol)
-    @test isapprox(mat[3, 1], 0.0, atol=tol)
-    @test isapprox(mat[3, 2], 0.0, atol=tol)
-    @test isapprox(mat[3, 3], 1.0, atol=tol)
+    array_isapprox(mat, one(mat), atol=tol)
 end
 
 let
@@ -343,10 +331,7 @@ let
     normalize(q)
     
     tol = 1e-12
-    @test isapprox(q.q0, 0.5, atol=tol)
-    @test isapprox(q.q1, 0.5, atol=tol)
-    @test isapprox(q.q2, 0.5, atol=tol)
-    @test isapprox(q.q3, 0.5, atol=tol)
+    array_isapprox(q[:], 0.5, atol=tol)
 
     @test normalize(q) == nothing
 end
@@ -357,7 +342,7 @@ let
     qc = conj(q)
 
     tol = 1e-12
-    @test isapprox(qc.q0, q.q0, atol=tol)
+    @test isapprox(qc.q0,  q.q0, atol=tol)
     @test isapprox(qc.q1, -q.q1, atol=tol)
     @test isapprox(qc.q2, -q.q2, atol=tol)
     @test isapprox(qc.q3, -q.q3, atol=tol)
@@ -369,10 +354,113 @@ let
     qi = inv(q)
 
     tol = 1e-12
-    @test isapprox(qi.q0, q.q0, atol=tol)
+    @test isapprox(qi.q0,  q.q0, atol=tol)
     @test isapprox(qi.q1, -q.q1, atol=tol)
     @test isapprox(qi.q2, -q.q2, atol=tol)
     @test isapprox(qi.q3, -q.q3, atol=tol)
+end
+
+let
+    q  = Quaternion(randn(4))
+    q2 = -q
+
+    tol = 1e-12
+    @test isapprox(q2.q0, -q.q0, atol=tol)
+    @test isapprox(q2.q1, -q.q1, atol=tol)
+    @test isapprox(q2.q2, -q.q2, atol=tol)
+    @test isapprox(q2.q3, -q.q3, atol=tol)
+end
+
+let
+    q1 = Quaternion([1.0 1.0 1.0 1.0])
+    q2 = Quaternion([1.0 1.0 1.0 1.0])
+
+    q = q2 - q1
+
+    tol = 1e-12
+    array_isapprox(q, 0.0, atol=tol)
+end
+
+let
+    q1 = Quaternion([1.0 1.0 1.0 1.0])
+    q2 = Quaternion([1.0 1.0 1.0 1.0])
+
+    q = q2 + q1
+
+    tol = 1e-12
+    array_isapprox(q, 1.0, atol=tol)
+end
+
+let
+    q1 = Quaternion([1.0 1.0 1.0 1.0])
+
+    q = q1 + 1.5
+
+    tol = 1e-12
+    array_isapprox(q, 2.0, atol=tol)
+end
+
+let
+    q1 = Quaternion([1.0 1.0 1.0 1.0])
+
+    q = 1.5 + q1
+
+    tol = 1e-12
+    array_isapprox(q, 2.0, atol=tol)
+end
+
+let
+    q1 = Quaternion([1.0 0.0 0.0 0.0])
+    q2 = Quaternion([1.0 0.0 0.0 0.0])
+
+    qp = q2*q1
+
+    tol = 1e-12
+    isapprox(qp.q0, 1.0, atol=tol)
+    isapprox(qp.q1, 0.0, atol=tol)
+    isapprox(qp.q2, 0.0, atol=tol)
+    isapprox(qp.q3, 0.0, atol=tol)
+
+    qp = q1*q2
+
+    tol = 1e-12
+    isapprox(qp.q0, 1.0, atol=tol)
+    isapprox(qp.q1, 0.0, atol=tol)
+    isapprox(qp.q2, 0.0, atol=tol)
+    isapprox(qp.q3, 0.0, atol=tol)
+end
+
+let
+    q1 = Quaternion([1.0 1.0 1.0 1.0])
+
+    q = q1*4
+
+    tol = 1e-12
+    array_isapprox(q, 2.0, atol=tol)
+end
+
+let
+    q1 = Quaternion([1.0 1.0 1.0 1.0])
+
+    q = 4*q1
+
+    tol = 1e-12
+    array_isapprox(q, 2.0, atol=tol)
+end
+
+let
+    q1  = Quaternion([1.0 0.0 0.0 0.0])
+    q2  = Quaternion([0.0 0.0 0.0 1.0])
+    tol = 1e-12
+
+    q = slerp(q1, q2, 0.0)
+    array_isapprox(q[:], [1.0 0.0 0.0 0.0], atol=tol)
+
+    q = slerp(q1, q2, 1.0)
+    array_isapprox(q[:], [0.0 0.0 0.0 1.0], atol=tol)
+
+    q = slerp(q1, q2, 0.5)
+    array_isapprox(q[:], [sqrt(2)/2.0 0.0 0.0 sqrt(2)/2.0], atol=tol)
 end
 
 ###########################

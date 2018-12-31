@@ -330,6 +330,28 @@ end
 # Quaternion Operations #
 #########################
 
+function Base.getindex(q::Quaternion, I::UnitRange{<:Integer})
+    # Allocate vector once
+    vec = as_vector(q)
+
+    # Return selected index or range
+    return [vec[i] for i in I]
+end
+
+function Base.getindex(q::Quaternion, I::Integer)
+    if I == 1
+        return q.q0
+    elseif I == 2
+        return q.q1
+    elseif I == 3
+        return q.q2
+    elseif I == 4
+        return q.q3
+    else
+        throw(BoundsError([as_vector(q)],[i]))
+    end
+end
+
 Base.getindex(q::Quaternion, ::Colon) = [q.q0 q.q1 q.q2 q.q3]
 
 # Return quaternion as a vector
@@ -462,21 +484,21 @@ function Base.:-(qa::Quaternion, qb::Quaternion)
     return [qa.q0 - qb.q0
             qa.q1 - qb.q1
             qa.q2 - qb.q2
-            qa,q3 - qb.q3]
+            qa.q3 - qb.q3]
 end
 
 function Base.:+(qa::Quaternion, qb::Quaternion)
     return [qa.q0 + qb.q0
             qa.q1 + qb.q1
             qa.q2 + qb.q2
-            qa,q3 + qb.q3]
+            qa.q3 + qb.q3]
 end
 
 function Base.:+(q::Quaternion, n::Real)
     return [q.q0 + n
             q.q1 + n
             q.q2 + n
-            q,q3 + n]
+            q.q3 + n]
 end
 
 function Base.:+(n::Real, q::Quaternion)
@@ -491,7 +513,6 @@ function Base.:*(qa::Quaternion, qb::Quaternion)
     # Quaternion Multiplication
     qcos = qa.q0*qb.q0 - dot(qa[2:4], qb[2:4])
     qvec = qa.q0*qb[2:4] + qb.q0*qa[2:4] + cross(qa[2:4], qb[2:4])
-
 
     return Quaternion(qcos, qvec...)
 end
@@ -531,24 +552,24 @@ function slerp(q0::Quaternion, q1::Quaternion, t::Real)
     q1 = copy(q1)
 
     # Compute cosine of the angle between the two vectors
-    dot = dot(q0[:], q1[:])
+    dp = dot(q0[:], q1[:])
 
     # If the dot product is negative, the quaternions have opposite handed-ness 
     # and slerp won't take the shortest path. Fix by reversing one quaternion.
-    if dot < 0.0
+    if dp < 0.0
         q1  = -q1
-        dot = -dot
+        dp = -dp
     end
 
     # If the inputs are too close we use linear interpolation instead
-    if dot > 0.9995
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 return Quaternion(q0 + (q1 - q0)*t)
+    if dp > 0.9995
+        return Quaternion(q0 + (q1 - q0)*t)
     end
 
-    theta0 = acos(dot) # Angle between input vectors
+    theta0 = acos(dp) # Angle between input vectors
     theta  = theta0*t  # Angle between q0 and result quaternion
 
-    s0 = cos(theta) - dot*sin(theta)/sin(theta0)
+    s0 = cos(theta) - dp*sin(theta)/sin(theta0)
     s1 = sin(theta) / sin(theta0)
 
     return Quaternion((s0 * q0) + (s1 * q1))
