@@ -16,7 +16,7 @@ matrix:
     - julia: nightly
 
   before_install:
-  - ./utils/build_setup.sh
+  - bash ./utils/build_setup.sh
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export GKSwstype=svg; fi
 
 script:
@@ -25,4 +25,4 @@ script:
 # After successfuly build submit coverage report and deploy updated documentation
 # But limit deployment to the linux worker so this is done only once.
 after_success:
-  - ./utils/push_updates.sh
+  - bash ./utils/push_updates.sh
