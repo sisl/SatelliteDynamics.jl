@@ -15,7 +15,7 @@ matrix:
   allow_failures:
     - julia: nightly
 
-  before_install:
+before_install:
   - bash ./utils/build_setup.sh
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export GKSwstype=svg; fi
 
