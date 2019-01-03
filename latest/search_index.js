@@ -721,6 +721,30 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modules/attitude/#Quaternions-1",
+    "page": "Attitude",
+    "title": "Quaternions",
+    "category": "section",
+    "text": "Quaternion\nas_vector(q::Quaternion)\nas_matrix(q::Quaternion)\ncopy(q::Quaternion)\ndeepcopy(q::Quaternion)\nslerp"
+},
+
+{
+    "location": "modules/attitude/#EulerAngle-1",
+    "page": "Attitude",
+    "title": "EulerAngle",
+    "category": "section",
+    "text": "EulerAngle\nas_vector(e::EulerAngle)\nas_matrix(e::EulerAngle)\ncopy(e::EulerAngle)\ndeepcopy(e::EulerAngle)"
+},
+
+{
+    "location": "modules/attitude/#EulerAxis-1",
+    "page": "Attitude",
+    "title": "EulerAxis",
+    "category": "section",
+    "text": "EulerAxis\nas_vector(e::EulerAxis)\nas_matrix(e::EulerAxis)\ncopy(e::EulerAxis)\ndeepcopy(e::EulerAxis)"
+},
+
+{
     "location": "modules/coordinates/#",
     "page": "Coordinates",
     "title": "Coordinates",
