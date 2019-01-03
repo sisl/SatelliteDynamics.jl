@@ -23,24 +23,33 @@ using SatelliteDynamics
 
 ## Package Structure
 
-The package is divided into a number of submodules each designed to provide a single, well-defined
-set of functions. The details on 
+The package is divided into a number of submodules each designed to provide a single, well-defined set of functions. The details of each specific module can be found on the relevant documentation page.
 
 ```@contents
 Pages = [
-    "modules/constants.md",
-    "modules/universe.md",
+"modules/constants.md",
+"modules/universe.md",
+"modules/time.md",
+"modules/reference_systems.md",
+"modules/attitude.md",
+"modules/coordinates.md",
+"modules/astrodynamics.md",
+"modules/orbit_dynamics.md",
+"modules/simulation.md",
 ]
 Depth = 2
 ```
 
 ## Examples
 
-The best way to learn how to use any software is to 
+The best way to learn how to use any software is to actually see it in action and
+use it for yourself. A number of tutorials showing how to use the modules provided
+as part of SatelliteDynamics.jl in your software are included as part of this
+documentation. You can find the list of tutorials below:
 
 ```@contents
 Pages = [
-    "tutorials/orbit_propagation.md",
+    "tutorials/orbit_propagation_example.md",
 ]
 Depth = 2
 ```
@@ -49,9 +58,9 @@ Depth = 2
 
 The software in this package was developed as part of academic research.
 If you would like to help support it, please star the repository as such metrics on
-usage help guage interest and secure funding. If you use the software as part of
-your research, teaching, or other activities, we would be grateful if you could
-cite our work.
+usage help guage interest, secure funding, and continue development. 
+
+If you use the software as part of your research, teaching, or other activities, we would be grateful if you could cite our work.
 
 ## Contributing
 

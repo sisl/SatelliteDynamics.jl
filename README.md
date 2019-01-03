@@ -30,4 +30,4 @@ using SatelliteDynamics
 
 The documentation for the package can be found here: <https://sisl.github.io/SatelliteDynamics.jl/latest>
 
-More example code and use will be added as time permits.
+More example code and more thorough documentation will be added as time permits.
