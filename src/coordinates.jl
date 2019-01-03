@@ -492,7 +492,7 @@ function sSEZtoECEF(station_ecef::Array{<:Real, 1}, sez::Array{<:Real, 1} ; conv
 
     # Return
     if length(sez) >= 6
-        sat_ecef = hcat(range_ecef + station_ecef, range_rate_ecef)
+        sat_ecef = vcat(range_ecef + station_ecef, range_rate_ecef)
     else
         sat_ecef = range_ecef + station_ecef
     end

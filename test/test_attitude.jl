@@ -249,6 +249,17 @@ let
     @test isapprox(q.q3, 0.0, atol=tol)
 end
 
+let 
+    # EulerAngle initialization - 323
+    e = EulerAngle(323, 0.0, 0.0, 0.0)
+
+    # Change to 999 to confirm error
+    e.seq = 999
+
+    @test typeof(e) == EulerAngle
+    @test_throws ArgumentError Quaternion(e)
+end
+
 let
     # EulerAxis initialization
     e = EulerAxis(0.0, [0.0, 0.0, 0.0])
@@ -281,6 +292,8 @@ let
     @test isapprox(q[4], 0.5, atol=tol)
 
     @test length(q[2:3]) == 2
+
+    @test_throws BoundsError q5 = q[5]
 end
 
 let
@@ -334,6 +347,8 @@ let
     array_isapprox(q[:], 0.5, atol=tol)
 
     @test normalize(q) == nothing
+
+    @test_throws ArgumentError Quaternion([1 2 3 4 5])
 end
 
 let
@@ -461,12 +476,280 @@ let
 
     q = slerp(q1, q2, 0.5)
     array_isapprox(q[:], [sqrt(2)/2.0 0.0 0.0 sqrt(2)/2.0], atol=tol)
+
+    # Edge Cases
+    q1  = Quaternion([1.0 0.0 0.0 0.0])
+    q2  = Quaternion([-1.0 0.0 0.0 0.0])
+
+    q = slerp(q1, q2, 0.0)
+    array_isapprox(q[:], [1.0 0.0 0.0 0.0], atol=tol)
 end
 
 ###########################
 # EulerAngle Constructors #
 ###########################
 
+let
+    # Test invalid constructors
+    @test_throws ArgumentError EulerAngle(999, 0.1, 0.2, 0.3)
+    @test_throws ArgumentError EulerAngle(123, [0.1, 0.2, 0.3, 0.4])
+    @test_throws ArgumentError EulerAngle(123, zeros(Float64, 4, 4))
+end
+
+let
+    # Test valid constructors
+    e = EulerAngle(123, 0.1, 0.2, 0.3)
+
+    tol = 1.0e-12
+    @test isapprox(e.phi, 0.1, atol=tol)
+    @test isapprox(e.theta, 0.2, atol=tol)
+    @test isapprox(e.psi, 0.3, atol=tol)
+
+    # Test valid constructors
+    e = EulerAngle(123, [0.4, 0.5, 0.6])
+
+    tol = 1.0e-12
+    @test isapprox(e.phi, 0.4, atol=tol)
+    @test isapprox(e.theta, 0.5, atol=tol)
+    @test isapprox(e.psi, 0.6, atol=tol)
+end
+
+# Test alternate constructors
+let
+    e = EulerAngle(123, Quaternion(-1.0, 0.0, 0.0, 0.0))
+    tol = 1.0e-12
+    array_isapprox((e[:]), 0.0, atol=tol)
+
+    e = EulerAngle(123, EulerAxis(0.0, 0.1, 0.2, 0.3))
+    tol = 1.0e-12
+    array_isapprox((e[:]), 0.0, atol=tol)
+end
+
+let
+    # Test error cases
+    mat = zeros(Float64, 4, 4)
+    @test_throws ArgumentError EulerAngle(123, mat)
+
+    mat = [1.0 0.0 0.0;
+           0.0 1.0 0.0;
+           0.0 0.0 1.0]
+    tol = 1.0e-12
+    
+    @test_throws ArgumentError EulerAngle(999, mat)
+
+    # Test angle construction    
+    e = EulerAngle(121, mat)
+    @test isapprox(e.phi, 0.0, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, pi, atol=tol)
+
+    e = EulerAngle(123, mat)
+    @test isapprox(e.phi, 0.0, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, 0.0, atol=tol)
+
+    e = EulerAngle(131, mat)
+    @test isapprox(e.phi, pi, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, 0.0, atol=tol)
+
+    e = EulerAngle(132, mat)
+    @test isapprox(e.phi, 0.0, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, 0.0, atol=tol)
+
+    e = EulerAngle(212, mat)
+    @test isapprox(e.phi, pi, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, 0.0, atol=tol)
+
+    e = EulerAngle(213, mat)
+    @test isapprox(e.phi, 0.0, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, 0.0, atol=tol)
+
+    e = EulerAngle(231, mat)
+    @test isapprox(e.phi, 0.0, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, 0.0, atol=tol)
+
+    e = EulerAngle(232, mat)
+    @test isapprox(e.phi, 0.0, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, pi, atol=tol)
+
+    e = EulerAngle(312, mat)
+    @test isapprox(e.phi, 0.0, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, 0.0, atol=tol)
+
+    e = EulerAngle(313, mat)
+    @test isapprox(e.phi, 0.0, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, pi, atol=tol)
+
+    e = EulerAngle(321, mat)
+    @test isapprox(e.phi, 0.0, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, 0.0, atol=tol)
+
+    e = EulerAngle(323, mat)
+    @test isapprox(e.phi, pi, atol=tol)
+    @test isapprox(e.theta, 0.0, atol=tol)
+    @test isapprox(e.psi, 0.0, atol=tol)
+end
+
+# Test Operators
+let
+    e = EulerAngle(123, 0.1, 0.2, 0.3)
+
+    v = e[:]
+
+    tol = 1e-12
+    array_isapprox(e[:], [0.1, 0.2, 0.3], atol=tol)
+
+    # Test Access
+    @test isapprox(e[1], 0.1, atol=tol)
+    @test isapprox(e[2], 0.2, atol=tol)
+    @test isapprox(e[3], 0.3, atol=tol)
+
+    @test length(e[2:3]) == 2
+
+    @test_throws BoundsError e[4]
+end
+
+let
+    q = EulerAngle(123, 0.5, 0.5, 0.5)
+
+    v = as_vector(q)
+
+    tol = 1.0e-12
+    array_isapprox(v, 0.5, atol=tol)
+end
+
+let
+    mat = as_matrix(EulerAngle(123, 0.0, 0.0, 0.0))
+
+    tol = 1.0e-12
+    array_isapprox(mat, one(mat), atol=tol)
+end
+
+let
+    e1 = EulerAngle(123, randn(3))
+    e2 = copy(e1)
+
+    @test pointer_from_objref(e1) != pointer_from_objref(e2)
+end
+
+let
+    e1 = EulerAngle(123, randn(3))
+    e2 = deepcopy(e1)
+
+    @test pointer_from_objref(e1) != pointer_from_objref(e2)
+end
+
+
 ##########################
 # EulerAxis Constructors #
 ##########################
+
+# Constructor Exceptions
+let
+    @test_throws ArgumentError EulerAxis([0.1, 0.2, 0.3])
+    @test_throws ArgumentError EulerAxis([0.1, 0.2, 0.3])
+    @test_throws ArgumentError EulerAxis(zeros(Float64, 4, 4))
+end
+
+# Vector Constructor
+let
+    e = EulerAxis([0.1, 0.2, 0.3, 0.4])
+
+    tol = 1.0e-12
+    array_isapprox(e[:], [0.1, 0.2, 0.3, 0.4], atol=tol)
+
+    e = EulerAxis(0.1, [0.2, 0.3, 0.4])
+
+    tol = 1.0e-12
+    array_isapprox(e[:], [0.1, 0.2, 0.3, 0.4], atol=tol)
+end
+
+# Euler Angle constructor
+let
+    e = EulerAxis(EulerAngle(123, 0.0, 0.0, 0.0))
+
+    tol = 1.0e-12
+    array_isapprox(e[:], 0.0, atol=tol)
+end
+
+# Quaternion constructor
+let
+    mat = [1.0 0.0 0.0;
+           0.0 1.0 0.0;
+           0.0 0.0 1.0]
+    e = EulerAxis(mat)
+
+    tol = 1.0e-12
+    array_isapprox(e[:], 0.0, atol=tol)
+end
+
+# Matrix constructor
+let
+    q = Quaternion(1.0, 0.0, 0.0, 0.0)
+
+    e = EulerAxis(q)
+
+    tol = 1.0e-12
+    array_isapprox(e[:], 0.0, atol=tol)
+end
+
+# Test Operators
+let
+    e = EulerAxis(0.4, 0.1, 0.2, 0.3)
+
+    v = e[:]
+
+    tol = 1e-12
+    array_isapprox((e[:]), [0.4, 0.1, 0.2, 0.3], atol=tol)
+
+    # Test Access
+    @test isapprox(e[1], 0.4, atol=tol)
+    @test isapprox(e[2], 0.1, atol=tol)
+    @test isapprox(e[3], 0.2, atol=tol)
+    @test isapprox(e[4], 0.3, atol=tol)
+
+    @test length(e[2:3]) == 2
+
+    @test_throws BoundsError e[5]
+end
+
+let
+    e = EulerAxis(0.5, 0.5, 0.5, 0.5)
+
+    v = as_vector(e)
+
+    tol = 1.0e-12
+    array_isapprox(v, 0.5, atol=tol)
+end
+
+let
+    e = EulerAxis(0.0, 0.0, 0.0, 0.0)
+
+    mat = as_matrix(e)
+
+    tol = 1.0e-12
+    array_isapprox(mat, one(mat), atol=tol)
+end
+
+let
+    e1 = EulerAxis(randn(4))
+    e2 = copy(e1)
+
+    @test pointer_from_objref(e1) != pointer_from_objref(e2)
+end
+
+let
+    e1 = EulerAxis(randn(4))
+    e2 = deepcopy(e1)
+
+    @test pointer_from_objref(e1) != pointer_from_objref(e2)
+end
