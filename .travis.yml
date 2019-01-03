@@ -36,7 +36,7 @@ script:
 after_success:
   # Install required packages for coverage and documentation
   - julia --project -e 'import Pkg; Pkg.add("Coverage");'
-  - julia --project -e 'import Pkg; Pkg.add("Documenter");'
+  - julia --project -e 'import Pkg; Pkg.add("Documenter"); Pkg.add("DocumenterTools");'
   - julia --project -e 'import Pkg; Pkg.add("Plots");'
   - julia --project -e 'import Pkg; Pkg.add("LaTeXStrings")'
 
