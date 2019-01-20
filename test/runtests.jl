@@ -1,9 +1,11 @@
+# Packages required for testing
 using Test
 using Random
 using LinearAlgebra
 using OrdinaryDiffEq
 using Logging
 
+# Package under test
 using SatelliteDynamics
 
 # Set logging level
