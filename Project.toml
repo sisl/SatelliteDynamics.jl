@@ -1,7 +1,7 @@
 name = "SatelliteDynamics"
 uuid = "0e7c1a32-1b9f-5532-88a4-e668712d6a4c"
 authors = ["Duncan Eddy <duncan.eddy@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
