@@ -14,10 +14,8 @@ Rz
 
 ```@docs
 Quaternion
-as_vector(q::Quaternion)
-as_matrix(q::Quaternion)
-copy(q::Quaternion)
-deepcopy(q::Quaternion)
+as_vector
+as_matrix
 slerp
 ```
 
@@ -25,18 +23,10 @@ slerp
 
 ```@docs
 EulerAngle
-as_vector(e::EulerAngle)
-as_matrix(e::EulerAngle)
-copy(e::EulerAngle)
-deepcopy(e::EulerAngle)
 ```
 
 ## EulerAxis
 
 ```@docs
 EulerAxis
-as_vector(e::EulerAxis)
-as_matrix(e::EulerAxis)
-copy(e::EulerAxis)
-deepcopy(e::EulerAxis)
 ```

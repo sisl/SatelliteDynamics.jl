@@ -37,7 +37,7 @@ after_success:
   - julia --project -e 'import Pkg; Pkg.add("Coverage");'
   - julia --project -e 'import Pkg; Pkg.add("Documenter"); Pkg.add("DocumenterTools");'
   - julia --project -e 'import Pkg; Pkg.add("Plots");'
-  - julia --project -e 'import Pkg; Pkg.add("LaTeXStrings")'
+  - julia --project -e 'import Pkg; Pkg.add("LaTeXStrings");'
 
   # Submit test coverage report
   - julia --project -e 'using Coverage; Coveralls.submit(Coveralls.process_folder())'
