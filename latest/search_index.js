@@ -721,11 +721,51 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modules/attitude/#SatelliteDynamics.Attitude.Quaternion",
+    "page": "Attitude",
+    "title": "SatelliteDynamics.Attitude.Quaternion",
+    "category": "type",
+    "text": "The Quaternion type defines a scalar-first quaternion for representation of attitude.\n\nData members:\n\nq0::Float64: Scalar part of quaternion\nq1::Float64: First vector component of quaternion\nq2::Float64: Second vector component of quaternion\nq3::Float64: Third vector component of quaternion\n\nReferences:\n\nJ. Diebel, Representing attitude: Euler angles, unit quaternions, and rotation vectors. Matrix 58(15-16) (2006).\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/attitude/#SatelliteDynamics.Attitude.as_vector",
+    "page": "Attitude",
+    "title": "SatelliteDynamics.Attitude.as_vector",
+    "category": "function",
+    "text": "Return quaternion as a vector. \n\nEquivalent to q[:]\n\nArguments:\n\nq::Quaternion: Quaternion\n\nReturns:\n\nvec::Array{Float64, 1}: Quaternion as a (4,) vector\n\n\n\n\n\nReturn Euler angles as a vector.\n\nEquivalent to: [e.phi, e.theta, e.psi] for EulerAngle e\n\nArguments:\n\ne::EulerAngle Euler Angle\n\nReturns:\n\nevec::Array{Float64, 1} Euler angles components in vector form.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/attitude/#SatelliteDynamics.Attitude.as_matrix",
+    "page": "Attitude",
+    "title": "SatelliteDynamics.Attitude.as_matrix",
+    "category": "function",
+    "text": "Return the rotation matrix representation of a Quaternion.\n\nArguments:\n\nq::Quaternion: Quaternion\n\nReturns:\n\nmat::Array{Float64, 2}: Rotation Matrix on SO(3).\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/attitude/#SatelliteDynamics.Attitude.slerp",
+    "page": "Attitude",
+    "title": "SatelliteDynamics.Attitude.slerp",
+    "category": "function",
+    "text": "Perform spherical linear interpolation (SLERP) on two quaternions. Interpolatles  from quaternion, q1, to quaternion, q2, at normalized interpolation time, t.\n\nInterpolation time must be in the range [0, 1] a value of 0 will return q1, while a value of 1 will return q2.\n\nArguments:\n\nq1::Quaternion: Starting Quaternion\nq2::Quaternion: Ending Quaternion\nt::Real: Normalized interpolation time. [0, 1]\n\nReturns:\n\nq:Quaternion: Quaternion attitude interpolation from q1 toward q2 at time t.\n\n\n\n\n\n"
+},
+
+{
     "location": "modules/attitude/#Quaternions-1",
     "page": "Attitude",
     "title": "Quaternions",
     "category": "section",
-    "text": "Quaternion\nas_vector(q::Quaternion)\nas_matrix(q::Quaternion)\ncopy(q::Quaternion)\ndeepcopy(q::Quaternion)\nslerp"
+    "text": "Quaternion\nas_vector\nas_matrix\nslerp"
+},
+
+{
+    "location": "modules/attitude/#SatelliteDynamics.Attitude.EulerAngle",
+    "page": "Attitude",
+    "title": "SatelliteDynamics.Attitude.EulerAngle",
+    "category": "type",
+    "text": "The EulerAngle type provides a represenation of EulerAngles for storing attitude information.\n\nValid sequences are: 121, 123, 131, 132, 212, 213, 231, 232, 312, 313, 321, 323.\n\nData members:\n\nseq::Symbol: Order of application of angles with respect to body axis.\nphi::Float64: First Euler angle\ntheta::Float64: Second Euler angle\npsi::Float64: Third Euler angle\n\nReferences:\n\nJ. Diebel, Representing attitude: Euler angles, unit quaternions, and rotation vectors. Matrix 58(15-16) (2006).\n\n\n\n\n\n"
 },
 
 {
@@ -733,7 +773,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Attitude",
     "title": "EulerAngle",
     "category": "section",
-    "text": "EulerAngle\nas_vector(e::EulerAngle)\nas_matrix(e::EulerAngle)\ncopy(e::EulerAngle)\ndeepcopy(e::EulerAngle)"
+    "text": "EulerAngle"
+},
+
+{
+    "location": "modules/attitude/#SatelliteDynamics.Attitude.EulerAxis",
+    "page": "Attitude",
+    "title": "SatelliteDynamics.Attitude.EulerAxis",
+    "category": "type",
+    "text": "The EulerAxis type provides a representation of the Euler angle-and-axis attitude representation.\n\nData members:\n\ntheta::Float64: Angle of rotation\nvec::Array{Float64, 1}: Axis of rotation\n\nReferences:\n\nJ. Diebel, Representing attitude: Euler angles, unit quaternions, and rotation vectors. Matrix 58(15-16) (2006).\n\n\n\n\n\n"
 },
 
 {
@@ -741,7 +789,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Attitude",
     "title": "EulerAxis",
     "category": "section",
-    "text": "EulerAxis\nas_vector(e::EulerAxis)\nas_matrix(e::EulerAxis)\ncopy(e::EulerAxis)\ndeepcopy(e::EulerAxis)"
+    "text": "EulerAxis"
 },
 
 {
