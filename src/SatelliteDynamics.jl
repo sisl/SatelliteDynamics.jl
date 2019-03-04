@@ -26,4 +26,8 @@ include("simulation.jl")
 @reexport using SatelliteDynamics.OrbitDynamics
 @reexport using SatelliteDynamics.Simulation
 
+# Export EarthEnvironment submodule
+# println(joinpath("earth_environment", "earth_environment.jl"))
+include(joinpath(".", "earth_environment", "earth_environment.jl"))
+
 end # module

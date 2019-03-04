@@ -2,7 +2,7 @@
 
 # Test internal data type
 let 
-    @test typeof(EOP.data) == Dict{Int32,Tuple{Float64,Float64,Float64}}
+    @test typeof(EOP.data) == Dict{Int,Tuple{Float64,Float64,Float64}}
 end
 
 # Test constructors
@@ -13,20 +13,20 @@ end
 
 # Test Data valutes
 let
-    @test UT1_UTC(58747)      == -0.1897929
-    @test POLE_LOCATOR(58747) == (0.230292*AS2RAD, 0.332704*AS2RAD)
-    @test XP(58747)           == 0.230292*AS2RAD
-    @test YP(58747)           == 0.332704*AS2RAD
+    @test UT1_UTC(58483)      == -0.0351914
+    @test POLE_LOCATOR(58483) == (0.088502*AS2RAD, 0.270753*AS2RAD)
+    @test XP(58483)           == 0.088502*AS2RAD
+    @test YP(58483)           == 0.270753*AS2RAD
 end
 
 # Test Set values
 let
     set_eop(58747, -0.2, 0.225, 0.3)
 
-    @test UT1_UTC(58747) == -0.2
+    @test UT1_UTC(58747)      == -0.2
     @test POLE_LOCATOR(58747) == (0.225*AS2RAD, 0.3*AS2RAD)
-    @test XP(58747)      == 0.225*AS2RAD
-    @test YP(58747)      == 0.3*AS2RAD
+    @test XP(58747)           == 0.225*AS2RAD
+    @test YP(58747)           == 0.3*AS2RAD
 
     set_eop(58747, -0.1897929, 0.230292, 0.332704)
     @test UT1_UTC(58747)      == -0.1897929

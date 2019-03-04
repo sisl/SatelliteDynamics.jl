@@ -87,11 +87,11 @@ Convert a Modified Julian Date to the equivalent Gregorian calendar date represe
 - `mjd::Real`: Modified Julian Date of Epoch
 
 # Returns:
-- `year::Int32`: Year
-- `year::Int32`: Month
-- `year::Int32`: Day
-- `hour::Int32`: Hour
-- `minute::Int32`: Minute 
+- `year::Int`: Year
+- `year::Int`: Month
+- `year::Int`: Day
+- `hour::Int`: Hour
+- `minute::Int`: Minute 
 - `second::Float64`: Seconds
 - `nanoseconds::Float64`: Nanoseconds
 """
@@ -133,11 +133,11 @@ Convert a Julian Date to the equivalent Gregorian calendar date representation o
 - `jd::Real`: Julian Date of Epoch
 
 # Returns:
-- `year::Int32`: Year
-- `year::Int32`: Month
-- `year::Int32`: Day
-- `hour::Int32`: Hour
-- `minute::Int32`: Minute 
+- `year::Int`: Year
+- `year::Int`: Month
+- `year::Int`: Day
+- `hour::Int`: Hour
+- `minute::Int`: Minute 
 - `second::Float64`: Seconds
 - `microsecond::Float64`: Nanoseconds
 """
@@ -243,8 +243,8 @@ epc = Epoch("2018-12-01 16:22:19.123456789 GPS")
 """
 struct Epoch
     # All days, seconds, and nanoseconds are stored internally in the TAI time scale, conversion to from TAI is done on intpu/output interacting.
-    days::Int32 # Total days [0, ∞)
-    seconds::Int32 # Integer seconds [0, 86400)
+    days::Int # Total days [0, ∞)
+    seconds::Int # Integer seconds [0, 86400)
     nanoseconds::Float64 # Fractional seconds [0, 1)
     tsys::Symbol # Time system of epoch
 end
@@ -297,8 +297,8 @@ function Epoch(year::Real, month::Real, day::Real, hour::Real=0, minute::Real=0,
     # @debug "Initializing Epoch: days: $days, seconds: $seconds, nanoseconds: $nanoseconds"
     
     # Ensure type consistency of input:
-    days        = Int32(days)
-    seconds     = Int32(seconds)
+    days        = Int(days)
+    seconds     = Int(seconds)
     nanoseconds = Float64(nanoseconds)
 
     days, seconds, nanoseconds = align_epoch_data(days, seconds, nanoseconds)
@@ -337,14 +337,14 @@ function Epoch(str::String)
         if !(m === nothing)
             # @debug m
             # Parse date (common to all)
-            year  = parse(Int32, m[1])
-            month = parse(Int32, m[2])
-            day   = parse(Int32, m[3])
+            year  = parse(Int, m[1])
+            month = parse(Int, m[2])
+            day   = parse(Int, m[3])
 
             # Parse time (most have this)
             if length(m.captures) >= 6
-                hour   = parse(Int32, m[4])
-                minute = parse(Int32, m[5])
+                hour   = parse(Int, m[4])
+                minute = parse(Int, m[5])
                 second = parse(Float64, m[6])
             end
 
@@ -380,7 +380,7 @@ end
 function Base.:+(epc::Epoch, t::Real)
     # Immidiately separate seconds and fractional seconds
     fseconds, seconds = modf(t)
-    seconds = Int32(seconds) # Conver seconds to integer seconds
+    seconds = Int(seconds) # Conver seconds to integer seconds
 
     # Compute time delta aligned 
     dt_days        = div(seconds, 86400)

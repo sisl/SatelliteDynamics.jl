@@ -5,13 +5,42 @@ module Universe
 # Julia Imports #
 #################
 
-using HTTP
 
 ###################
 # Package Imports #
 ###################
 
 using SatelliteDynamics.Constants
+
+###############
+# Remote Data #
+###############
+
+DATA_DIR = abspath(joinpath(abspath(string(@__DIR__)), "../data"))
+
+function download_file(url, file)
+    filepath = abspath(joinpath(DATA_DIR, file))
+    @debug("Downloading datafile. URL: $url DESTINATION: $filepath")
+    run(`curl -S -L $url -o $filepath`)
+end
+
+export download_all_data
+"""
+Downloads package datafiles into folders `\$PACKAGE_ROOT/DIR`
+
+Downloads the following files:
+- IERS C04 IAU2000A Earth Orientation Data
+- IERS C04 IAU1980 Earth Orientation Data
+- IERS Bulletin A/B IAU2000 Earth Orientation Data
+"""
+function download_all_data()
+    # Earth Orientation Data
+    download_file("https://datacenter.iers.org/data/latestVersion/224_EOP_C04_14.62-NOW.IAU2000A224.txt", "EOP_C04_14.62-NOW.IAU2000A.txt")
+    download_file("https://datacenter.iers.org/data/latestVersion/223_EOP_C04_14.62-NOW.IAU1980223.txt", "EOP_C04_80.62-NOW.IAU2000A.txt")
+    download_file("https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt", "FINALS.ALL_IAU2000.txt")
+
+
+end
 
 ##########################
 # Earth Orientation Data #
@@ -27,7 +56,7 @@ eop_products = Dict(
 export EarthOrientationData
 """
 The EarthOrientationData constains a single data member of type 
-`Dict{Int32, Tuple{Float64, Float64, Float64}}` that stores the Earth
+`Dict{Int, Tuple{Float64, Float64, Float64}}` that stores the Earth
 Orientation parameters `UT1-UTC`, `xp`, and `yp` whose units are _meters_, 
 _radians_, and _radians_, respectively. `xp` and `yp` are the x- and 
 y-components of Earth's polar motion. The dictionary key is the Epoch the 
@@ -43,13 +72,13 @@ end
 
 function EarthOrientationData(product::Symbol) 
     # Initialize Data Array
-    eop_data = Dict{Int32, Tuple{Float64, Float64, Float64}}()
+    eop_data = Dict{Int, Tuple{Float64, Float64, Float64}}()
 
     # Load in Data from filepath
     if product == :FINALS_2000
         for line in readlines(eop_products[product][2])
             if line[17] == 'P' || line[17] == 'I'
-                mjd_utc = parse(Int32, line[8:12])            # MJD (UTC)
+                mjd_utc = parse(Int, line[8:12])            # MJD (UTC)
                 ut1_utc = parse(Float64, line[59:68])         # UT1-UTC [s]
                 xp      = parse(Float64, line[19:27])*AS2RAD  # xp [rad]
                 yp      = parse(Float64, line[38:46])*AS2RAD  # yp [rad]
@@ -66,7 +95,7 @@ function EarthOrientationData(product::Symbol)
 
             for line in readlines(product_file)
                 split_line = split(line)
-                mjd_utc = parse(Int32, split_line[4])
+                mjd_utc = parse(Int, split_line[4])
                 ut1_utc = parse(Float64, split_line[7])
                 xp      = parse(Float64, split_line[5])*AS2RAD
                 yp      = parse(Float64, split_line[6])*AS2RAD
@@ -116,12 +145,12 @@ function UT1_UTC(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
     if interp
         x1 = floor(mjd)
         x2 = floor(mjd) + 1
-        y1 = eop.data[convert(Int32, floor(mjd))][1]
-        y2 = eop.data[convert(Int32, floor(mjd)+1)][1]
+        y1 = eop.data[convert(Int, floor(mjd))][1]
+        y2 = eop.data[convert(Int, floor(mjd)+1)][1]
         x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
         return x
     else
-        return eop.data[convert(Int32, floor(mjd))][1]
+        return eop.data[convert(Int, floor(mjd))][1]
     end
 end
 
@@ -145,12 +174,12 @@ function POLE_LOCATOR(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
         x2 = floor(mjd) + 1
 
         # Get values converted to array for interpolation
-        y1 = [v for v in eop.data[convert(Int32, floor(mjd))][2:3]]
-        y2 = [v for v in eop.data[convert(Int32, floor(mjd)+1)][2:3]]
+        y1 = [v for v in eop.data[convert(Int, floor(mjd))][2:3]]
+        y2 = [v for v in eop.data[convert(Int, floor(mjd)+1)][2:3]]
         x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
         return x
     else
-        return eop.data[convert(Int32, floor(mjd))][2:3]
+        return eop.data[convert(Int, floor(mjd))][2:3]
     end
 end
 
@@ -172,12 +201,12 @@ function XP(eop::EarthOrientationData, mjd::Real; interp=false)
     if interp
         x1 = floor(mjd)
         x2 = floor(mjd) + 1
-        y1 = eop.data[convert(Int32, floor(mjd))][2]
-        y2 = eop.data[convert(Int32, floor(mjd)+1)][2]
+        y1 = eop.data[convert(Int, floor(mjd))][2]
+        y2 = eop.data[convert(Int, floor(mjd)+1)][2]
         x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
         return x
     else
-        return eop.data[convert(Int32, floor(mjd))][2]
+        return eop.data[convert(Int, floor(mjd))][2]
     end
 end
 
@@ -199,12 +228,12 @@ function YP(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
     if interp
         x1 = floor(mjd)
         x2 = floor(mjd) + 1
-        y1 = eop.data[convert(Int32, floor(mjd))][3]
-        y2 = eop.data[convert(Int32, floor(mjd)+1)][3]
+        y1 = eop.data[convert(Int, floor(mjd))][3]
+        y2 = eop.data[convert(Int, floor(mjd)+1)][3]
         x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
         return x
     else
-        return eop.data[convert(Int32, floor(mjd))][3]
+        return eop.data[convert(Int, floor(mjd))][3]
     end
 end
 
@@ -221,7 +250,7 @@ Set Earth orientation data values for a specific date in the module global Earth
 - `yp::Real` y-component of the pole locator in radians.
 """
 function set_eop(mjd::Real, ut1_utc::Real, xp::Real, yp::Real)
-    EOP.data[convert(Int32, floor(mjd))] = (ut1_utc, xp*AS2RAD, yp*AS2RAD)
+    EOP.data[convert(Int, floor(mjd))] = (ut1_utc, xp*AS2RAD, yp*AS2RAD)
 end
 
 export load_eop
@@ -366,35 +395,4 @@ function GRAV_COEF(i::Int, j::Int)
     return GRAVITY_MODEL.data[i+1, j+1]
 end
 
-##########
-# Update #
-##########
-
-export update_eop
-"""
-Download updated Earth orientation datafiles for included products IERS products.
-
-# Arguments:
-- `product::Symbol` The IERS product type can be `:C04_14`, `:C04_80`, or `:FINALS_2000`
-"""
-function update_eop(product::Symbol)
-    if (product != :C04_14) && (product != :C04_80) && (product != :FINALS_2000)
-        error("Unknown product type \"$(String(product))\"")
-    end
-
-    @debug "Getting product: \"$(String(product))\""
-
-    product_url  = eop_products[product][1]
-    product_file = eop_products[product][2]
-
-    @debug "IERS Product Server URL: \"$product_url\""
-    @debug "Local IERS file location: \"$product_file\""
-
-    HTTP.open("GET", product_url) do http
-        open(product_file, "w") do file
-            write(file, http)
-        end
-    end
-end
-
-end
+end # End Module
