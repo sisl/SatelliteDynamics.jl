@@ -51,14 +51,22 @@ apt  = zeros(Float64, 4)
 # Model Structure #
 ###################
 
+export NRLMSISE_Flags
 """
 """
 mutable struct NRLMSISE_Flags
     switches::Array{<:Int, 1}
     sw::Array{<:Real, 1}
     swc::Array{<:Real, 1}
+
+    function NRLMSISE_Flags(switches::Array{<:Int, 1}=zeros(Int, 24),
+            sw::Array{<:Real, 1}=zeros(Float32, 24),
+            swc::Array{<:Real, 1}=zeros(Float32, 24),)
+        new(switches, sw, swc)
+    end
 end
 
+export NRLMSISE_Input
 """
 Internal structure for storing model input
 
@@ -82,9 +90,17 @@ mutable struct NRLMSISE_Input
     f107A::Float64  # 81 day average of F10.7cm flux (centered on day)
     f107::Float64   # Daily F10.7cm flux for previous day
     ap::Float64     # Magnetic index (daily)
-    ap_array::NTuple{7 ,Float64} # Magnetic index array
+    ap_array::Array{<:Real, 1} # Magnetic index array
+
+    function NRLMSISE_Input(year::Int=2000, doy::Int=1, sec::Float64=0.0, 
+                alt::Float64=0.0, g_lat::Float64=0.0, g_lon::Float64=0.0,
+                lst::Float64=0.0, f107A::Float64=0.0, f107::Float64=0.0, 
+                ap::Float64=0.0, ap_array::Array{<:Real, 1}=zeros(Float64, 7))
+        new(year, doy, sec, alt, g_lat, g_lon, lst, f107A, f107, ap, ap_array)
+    end
 end
 
+export NRLMSISE_Output
 """
 # Output variables
 d = zeros(Float64, 9)
@@ -93,6 +109,10 @@ t = zeros(Float64, 2)
 mutable struct NRLMSISE_Output
     d::Array{Float64, 1}
     t::Array{Float64, 1}
+
+    function NRLMSISE_Output(d::Array{<:Real, 1}=zeros(Float64, 9), t::Array{<:Real, 1}=zeros(Float64, 2))
+        new(d, t)
+    end
 end
 
 #####################
@@ -252,11 +272,11 @@ Returns:
 """
 function splini(xa::Array{<:Real, 1}, ya::Array{<:Real, 1}, y2a::Array{<:Real, 1}, x::Real)
     yi  = 0
-    klo = 0
-    khi = 1
+    klo = 1
+    khi = 2
     n   = length(xa)
 
-    while (x > xa[klow]) && (khi <= n)
+    while (x > xa[klo]) && (khi <= n)
         xx = x
         if (khi < n)
             if x < xa[khi]
@@ -290,12 +310,12 @@ Arguments:
 Returns:
 -`y::Real` Array output value
 """
-function splint(xa::Array{<:Real, 1}, ya::Array{<:Real, 1}, y2a::Array{<:Real, 1}, x::Real)
+function splint(xa::Array{<:Real, 1}, ya::Array{<:Real, 1}, y2a::Array{<:Real, 1}, n::Int, x::Real)
     klo = 1
-    khi = length(n)
+    khi = n
     k   = 0
     while (khi - klo) > 1
-        k = (khi + klo)/2
+        k = floor(Int, (khi + klo)/2)
         if xa[k] > x
             khi = k
         else
@@ -305,7 +325,8 @@ function splint(xa::Array{<:Real, 1}, ya::Array{<:Real, 1}, y2a::Array{<:Real, 1
 
     h = xa[khi] - xa[klo]
     if h == 0
-        @error "Bad array input to splint"
+        @error "Bad array input to splint. xa[$khi]: $(xa[khi]), xa[$klo]: $(xa[klo])"
+        @error "Array Input: $xa, $ya"
     end
 
     a = (xa[khi] - x)/h
@@ -329,8 +350,7 @@ Arguments:
 Returns:
 -`y::Array{Float64, 1}` Array second derivatives
 """
-function spline(x::Array{<:Real, 1}, y::Array{<:Real, 1}, yp1::Real, ypn::Real)
-    n  = length(x)
+function spline(x::Array{<:Real, 1}, y::Array{<:Real, 1}, n::Int, yp1::Real, ypn::Real)
     u  = zeros(Float64, n)
     y2 = zeros(Float64, n)
 
@@ -344,9 +364,9 @@ function spline(x::Array{<:Real, 1}, y::Array{<:Real, 1}, yp1::Real, ypn::Real)
 
     for i in 2:(n-2)
         sig = (x[i]-x[i-1])/(x[i+1] - x[i-1])
-        p   = sig*y2[i-1] + 2.0
-        y2  = (sig - 1.0)/p
-        u   = (6.0 * ((y[i+1] - y[i])/(x[i+1] - x[i]) -(y[i] - y[i-1]) / (x[i] - x[i-1]))/(x[i+1] - x[i-1]) - sig * u[i-1])/p
+        p     = sig*y2[i-1] + 2.0
+        y2[i] = (sig - 1.0)/p
+        u[i]  = (6.0 * ((y[i+1] - y[i])/(x[i+1] - x[i]) -(y[i] - y[i-1]) / (x[i] - x[i-1]))/(x[i+1] - x[i-1]) - sig * u[i-1])/p
     end
     
 	if ypn>0.99E30
@@ -390,12 +410,9 @@ Returns:
 - `meso_tn2`
 - `meso_tgn2`
 """
-function densm(alt::Real, d0::Real, xm::Real, tz::Real, 
+function densm!(alt::Real, d0::Real, xm::Real, tz::Real, 
                 mn3::Int, zn3::Array{<:Real, 1}, tn3::Array{<:Real, 1}, tgn3::Array{<:Real, 1}, 
                 mn2::Int, zn2::Array{<:Real, 1}, tn2::Array{<:Real, 1}, tgn2::Array{<:Real, 1})
-    
-    mn3 = length(zn3)
-    mn2 = length(zn2)
     
     xs = zeros(Float64, 10)
     ys = zeros(Float64, 10)
@@ -404,11 +421,11 @@ function densm(alt::Real, d0::Real, xm::Real, tz::Real,
 
     densm_tmp = d0
 
-    if alt > zn2[0]
+    if alt > zn2[1]
         if xm == 0.0
-            return tz
+            return tz, tz
         else
-            return d0
+            return tz, d0
         end
     end
 
@@ -435,9 +452,9 @@ function densm(alt::Real, d0::Real, xm::Real, tz::Real,
     yd2 = -tgn2[2] / (t2*t2) * zgdif * ((re+z2)/(re+z1))^2
 
     # Calculate spline coefficients
-    y2out = spline(xs, ys, yd1, yd2)
-    x = zg/zgdif
-    y = splint(xs, ys, y2out, x)
+    y2out = spline(xs, ys, mn, yd1, yd2)
+    x     = zg/zgdif
+    y     = splint(xs, ys, y2out, mn, x)
 
     # Temperature at altitude
     tz = 1.0 / y
@@ -455,14 +472,14 @@ function densm(alt::Real, d0::Real, xm::Real, tz::Real,
         end
 
         # Density at altitude
-        densm_tmp = densm_temp * (t1 / tz) * exp(-expl)
+        densm_tmp = densm_tmp * (t1 / tz) * exp(-expl)
     end
 
     if alt > zn3[1]
         if xm == 0.0
-            return tz
+            return tz, tz
         else
-            return densm_tmp
+            return tz, densm_tmp
         end
     end
 
@@ -484,9 +501,9 @@ function densm(alt::Real, d0::Real, xm::Real, tz::Real,
     yd2 = -tgn3[2] / (t2*t2) * zgdif * ((re+z2)/(re+z1))^2
 
     # Calculate spline coefficients
-    y2out = spline(xs, ys, yd1, yd2)
+    y2out = spline(xs, ys, mn, yd1, yd2)
     x = zg/zgdif
-    y = splint(xs, ys, y2out, x)
+    y = splint(xs, ys, y2out, mn, x)
 
     # Temperature at altitude
     tz = 1.0 / y
@@ -504,20 +521,18 @@ function densm(alt::Real, d0::Real, xm::Real, tz::Real,
         end
 
         # Density at altitude
-        densm_tmp = densm_temp * (t1 / tz) * exp(-expl)
+        densm_tmp = densm_tmp * (t1 / tz) * exp(-expl)
     end
 
     if xm == 0.0
-        return tz
+        return tz, tz
     else
-        return densm_tmp
+        return tz, densm_tmp
     end    
 end
 
-function densu(alt::Real, dlb::Real, tinf::Real, tlb::Real, xm::Real, 
-               alpha::Real, tz::Real, zlb::Real, s2::Real, zn1::Array{<:Real, 1}, tn1::Array{<:Real, 1}, tgn1::Array{<:Real, 1})
-
-    mn1 = length(zn1)
+function densu!(alt::Real, dlb::Real, tinf::Real, tlb::Real, xm::Real, 
+               alpha::Real, tz::Real, zlb::Real, s2::Real, mn1::Int, zn1::Array{<:Real, 1}, tn1::Array{<:Real, 1}, tgn1::Array{<:Real, 1})
 
     x          = 0
     rgas       = 831.4
@@ -532,7 +547,7 @@ function densu(alt::Real, dlb::Real, tinf::Real, tlb::Real, xm::Real,
     
     # Join altitudes of Bates and spline
     za = zn1[1]
-    if zlt > za
+    if alt > za
         z = alt
     else
         z = za
@@ -553,7 +568,7 @@ function densu(alt::Real, dlb::Real, tinf::Real, tlb::Real, xm::Real,
         dta = (tinf - ta) * s2 * ((re+zlb)/(re+za))^2
 
         tgn1[1] = dta
-        tn[1]   = ta
+        tn1[1]  = ta
 
         if alt > zn1[end]
             z = alt
@@ -561,11 +576,11 @@ function densu(alt::Real, dlb::Real, tinf::Real, tlb::Real, xm::Real,
             z = zn1[end]
         end
 
-        mn  = mn1
-        z1  = zn1[1]
-        z2  = zn1[end]
-        t1  = tn1[1]
-        tn2 = tn1[end]
+        mn = mn1
+        z1 = zn1[1]
+        z2 = zn1[end]
+        t1 = tn1[1]
+        t2 = tn1[end]
 
         # Geopotential difference from z1
         zg    = zeta(z, z1)
@@ -582,8 +597,9 @@ function densu(alt::Real, dlb::Real, tinf::Real, tlb::Real, xm::Real,
         yd2 = -tgn1[2] / (t2*t2) * zgdif * ((re+z2)/(re+z1))^2
 
         # Calculate spline coefficients
-        y2out = spline(xs, ys, yd1, yd2)
+        y2out = spline(xs, ys, mn, yd1, yd2)
         x     = zg/zgdif
+        y     = splint(xs, ys, y2out, mn, x)
 
         # Temperature at altitude
         tz = 1.0 / y
@@ -591,7 +607,7 @@ function densu(alt::Real, dlb::Real, tinf::Real, tlb::Real, xm::Real,
     end
 
     if xm == 0
-        return densu_temp
+        return tz, densu_temp
     end
 
     # Calculate density about za
@@ -612,7 +628,7 @@ function densu(alt::Real, dlb::Real, tinf::Real, tlb::Real, xm::Real,
     densu_temp = densa
 
     if alt >= za
-        return densu_temp
+        return tz, densu_temp
     end
 
     # Calculate density below za
@@ -634,7 +650,7 @@ function densu(alt::Real, dlb::Real, tinf::Real, tlb::Real, xm::Real,
 
     # density at altitude
     densu_temp = densu_temp * (t1/tz)^(1.0+alpha) * exp(-expl)
-    return densu_temp
+    return tz, densu_temp
 end
 
 # Equation A24a
@@ -661,10 +677,9 @@ end
 """
 Calculate G(L) function
 """
-function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}, swc::Array{<:Real, 1})
+function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, flags::NRLMSISE_Flags)
     # Working variables
     t = zeros(Float64, 15)
-    plg = zeros(Float64, 4, )
 
     # Upper therrmosphere parameters
     sr   = 7.2722E-5
@@ -720,16 +735,16 @@ function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
     end
 
     cd32 = cos(dr*(input.doy - p[32]))
-    cd18 = cos(2.0*dr*(doy - p[18]))
-    cd14 = cos(dr*(doy - p[14]))
-    cd39 = cos(2.0*dr*(doy - p[39]))
+    cd18 = cos(2.0*dr*(input.doy - p[18]))
+    cd14 = cos(dr*(input.doy - p[14]))
+    cd39 = cos(2.0*dr*(input.doy - p[39]))
 
     # F10.7 Effect
-    df  = input.f107 - input.f107A
-    dfa = f107A - 150.0
+    df   = input.f107 - input.f107A
+    dfa  = input.f107A - 150.0
     t[1] = p[20]*df*(1.0+p[60]*dfa) + p[21]*df*df + p[22]*dfa + p[30]*dfa^2.0
-    f1 = 1.0 + (p[48]*dfa +p[20]*df+p[21]*df*df)*flags.swc[2]
-    f2 = 1.0 + (p[50]*dfa+p[20]*df+p[21]*df*df)*flags.swc[2]
+    f1   = 1.0 + (p[48]*dfa +p[20]*df+p[21]*df*df)*flags.swc[2]
+    f2   = 1.0 + (p[50]*dfa+p[20]*df+p[21]*df*df)*flags.swc[2]
     
     # Time independent
     t[2] = (p[2]*plg[1][3]+ p[3]*plg[1][5]+p[23]*plg[1][7]) +
@@ -748,7 +763,7 @@ function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
     t[6] = p[38]*plg[1][2]*cd39
 
     # Diurnal
-    if flags.sw[7]
+    if flags.sw[7] != 0
         t71  = (p[12]*plg[2][3])*cd14*flags.swc[6]
         t72  = (p[13]*plg[2][3])*cd14*flags.swc[6]
         t[7] = f2*((p[4]*plg[2][2] + p[5]*plg[2][4] + p[28]*plg[2][6] + t71) * 
@@ -756,7 +771,7 @@ function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
     end     
 
     # Semidiurnal
-    if flags.sw[9]
+    if flags.sw[9] != 0
         t81 = (p[24]*plg[3][4]+p[36]*plg[3][6])*cd14*flags.swc[6]
 		t82 = (p[34]*plg[3][4]+p[37]*plg[3][6])*cd14*flags.swc[6]
         t[7] = f2*((p[6]*plg[3][3]+ p[42]*plg[3][5] + t81)*c2tloc + 
@@ -764,7 +779,7 @@ function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
     end
 
     # Terdiurnal
-    if flags.sw[15]
+    if flags.sw[15] != 0
         t[14] = f2*((p[40]*plg[4][4]+(p[94]*plg[4][5]+p[47]*plg[4][7])*cd14*flags.swc[6])*s3tloc
                  + (p[41]*plg[4][4]+(p[95]*plg[4][5]+p[49]*plg[4][7])*cd14*flags.swc[6])*c3tloc)
     end
@@ -785,7 +800,7 @@ function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
 
         apt[1] = sg0(exp1, p, input.ap_array)
 
-        if flags.sw[10]
+        if flags.sw[10] != 0
             t[8] = apt[1]*(p[51]+p[97]*plg[1][3]+p[55]*plg[1][5] + 
                     (p[126]*plg[1][2]+p[127]*plg[1][4]+p[128]*plg[1][6])*cd14*flags.swc[6] +
                     (p[129]*plg[2][2]+p[130]*plg[2][4]+p[131]*plg[2][6])*flags.swc[8] * 
@@ -799,7 +814,7 @@ function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
             p44 = 1.0e-5
         end
         apdf = apd + (p45-1.0)*(apd + (exp(-p44 * apd) - 1.0)/p44)
-        if flags.sw[10]
+        if flags.sw[10] != 0
             t[9] = apdf*(p[33]+p[46]*plg[1][3]+p[35]*plg[1][5] +
                     (p[101]*plg[1][2]+p[102]*plg[1][4]+p[103]*plg[1][6])*cd14*flags.swc[6] +
                     (p[122]*plg[2][2]+p[123]*plg[2][4]+p[124]*plg[2][6])*flags.swc[8]*
@@ -807,9 +822,9 @@ function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
         end
     end
 
-    if flags.sw[11] && (input.g_lon > - 1000.0)
+    if flags.sw[11] != 0 && (input.g_lon > - 1000.0) != 0
         # Longitudinal
-        if flags.sw[12]
+        if flags.sw[12] != 0
 			t[11] = (1.0 + p[81]*dfa*flags.swc[2])*
                     ((p[65]*plg[2][3]+p[66]*plg[2][5]+p[67]*plg[2][7]
                     + p[104]*plg[2][2]+p[105]*plg[2][4]+p[106]*plg[2][6]
@@ -822,7 +837,7 @@ function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
         end
 
         # UT and mixed UT, longitude
-        if flags.sw[13]
+        if flags.sw[13] != 0
             t[12] = (1.0+p[96]*plg[1][2])*(1.0+p[82]*dfa*flags.swc[2])*
 				    (1.0+p[120]*plg[1][2]*flags.swc[6]*cd14)*
 				    ((p[69]*plg[1][2]+p[70]*plg[1][4]+p[71]*plg[1][6])*
@@ -834,7 +849,7 @@ function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
         end
 
         # UT longitude magnetic activity
-        if flags.sw[14]
+        if flags.sw[14] != 0
             if flags.sw[10] == -1 && p[52]
                 t[13] = apt[1]*flags.swc[12]*(1.0+p[133]*plg[1][2])*
 						((p[53]*plg[2][3]+p[99]*plg[2][5]+p[68]*plg[2][7])*
@@ -862,7 +877,7 @@ function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
     # Params not used: 82, 89, 99, 139-149
     tinf = p[31]
     for i in 1:14
-        tinf = tinf + fabs(flags.sw[i+1])*t[i]
+        tinf = tinf + abs(flags.sw[i+1])*t[i]
     end
 
     return tinf
@@ -871,7 +886,7 @@ end
 """
 Calculate G(L) function for lower atmosphere
 """
-function glob7s(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}, swc::Array{<:Real, 1})
+function glob7s(p::Array{<:Real, 1}, input::NRLMSISE_Input, flags::NRLMSISE_Flags)
     # Working variables
     pset = 2.0
     t    = zeros(Float64, 14)
@@ -916,21 +931,21 @@ function glob7s(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
     t[6] = (p[38]*plg[1][2])*cd39
 
     # Diurnal
-    if flags.sw[8]
+    if flags.sw[8] != 0
         t71  = p[12]*plg[2][3]*cd14*flags.swc[6]
 		t72  = p[13]*plg[2][3]*cd14*flags.swc[6]
 		t[7] = ((p[4]*plg[2][2] + p[5]*plg[2][4] + t71) * ctloc + (p[7]*plg[2][2] + p[8]*plg[2][4] + t72) * stloc)
     end
 
     # Semidiurnal
-    if flags.sw[9]
+    if flags.sw[9] != 0
         t81  = (p[24]*plg[3][4]+p[36]*plg[3][6])*cd14*flags.swc[6]
 		t82  = (p[34]*plg[3][4]+p[37]*plg[3][6])*cd14*flags.swc[6]
 		t[8] = ((p[6]*plg[3][3] + p[42]*plg[3][5] + t81) * c2tloc + (p[9]*plg[3][3] + p[43]*plg[3][5] + t82) * s2tloc)
     end
 
     # Terdiurnal
-    if flags.sw[15]
+    if flags.sw[15] != 0
         t[14] = p[40] * plg[4][4] * s3tloc + p[41] * plg[4][4] * c3tloc
     end
 
@@ -947,18 +962,21 @@ function glob7s(p::Array{<:Real, 1}, input::NRLMSISE_Input, sw::Array{<:Real, 1}
 
     tt = 0
     for i in 1:14
-        tt += fabs(flags.sw[i+1])*t[i]
+        tt += abs(flags.sw[i+1])*t[i]
     end
 
     return tt
 end
 
-function gtd7(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Output)
+export gtd7!
+function gtd7!(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Output)
     # Working output varriable 
-    soutput = NRLMSISE_Output(zeros(Float64, 9), zeros(Float64, 2))
+    soutput = NRLMSISE_Output()
     tz = 0.0
 
     # Working variables
+    mn3  = 5
+    mn2  = 4
     zn3  = [32.5, 20.0, 15.0, 10.0, 0.0]
     zn2  = [72.5, 55.0, 45.0, 32.5]
     zmix = 52.5
@@ -987,13 +1005,13 @@ function gtd7(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Out
     tmp = input.alt
     input.alt = altt
 
-    soutput = gts(input, sw, swc)
+    gts7!(input, flags, soutput)
 
     altt = input.alt 
     input.alt = tmp
 
     dm28m = 0.0
-    if flags.sw[1] # Metric adjustment
+    if flags.sw[1] != 0 # Metric adjustment != 0
         dm28m = dm28*1.0e6
     else
         dm28m = dm28
@@ -1036,9 +1054,9 @@ function gtd7(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Out
 
     # N2 Density
     dmr = soutput.d[3] / dm28m - 1.0
-    output.d[3] = densm(input.alt, dm28m, xmm, tz, 
-                        zn3, meso_tn3, meso_tgn3, 
-                        zn2, meso_tn2, meso_tgn2)
+    tz, output.d[3] = densm!(input.alt, dm28m, xmm, tz, 
+                        mn3, zn3, meso_tn3, meso_tgn3, 
+                        mn2, zn2, meso_tn2, meso_tgn2)
     output.d[3] = output.d[3] * (1.0 * dmr*dmc)
 
     # HE density
@@ -1073,17 +1091,17 @@ function gtd7(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Out
                              + 14.0 * output.d[8])
 
     # Correct units
-    if flags.sw[1]
+    if flags.sw[1] != 0
         output.d[6] = output.d[6]/1000
     end
 
     # Temperature at altitude
-    dd = densm(input.alt, 1.0, 0, tz, zn3, meso_tn3, meso_tgn3, zn2, meso_tn2, meso_tgn2)
+    tz, dd = densm!(input.alt, 1.0, 0, tz, mn3, zn3, meso_tn3, meso_tgn3, mn2, zn2, meso_tn2, meso_tgn2)
     output.t[2] = tz
 end
 
-function gtd7d(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Output)
-    gtd7(input, flags, output)
+function gtd7d!(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Output)
+    gtd7!(input, flags, output)
     tselec!(flags)
 
     output.d[6] = 1.66e-24 * (  4.0 * output.d[1] 
@@ -1094,7 +1112,7 @@ function gtd7d(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Ou
                              +  1.0 * output.d[7]
                              + 14.0 * output.d[8])
     
-    if flags.sw[1]
+    if flags.sw[1] != 0
         output.d[5] = output.d[5]/1000
     end
 end
@@ -1155,13 +1173,13 @@ end
 #     while true
 #         l++
 #         input.alt  = z
-#         gtd7(input, flags, output)
+#         gtd7!(input, flags, output)
 
 #         z  = input.alt
 #         xn = output.d[1] + output.d[2] + output.d[3] + output.d[4] + output.d[5] + output.d[7] + output.d[8]
 #         p  = bm * xn * output.t[1]
 
-#         if flags.sw[1]
+#         if flags.sw[1] != 0
 #             p = p*1.0e-6
 #         end
 
@@ -1178,7 +1196,7 @@ end
 
 #         xm = output.d[6] / xn / 1.66e-24
 
-#         if flags.sw[1]
+#         if flags.sw[1] != 0
 #             xm = xm * 1.0e3
 #         end
 
@@ -1200,7 +1218,8 @@ See GTD7 for more extensive comments
 For alt > 72.5 km
 """
 
-function gts7(input::NRLMSISE_Input, flags::Array{<:Int, 1}, output::NRLMSISE_Output, press::Real)
+function gts7!(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Output)
+    mn1   = 5
     zn1   = [120.0, 110.0, 100.0, 90.0, 72.5]
     dgtr  = 1.74533E-2
     dr    = 1.72142E-2
@@ -1256,17 +1275,22 @@ function gts7(input::NRLMSISE_Input, flags::Array{<:Int, 1}, output::NRLMSISE_Ou
     
     # N2 Density 
     # Diffusive density at Zlb
-    output.d[3] = densu(z, db28, tinf, tlb, 28.0, alpha[3], output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+    db28 = pdm[3][1]*exp(g28)*pd[3][1]
+
+    # Diffusive density at Alt
+    tz, output.d[3] = densu!(z, db28, tinf, tlb, 28.0, alpha[3], output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
     dd = output.d[3]
+
     # Turbopause
     zh28  = pdm[3][3]*zhf
     zhm28 = pdm[3][4]*pdl[2][6]
-    xmd   = 28.0 - xmn
+    xmd   = 28.0 - xmm
+
     # Mixed density at Zlb
-    b28 = densu(zh28, db28, tinf, tlb, xmd, (alpha[3]-1.0), tz,ptm[6], s, zn1, meso_tn1, meso_tgn1)
-    if flags.sw[16] && (z <= altl[3])
+    tz, b28 = densu!(zh28, db28, tinf, tlb, xmd, (alpha[3]-1.0), tz,ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
+    if flags.sw[16] != 0 && (z <= altl[3]) != 0
         # Mixed density at alt
-        dm28 = densu(z, b28, tinf, tlb, xmm, alpha[3], tz, ptm[6], s, zn1, meso_tn1, meso_tgn1)
+        tz, dm28 = densu!(z, b28, tinf, tlb, xmm, alpha[3], tz, ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
         # Net density at alt
         output.d[3] = dnet(output.d[3], dm28, zhm28, xmm, 28.0)
     end
@@ -1274,20 +1298,22 @@ function gts7(input::NRLMSISE_Input, flags::Array{<:Int, 1}, output::NRLMSISE_Ou
     # HE density
     # Density variation factor at Zlb
     g4 = flags.sw[22]*globe7(pd[1], input, flags)
+    
     # Diffusive denity at Zlb
     db04 = pdm[1][1]*exp(g4)*pd[1][1]
+    
     # Diffusive density at alt
-    output.d[1] = densu(z, db04, tinf, tlb, 4.0, alpha[1], output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+    tz, output.d[1] = densu!(z, db04, tinf, tlb, 4.0, alpha[1], output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
     dd = output.d[1]
-    if flags.sw[16] && (z < altl[1])
+    if flags.sw[16] != 0 && (z < altl[1]) != 0
         # Turbo pause
         zh04 = pdm[1][3]
         
         # Mixed density at Zlb
-        b04 = densu(zh04, db04, tinf, tlb, 4.0-xmm, alpha[1]-1.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+        tz, b04 = densu!(zh04, db04, tinf, tlb, 4.0-xmm, alpha[1]-1.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
 
         # Mixed density at alt
-        dm04  = densu(z, b04, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+        tz, dm04  = densu!(z, b04, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
         zhm04 = zhm28
 
         # Net density at alt
@@ -1303,22 +1329,25 @@ function gts7(input::NRLMSISE_Input, flags::Array{<:Int, 1}, output::NRLMSISE_Ou
     end
 
     # O density
+    
     #  Density variation factor at Zlb
 	g16 = flags.sw[22]*globe7(pd[2], input, flags)
-	#  Diffusive density at Zlb
+    
+    #  Diffusive density at Zlb
 	db16 = pdm[2][1]*exp(g16)*pd[2][1]
+    
     # Diffusive density at Alt
-	output.d[2] = densu(z, db16, tinf, tlb, 16.0, alpha[2],output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+	tz, output.d[2] = densu!(z, db16, tinf, tlb, 16.0, alpha[2],output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
 	dd=output.d[2]
-	if flags.sw[16] && (z <= altl[2])
+	if flags.sw[16] != 0 && (z <= altl[2])
 		# Turbopause
         zh16=pdm[2][3]
         
 		# Mixed density at Zlb
-        b16=densu(zh16, db16, tinf, tlb, 16.0-xmm, (alpha[2]-1.0), output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+        tz, b16 = densu!(zh16, db16, tinf, tlb, 16.0-xmm, (alpha[2]-1.0), output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
         
 		# Mixed density at Alt
-		dm16  = densu(z, b16, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+		tz, dm16  = densu!(z, b16, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
         zhm16 = zhm28
         
 		# Net density at Alt
@@ -1339,24 +1368,27 @@ function gts7(input::NRLMSISE_Input, flags::Array{<:Int, 1}, output::NRLMSISE_Ou
     end
 
     # O2 Density 
+    
     # Density variation factor at Zlb
 	g32 = flags.sw[22]*globe7(pd[5], input, flags)
-    # Diffusive density at Zlb
-	db32 = pdm[3][0]*exp(g32)*pd[4][0]
-    # Diffusive density at Alt
-	output.d[3] = densu(z, db32, tinf, tlb, 32.0, alpha[4], output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
-    dd=output.d[3]
     
-	if flags.sw[15]
+    # Diffusive density at Zlb
+	db32 = pdm[4][1]*exp(g32)*pd[5][1]
+    
+    # Diffusive density at Alt
+	tz, output.d[4] = densu!(z, db32, tinf, tlb, 32.0, alpha[4], output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
+    dd=output.d[4]
+    
+	if flags.sw[16] != 0
 		if z <= altl[4]
 			# Turbopause
             zh32 = pdm[4][3]
             
 			# Mixed density at Zlb
-            b32 = densu(zh32, db32, tinf, tlb, 32.0-xmm, alpha[4]-1.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+            tz, b32 = densu!(zh32, db32, tinf, tlb, 32.0-xmm, alpha[4]-1.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
             
 			# Mixed density at Alt
-			dm32  = densu(z, b32, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+			tz, dm32  = densu!(z, b32, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
             zhm32 = zhm28
             
 			# Net density at Alt
@@ -1381,24 +1413,24 @@ function gts7(input::NRLMSISE_Input, flags::Array{<:Int, 1}, output::NRLMSISE_Ou
 
     # AR density
     # Density variation factor at Zlb
-	g40= flags.sw[22]*globe7(pd[6], input, flags)
+	g40 = flags.sw[22]*globe7(pd[6], input, flags)
     
     # Diffusive density at Zlb
 	db40 = pdm[5][1]*exp(g40)*pd[6][1]
     
     # Diffusive density at Alt
-	output.d[5] = densu(z, db40, tinf, tlb, 40.0, alpha[5], output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+	tz, output.d[5] = densu!(z, db40, tinf, tlb, 40.0, alpha[5], output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
 	dd = output.d[5]
     
-    if flags.sw[16] && (z <= altl[5])
+    if flags.sw[16] != 0 && (z <= altl[5]) != 0
 		# Turbopause
 		zh40 = pdm[5][3]
         
         # Mixed density at Zlb
-		b40 = densu(zh40, db40, tinf, tlb, 40.0-xmm, alpha[5]-1.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+		tz, b40 = densu!(zh40, db40, tinf, tlb, 40.0-xmm, alpha[5]-1.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
         
         # Mixed density at Alt
-		dm40  = densu(z, b40, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+		tz, dm40  = densu!(z, b40, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
 		zhm40 = zhm28
         
         # Net density at Alt
@@ -1421,18 +1453,18 @@ function gts7(input::NRLMSISE_Input, flags::Array{<:Int, 1}, output::NRLMSISE_Ou
     db01 = pdm[6][1]*exp(g1)*pd[7][1]
     
     # Diffusive density at Alt
-	output.d[7] = densu(z, db01, tinf, tlb, 1.0, alpha[7], output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+	tz, output.d[7] = densu!(z, db01, tinf, tlb, 1.0, alpha[7], output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
     dd = output.d[7]
     
-	if flags.sw[16] && ( z <= altl[7])
+	if flags.sw[16] != 0 && ( z <= altl[7])
 		# Turbopause
-		zh01=pdm[6][3]
+		zh01 = pdm[6][3]
         
         # Mixed density at Zlb
-		b01=densu(zh01, db01, tinf, tlb, 1.0-xmm, alpha[7]-1.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+		tz, b01 = densu!(zh01, db01, tinf, tlb, 1.0-xmm, alpha[7]-1.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
         
         # Mixed density at Alt
-		dm01  = densu(z, b01, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+		tz, dm01  = densu!(z, b01, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
 		zhm01 = zhm28
         
         # Net density at Alt
@@ -1461,18 +1493,18 @@ function gts7(input::NRLMSISE_Input, flags::Array{<:Int, 1}, output::NRLMSISE_Ou
 	db14 = pdm[7][1]*exp(g14)*pd[8][1]
     
     # Diffusive density at Alt
-	output.d[8] = densu(z, db14, tinf, tlb, 14.0, alpha[8],output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+	tz, output.d[8] = densu!(z, db14, tinf, tlb, 14.0, alpha[8],output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
 	dd = output.d[8]
     
-    if flags.sw[16] && (z <= altl[8])
+    if flags.sw[16] != 0 && (z <= altl[8]) != 0
 		# Turbopause
-		zh14=pdm[7][3]
+		zh14 = pdm[7][3]
         
         # Mixed density at Zlb
-		b14 = densu(zh14, db14, tinf, tlb, 14.0-xmm, alpha[8]-1.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+		tz, b14 = densu!(zh14, db14, tinf, tlb, 14.0-xmm, alpha[8]-1.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
         
         # Mixed density at Alt
-		dm14  = densu(z, b14, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+		tz, dm14  = densu!(z, b14, tinf, tlb, xmm, 0.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
 		zhm14 = zhm28
         
         # Net density at Alt
@@ -1497,10 +1529,10 @@ function gts7(input::NRLMSISE_Input, flags::Array{<:Int, 1}, output::NRLMSISE_Ou
     g16h  = flags.sw[22]*globe7(pd[9], input, flags)
     db16h = pdm[8][1]*exp(g16h)*pd[9][1]
     tho   = pdm[8][10]*pdl[1][7]
-    dd    = densu(z, db16h, tho, tho, 16.0, alpha[9], output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+    tz, dd  = densu!(z, db16h, tho, tho, 16.0, alpha[9], output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
     zsht  = pdm[8][6]
     zmho  = pdm[8][5]
-    zsho  = scalh(zmho, 16.0, tho)
+    zsho  = scaleh(zmho, 16.0, tho)
 	output.d[9] = dd*exp(-zsht/zsho*(exp(-(z-zmho)/zsht)-1.0))
 
     # Total mass density
@@ -1515,9 +1547,9 @@ function gts7(input::NRLMSISE_Input, flags::Array{<:Int, 1}, output::NRLMSISE_Ou
     # Temperature
     # z = sqrt(input.alt^2)
     z = input.alt
-    ddum = densu(z, 1.0, tinf, tlb, 0.0, 0.0, output.t[2], ptm[6], s, zn1, meso_tn1, meso_tgn1)
+    tz, ddum = densu!(z, 1.0, tinf, tlb, 0.0, 0.0, output.t[2], ptm[6], s, mn1, zn1, meso_tn1, meso_tgn1)
 
-    if flags.sw[1]
+    if flags.sw[1] != 0
         for i in 1:9
             output.d[i] = output.d[i]*1.0e6
         end
