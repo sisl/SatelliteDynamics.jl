@@ -78,7 +78,12 @@ Arguments:
 Returns:
 - `dx::Array{<:Float64, 1}`: Satellite state derivative, velocity and accelerations [m; m/s]
 """
-function deriv_orbit_earth(epc::Epoch, x::Array{<:Real} ; mass=1.0::Real, area_drag=1.0::Real, coef_drag=2.3::Real, area_srp=1.0::Real, coef_srp=1.8::Real, n_grav=20::Integer, m_grav=20::Integer, drag=true::Bool, srp=true::Bool, moon=true::Bool, sun=true::Bool, relativity=true::Bool)
+function deriv_orbit_earth(epc::Epoch, x::Array{<:Real} ;
+             mass::Real=1.0, area_drag::Real=1.0, coef_drag::Real=2.3, 
+             area_srp::Real=1.0, coef_srp::Real=1.8, 
+             n_grav::Integer=20, m_grav::Integer=20, 
+             drag::Bool=true, srp::Bool=true, moon::Bool=true, sun::Bool=true, 
+             relativity::Bool=true)
     # Extract position and velocity
     r = x[1:3]
     v = x[4:6]
@@ -148,7 +153,7 @@ Arguments:
 Return:
 - `a::Array{<:Real, 1}`: Acceleration in X, Y, and Z inertial directions [m/s^2]
 """
-function accel_point_mass(r_sat::Array{<:Real, 1}, r_body::Array{<:Real, 1}, gm_body=GM_EARTH::Real)
+function accel_point_mass(r_sat::Array{<:Real, 1}, r_body::Array{<:Real, 1}, gm_body::Real=GM_EARTH)
     # Restrict inputs to position only
     r_sat  = r_sat[1:3]
     r_body = r_body[1:3]
@@ -174,7 +179,7 @@ Arguments:
 Return:
 - `a::Array{<:Real, 1}`: Acceleration in X, Y, and Z inertial directions [m/s^2]
 """
-function accel_point_mass(x::Array{<:Real, 1}, gm_body=GM_EARTH::Real)
+function accel_point_mass(x::Array{<:Real, 1}, gm_body::Real=GM_EARTH)
     # Restrict inputs to position only. Considered in body frame
     r  = x[1:3]
 
@@ -200,7 +205,7 @@ Arguments:
 Returns:
 - `a::Array{<:Real, 1}`: Acceleration in X, Y, and Z inertial directions [m/s^2]
 """
-function spherical_harmonic_gravity(r::Array{<:Real, 1}, coef::Array{<:Real, 2}, n_max::Integer, m_max::Integer, r_ref::Real, GM::Real; normalized=true::Bool)
+function spherical_harmonic_gravity(r::Array{<:Real, 1}, coef::Array{<:Real, 2}, n_max::Integer, m_max::Integer, r_ref::Real, GM::Real; normalized::Bool=true)
     # Intermediate computations
     r_sqr = dot(r, r)
     rho   = r_ref^2/r_sqr
@@ -305,7 +310,7 @@ Return:
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.56-68.
 """
-function accel_gravity(x::Array{<:Real, 1}, R_eci_ecef::Array{<:Real, 2}, n_max=20::Int, m_max=20::Int)
+function accel_gravity(x::Array{<:Real, 1}, R_eci_ecef::Array{<:Real, 2}, n_max::Int=20, m_max::Int=20)
     
     # Check Limits of Gravity Field
     if n_max > GRAVITY_MODEL.n_max
@@ -761,7 +766,7 @@ Returns:
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.77-79.
 """
-function accel_srp(x::Array{<:Real, 1}, r_sun::Array{<:Real, 1}, mass=0::Real, area=0::Real, CR=1.8::Real, p0=P_SUN::Real, au=AU::Real)
+function accel_srp(x::Array{<:Real, 1}, r_sun::Array{<:Real, 1}, mass::Real=0, area::Real=0, CR::Real=1.8, p0::Real=P_SUN, au::Real=AU)
     # Spacecraft position vector
     r = x[1:3]
 

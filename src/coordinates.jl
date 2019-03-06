@@ -27,7 +27,7 @@ Arguments:
 Returns:
 - `ecef::Array{<:Real, 1}`: Earth-fixed coordinates [m]
 """
-function sGEOCtoECEF(geoc::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sGEOCtoECEF(geoc::Array{<:Real, 1} ; use_degrees::Bool=false)
     # Extract lat and lon
     lon = geoc[1]
     lat = geoc[2]
@@ -70,7 +70,7 @@ Arguments:
 Returns:
 - `geoc`: Geocentric coordinates (lon, lat, altitude) [rad] / [deg]
 """
-function sECEFtoGEOC(ecef::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sECEFtoGEOC(ecef::Array{<:Real, 1} ; use_degrees::Bool=false)
     # Expand ECEF coordinates
     x, y, z = ecef
 
@@ -103,7 +103,7 @@ Arguments:
 Returns:
 - `ecef::Array{<:Real, 1}`: Earth-fixed coordinates [m]
 """
-function sGEODtoECEF(geod::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sGEODtoECEF(geod::Array{<:Real, 1} ; use_degrees::Bool=false)
     # Extract lat and lon
     lon = geod[1]
     lat = geod[2]
@@ -146,7 +146,7 @@ Arguments:
 Returns:
 - `geod::Array{<:Real, 1}`: Geocentric coordinates (lon, lat, altitude) [rad] / [deg]
 """
-function sECEFtoGEOD(ecef::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sECEFtoGEOD(ecef::Array{<:Real, 1} ; use_degrees::Bool=false)
     # Expand ECEF coordinates
     x, y, z = ecef
 
@@ -204,7 +204,7 @@ Arguments:
 Returns:
 - `E::Array{Real, 2}`: Topocentric rotation matrix
 """
-function rECEFtoENZ(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)   
+function rECEFtoENZ(ecef::Array{<:Real, 1} ; conversion::String="geodetic")   
     if length(ecef) < 3
         throw(ArgumentError("Input coordinates must be length 3."))
     end
@@ -242,7 +242,7 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function rENZtoECEF(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
+function rENZtoECEF(ecef::Array{<:Real, 1} ; conversion::String="geodetic")
     # Check input coordinates
     if length(ecef) < 3
         throw(ArgumentError("Input coordinates must be length 3."))
@@ -264,7 +264,7 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function sECEFtoENZ(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
+function sECEFtoENZ(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1} ; conversion::String="geodetic")
     # Check input sizes
     if length(ecef) < 3
         throw(ArgumentError("Input ecef state must be at least length 3."))
@@ -310,7 +310,7 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function sENZtoECEF(station_ecef::Array{<:Real, 1}, enz::Array{<:Real, 1} ; conversion="geodetic"::String)
+function sENZtoECEF(station_ecef::Array{<:Real, 1}, enz::Array{<:Real, 1} ; conversion::String="geodetic")
     # Check input sizes
     if length(enz) < 3
         throw(ArgumentError("Input ENZ state must be at least length 3."))
@@ -359,7 +359,7 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function rECEFtoSEZ(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)    
+function rECEFtoSEZ(ecef::Array{<:Real, 1} ; conversion::String="geodetic")    
     if length(ecef) < 3
         throw(ArgumentError("Input coordinates must be length 3."))
     end
@@ -398,7 +398,7 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function rSEZtoECEF(ecef::Array{<:Real, 1} ; conversion="geodetic"::String)
+function rSEZtoECEF(ecef::Array{<:Real, 1} ; conversion::String="geodetic")
     # Check input coordinates
     if length(ecef) < 3
         throw(ArgumentError("Input coordinates must be length 3."))
@@ -421,7 +421,7 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function sECEFtoSEZ(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1} ; conversion="geodetic"::String)    
+function sECEFtoSEZ(station_ecef::Array{<:Real, 1}, ecef::Array{<:Real, 1} ; conversion::String="geodetic")    
     # Check input sizes
     if length(ecef) < 3
         throw(ArgumentError("Input ecef state must be at least length 3."))
@@ -467,7 +467,7 @@ Arguments:
 Returns:
 - `E::Array{Float64, 2}`: Topocentric rotation matrix
 """
-function sSEZtoECEF(station_ecef::Array{<:Real, 1}, sez::Array{<:Real, 1} ; conversion="geodetic"::String)
+function sSEZtoECEF(station_ecef::Array{<:Real, 1}, sez::Array{<:Real, 1} ; conversion::String="geodetic")
     # Check input sizes
     if length(sez) < 3
         throw(ArgumentError("Input SEZ state must be at least length 3."))
@@ -515,7 +515,7 @@ Arguments:
 Returns:
 - `azel::Array{<:Real, 1}`: Azimuth, elevation and range [rad; rad; m]
 """
-function sENZtoAZEL(x::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sENZtoAZEL(x::Array{<:Real, 1} ; use_degrees::Bool=false)
     # Check inputs
     if !(length(x) == 3 || length(x) == 6)
         throw(ArgumentError("Input ENZ state must be length 3 or 6."))
@@ -596,7 +596,7 @@ Arguments:
 Returns:
 - `azel::Array{<:Real, 1}`: Azimuth, elevation and range [rad; rad; m]
 """
-function sSEZtoAZEL(x::Array{<:Real, 1} ; use_degrees=false::Bool)
+function sSEZtoAZEL(x::Array{<:Real, 1} ; use_degrees::Bool=false)
     # Check inputs
     if !(length(x) == 3 || length(x) == 6)
         throw(ArgumentError("Input rECEFtoSEZ state must be length 3 or 6."))

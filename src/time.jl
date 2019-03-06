@@ -71,7 +71,7 @@ Convert a Gregorian calendar date to the equivalent Modified Julian Date represe
 # Returns:
 - `mjd::Float64` Modified Julian Date of Epoch
 """
-function caldate_to_mjd(year::Integer, month::Integer, day::Integer, hour=0::Integer, minute=0::Integer, second=0.0::Real, nanoseconds=0.0::Real)
+function caldate_to_mjd(year::Integer, month::Integer, day::Integer, hour::Integer=0, minute::Integer=0, second::Real=0.0, nanoseconds::Real=0.0)
     status, jd, fd = iauDtf2d("TAI", year, month, day, hour, minute, second + nanoseconds/1.0e9)
 
     mjd = (jd - Constants.MJD_ZERO) + fd
@@ -117,7 +117,7 @@ Convert a Gregorian calendar date to the equivalent Julian Date representation o
 # Returns:
 - `mjd::Float64`: Julian Date of Epoch
 """
-function caldate_to_jd(year::Integer, month::Integer, day::Integer, hour=0::Integer, minute=0::Integer, second=0.0::Real, nanoseconds=0.0::Real)
+function caldate_to_jd(year::Integer, month::Integer, day::Integer, hour::Integer=0, minute::Integer=0, second::Real=0.0, nanoseconds::Real=0.0)
     status, jd, fd = iauDtf2d("TAI", year, month, day, hour, minute, second + nanoseconds/1.0e9)
 
     jd = jd + fd
@@ -543,7 +543,7 @@ Arguments:
 Returns:
 - `gmst::Real`: Greenwich Mean Sidereal Time [rad/deg]
 """
-function gmst(epc::Epoch; use_degrees=false::Bool)
+function gmst(epc::Epoch; use_degrees::Bool=false)
     uta, utb = epoch_to_jdfd(epc, tsys=:UT1)
     tta, ttb = epoch_to_jdfd(epc, tsys=:TT)
 
@@ -564,7 +564,7 @@ Arguments:
 Returns:
 - `gast::Real`: Greenwich Apparent Sidereal Time [rad/deg]
 """
-function gast(epc::Epoch; use_degrees=false::Bool)
+function gast(epc::Epoch; use_degrees::Bool=false)
     uta, utb = epoch_to_jdfd(epc, tsys=:UT1)
     tta, ttb = epoch_to_jdfd(epc, tsys=:TT)
 

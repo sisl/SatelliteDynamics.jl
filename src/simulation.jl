@@ -71,7 +71,14 @@ Returns:
 - `epc::Array{Epoch, 1}`: Simulation output times as absolute Epochs
 - `eci::Array{Float64, 2}`: Propgated inertial state. Time is aligned with column dimension.
 """
-function propagate_orbit(epc0::Epoch, x0::Array{<:Real, 1}, epcf::Epoch; timestep=5.0, dtmax=60.0, solver=RK4(), rtol=1.0e-9::Real, atol=1.0e-9, mass=100.0::Real, area_drag=1.0::Real, coef_drag=2.3::Real, area_srp=1.0::Real, coef_srp=1.8::Real, n_grav=0::Integer, m_grav=0::Integer, drag=false::Bool, srp=false::Bool, moon=false::Bool, sun=false::Bool, relativity=false::Bool)
+function propagate_orbit(epc0::Epoch, x0::Array{<:Real, 1}, epcf::Epoch; 
+            timestep=5.0::Real, dtmax=60.0::Real, solver=RK4(), 
+            rtol::Real=1.0e-9, atol::Real=1.0e-9, 
+            mass::Real=100.0, area_drag::Real=1.0, coef_drag::Real=2.3, 
+            area_srp::Real=1.0, coef_srp::Real=1.8, 
+            n_grav::Integer=0, m_grav::Integer=0, 
+            drag::Bool=false, srp::Bool=false, moon::Bool=false, sun::Bool=false, 
+            relativity::Bool=false)
     tspan  = (0, epcf-epc0)
     params = [epc0, mass, area_drag, coef_drag, area_srp, coef_srp, n_grav, m_grav, drag, srp, moon, sun, relativity]
     prob   = ODEProblem(f_orbit_dynamics, x0, tspan, params)

@@ -18,7 +18,7 @@ Arguments:
 Returns:
 - `n::Real`: Orbital mean motion. [rad/s] or [deg/s]
 """
-function mean_motion(a::Real; use_degrees=false::Bool, GM=GM_EARTH::Real)
+function mean_motion(a::Real; use_degrees::Bool=false, GM::Real=GM_EARTH)
     n = sqrt(GM/a^3)
 
     if use_degrees
@@ -40,7 +40,7 @@ Arguments:
 Returns:
 - `a::Real`: Semi-major axis. [m]
 """
-function semimajor_axis(n::Real; use_degrees=false::Bool, GM=GM_EARTH::Real)
+function semimajor_axis(n::Real; use_degrees::Bool=false, GM::Real=GM_EARTH)
     if use_degrees
         n *= pi/180.0
     end
@@ -61,7 +61,7 @@ Arguments:
 Returns:
 - `T::Real`: Orbital period. [s]
 """
-function orbit_period(a::Real; GM=GM_EARTH::Real)
+function orbit_period(a::Real; GM::Real=GM_EARTH)
     return 2.0*pi*sqrt(a^3/GM)
 end
 
@@ -81,7 +81,7 @@ Arguments:
 Returns:
 - `iss::Real`: Requierd inclination for a sun-synchronous orbit. [rad] or [deg]
 """
-function sun_sync_inclination(a::Real, e::Real; use_degrees=false::Bool)
+function sun_sync_inclination(a::Real, e::Real; use_degrees::Bool=false)
     # Compute the required RAAN precession of a sun-synchronous orbit
     OMEGA_DOT_SS = 2*pi/365.2421897/86400.0
 
@@ -107,7 +107,7 @@ Arguments:
 Returns:
 - `M::Real`: Mean anomaly. [rad] or [deg]
 """
-function anomaly_eccentric_to_mean(E::Real, e::Real; use_degrees=false::Bool)
+function anomaly_eccentric_to_mean(E::Real, e::Real; use_degrees::Bool=false)
     # Convert degree input
     if use_degrees == true
         E *= pi/180.0
@@ -136,7 +136,7 @@ Arguments:
 Returns:
 - `E::Real`: Eccentric anomaly. [rad] or [deg]
 """
-function anomaly_mean_to_eccentric(M::Real, e::Real; use_degrees=false::Bool)
+function anomaly_mean_to_eccentric(M::Real, e::Real; use_degrees::Bool=false)
     # Convert degree input
     if use_degrees == true
         M *= pi/180.0
@@ -198,7 +198,7 @@ The osculating elements are assumed to be (in order):
 # Returns
 - x `x::Array{<:Real, 1}`: Cartesean inertial state. Returns position and velocity. [m; m/s]
 """
-function sOSCtoCART(x_oe::Array{<:Real, 1}; use_degrees=false::Bool, GM=GM_EARTH::Real)
+function sOSCtoCART(x_oe::Array{<:Real, 1}; use_degrees::Bool=false, GM::Real=GM_EARTH)
 
     if use_degrees == true
         # Copy and convert input from degrees to radians if necessary
@@ -253,7 +253,7 @@ The osculating elements are assumed to be (in order):
 # Returns
 - x_oe `x::Array{<:Real, 1}`: Osculating orbital elements. See above for desription of the elements and their required order.
 """
-function sCARTtoOSC(x::Array{<:Real, 1}; use_degrees=false::Bool, GM=GM_EARTH::Real)
+function sCARTtoOSC(x::Array{<:Real, 1}; use_degrees::Bool=false, GM::Real=GM_EARTH)
 
     # Initialize Cartesian Polistion and Velocity
     r = x[1:3]

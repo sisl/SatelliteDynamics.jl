@@ -72,7 +72,7 @@ Arguments:
 Returns:
 - `rtn::Array{<:Real, 1}`: Position and velocity of the target relative of the observing satellite in the RTN.
 """
-function sECItoRTN(x::Array{<:Real, 1}, xt::Array{<:Real, 1}; is_relative=false::Bool)
+function sECItoRTN(x::Array{<:Real, 1}, xt::Array{<:Real, 1}; is_relative::Bool=false)
     # Create RTN rotation matrix
     R_eci2rtn = rECItoRTN(x)
 

@@ -21,7 +21,7 @@ Returns:
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.27.
 """
-function Rx(angle::Real ; use_degrees=false::Bool)
+function Rx(angle::Real ; use_degrees::Bool=false)
     
     if use_degrees
         angle *= pi/180.0
@@ -49,7 +49,7 @@ Returns:
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.27.
 """
-function Ry(angle::Real ; use_degrees=false::Bool)
+function Ry(angle::Real ; use_degrees::Bool=false)
     
     if use_degrees
         angle *= pi/180.0
@@ -77,7 +77,7 @@ Returns:
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.27.
 """
-function Rz(angle::Real ; use_degrees=false::Bool)
+function Rz(angle::Real ; use_degrees::Bool=false)
     
     if use_degrees
         angle *= pi/180.0
