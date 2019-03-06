@@ -337,102 +337,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "modules/universe/#SatelliteDynamics.Universe.EarthOrientationData",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.EarthOrientationData",
-    "category": "type",
-    "text": "The EarthOrientationData constains a single data member of type  Dict{Int32, Tuple{Float64, Float64, Float64}} that stores the Earth Orientation parameters UT1-UTC, xp, and yp whose units are meters,  radians, and radians, respectively. xp and yp are the x- and  y-components of Earth\'s polar motion. The dictionary key is the Epoch the  parameters are for as a Modified Julian Day at 0h UTC.\n\nArguments:\n\nproduct::Symbol The IERS product type can be :C04_14, :C04_80, or :FINALS_2000\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/universe/#SatelliteDynamics.Universe.EOP",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.EOP",
-    "category": "constant",
-    "text": "Module-wide global EarthOrientationData object. This data object is used as the default source of Earth Orientation Data by reference system transformations if no explicit EarthOrientationData file is provided to those transformations.\n\nThis value can be overridden in your own code as follows:\n\nSatelliteDynamics.EOP = EarthOrientationData(:EOP_PRODUCT_CHOICE)\n\nThis global variable defaults to use the module\'s internal version of :FINALS_2000  if it is not otherwise set/provided.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/universe/#SatelliteDynamics.Universe.UT1_UTC",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.UT1_UTC",
-    "category": "function",
-    "text": "Compute the offset between the UT1 and UTC time systems in seconds. If the EarthOrientationData argument is ommitted the function will use the default module-global value.\n\nArguments:\n\neop::EarthOrientationData EarthOrientationData object to use to compute the offset\nmjd::Real Modified Julian Date in UTC of the Epoch for which the UT1-UTC offset is desired.\ninterp::Bool Whether to linearly interpolate the parameter data to the input MJD.\n\nReturns:\n\nut1_utc::Float UT1 - UTC offset. [s] \n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/universe/#SatelliteDynamics.Universe.POLE_LOCATOR",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.POLE_LOCATOR",
-    "category": "function",
-    "text": "Compute the location of the pole. Returns x- and y- components as a tuple with the units of [radians].  If the EarthOrientationData argument is ommitted the function will use the default module-global value.\n\nArguments:\n\neop::EarthOrientationData EarthOrientationData object to use to compute the offset\nmjd::Real Modified Julian Date in UTC of the Epoch for which the pole locator is desired.\ninterp::Bool Whether to linearly interpolate the parameter data to the input MJD.\n\nReturns:\n\npole_locator::Tuple{ -Float, Float} (x, y) pole location in radians.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/universe/#SatelliteDynamics.Universe.XP",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.XP",
-    "category": "function",
-    "text": "Compute the x-component of the pole locator in [radians]. If the first EarthOrientationData argument is ommitted the function will use the default module-global value.\n\nArguments:\n\neop::EarthOrientationData EarthOrientationData object to use to compute the offset\nmjd::Real Modified Julian Date in UTC of the Epoch for which the xp value is desired.\ninterp::Bool Whether to linearly interpolate the parameter data to the input MJD.\n\nReturns:\n\nxp::Float x-component of pole locator in radians.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/universe/#SatelliteDynamics.Universe.YP",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.YP",
-    "category": "function",
-    "text": "Compute the y-component of the pole locator in [radians]. If the first EarthOrientationData argument is ommitted the function will use the default module-global value.\n\nArguments:\n\neop::EarthOrientationData EarthOrientationData object to use to compute the offset\nmjd::Real Modified Julian Date in UTC of the Epoch for which the yp value is desired.\ninterp::Bool Whether to linearly interpolate the parameter data to the input MJD.\n\nReturns:\n\nyp::Float y-component of pole locator in radians.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/universe/#SatelliteDynamics.Universe.set_eop",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.set_eop",
-    "category": "function",
-    "text": "Set Earth orientation data values for a specific date in the module global EarthOrientationData object.\n\nArguments:\n\nmjd::Real Modified Julian Date in UTC of the Epoch for which the Earth orientation data is aligned to.\nut1_utc::Real Offset between UT1 and UTC in seconds.\nxp::Real x-component of the pole locator in radians.\nyp::Real y-component of the pole locator in radians.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/universe/#SatelliteDynamics.Universe.load_eop",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.load_eop",
-    "category": "function",
-    "text": "Load new Earth orientation data into the module global EarthOrientationData object. The product can be one of the symbols: :C04_14, :C04_80, or :FINALS_2000.\n\nArguments:\n\nproduct::Symbol Loads a different set of EarthOrientationData values into the module-wide global EarthOrientationData parameters.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/universe/#SatelliteDynamics.Universe.update_eop",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.update_eop",
-    "category": "function",
-    "text": "Download updated Earth orientation datafiles for included products IERS products.\n\nArguments:\n\nproduct::Symbol The IERS product type can be :C04_14, :C04_80, or :FINALS_2000\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/universe/#SatelliteDynamics.Universe.GravModel",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.GravModel",
-    "category": "type",
-    "text": "GravModel stores a spherical harmonic gravity field in memory. Can store normalized or denomalized coefficients. Package contains EGM2008, GGM01S, and GGM0S gravity models, as well as the default gravity model of EGM2008 truncated to degree and order 90.\n\nAdditional gravity field models can be downloaded from: http://icgem.gfz-potsdam.de/home\n\nArguments:\n\nfilepath::string Path to spherical harmonic gravity model file.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/universe/#SatelliteDynamics.Universe.GRAVITY_MODEL",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.GRAVITY_MODEL",
-    "category": "constant",
-    "text": "Module-wide global GravityModel object. This data object is used as the default spherical harmonic gravity field unless one is otherwise provided.\n\nThis value can be overridden in your own code as follows:\n\nSatelliteDynamics.GravityModel = GravityModel(PATH_TO_YOUR_GRAVITY_MODEL)\n\nThis global variable defaults to use the module\'s internal version of the EGM2008 model truncated to order and degree 90, if it is not otherwise set.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/universe/#SatelliteDynamics.Universe.load_gravity_model",
-    "page": "Universe",
-    "title": "SatelliteDynamics.Universe.load_gravity_model",
-    "category": "function",
-    "text": "Load new gravity model into module global EarthOrientationData object. The product can be one of the symbols: :EGM2008_20, :EGM2008_90, :GGM01S, :GGM05S, or the filepath to a text-encoded gravity model file.\n\nArguments:\n\ngfc_file::String File path of gravity field model\nproduct_name::Symbol OR a symbol of a known gravity field product. Valid ones are: :EGM2008_20, :EGM2008_90, :GGM01S, :GGM05S\n\n\n\n\n\n"
-},
-
-{
     "location": "modules/universe/#Universe-1",
     "page": "Universe",
     "title": "Universe",
@@ -461,7 +365,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Time",
     "title": "SatelliteDynamics.Time.mjd_to_caldate",
     "category": "function",
-    "text": "Convert a Modified Julian Date to the equivalent Gregorian calendar date representation of the same instant in time.\n\nAguments:\n\nmjd::Real: Modified Julian Date of Epoch\n\nReturns:\n\nyear::Int32: Year\nyear::Int32: Month\nyear::Int32: Day\nhour::Int32: Hour\nminute::Int32: Minute \nsecond::Float64: Seconds\nnanoseconds::Float64: Nanoseconds\n\n\n\n\n\n"
+    "text": "Convert a Modified Julian Date to the equivalent Gregorian calendar date representation of the same instant in time.\n\nAguments:\n\nmjd::Real: Modified Julian Date of Epoch\n\nReturns:\n\nyear::Int: Year\nyear::Int: Month\nyear::Int: Day\nhour::Int: Hour\nminute::Int: Minute \nsecond::Float64: Seconds\nnanoseconds::Float64: Nanoseconds\n\n\n\n\n\n"
 },
 
 {
@@ -477,7 +381,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Time",
     "title": "SatelliteDynamics.Time.jd_to_caldate",
     "category": "function",
-    "text": "Convert a Julian Date to the equivalent Gregorian calendar date representation of the same instant in time.\n\nAguments:\n\njd::Real: Julian Date of Epoch\n\nReturns:\n\nyear::Int32: Year\nyear::Int32: Month\nyear::Int32: Day\nhour::Int32: Hour\nminute::Int32: Minute \nsecond::Float64: Seconds\nmicrosecond::Float64: Nanoseconds\n\n\n\n\n\n"
+    "text": "Convert a Julian Date to the equivalent Gregorian calendar date representation of the same instant in time.\n\nAguments:\n\njd::Real: Julian Date of Epoch\n\nReturns:\n\nyear::Int: Year\nyear::Int: Month\nyear::Int: Day\nhour::Int: Hour\nminute::Int: Minute \nsecond::Float64: Seconds\nmicrosecond::Float64: Nanoseconds\n\n\n\n\n\n"
 },
 
 {
