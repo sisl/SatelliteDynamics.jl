@@ -140,7 +140,7 @@ References:
 1. J. Diebel, _Representing attitude: Euler angles, unit quaternions, and rotation vectors._ Matrix 58(15-16) (2006).
 """
 mutable struct EulerAngle
-    seq::Int32
+    seq::Int
     phi::Float64
     theta::Float64
     psi::Float64

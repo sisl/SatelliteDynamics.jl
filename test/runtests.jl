@@ -18,7 +18,7 @@ Random.seed!(0)
 @inline function array_isapprox(x::AbstractArray{F},
                   y::AbstractArray{F};
                   rtol::F=sqrt(eps(F)),
-                  atol::F=zero(F)) where {F<:AbstractFloat}
+                  atol::F=zero(F)) where {F<:Real}
 
     # Easy check on matching size
     if length(x) != length(y)
@@ -34,7 +34,7 @@ end
 @inline function array_isapprox(x::AbstractArray{F},
                   y::F;
                   rtol::F=sqrt(eps(F)),
-                  atol::F=zero(F)) where {F<:AbstractFloat}
+                  atol::F=zero(F)) where {F<:Real}
 
     for a in x
         @test isapprox(a, y, rtol=rtol, atol=atol)
@@ -69,5 +69,10 @@ end
     end
     @time @testset "SatelliteDynamics.Simulation" begin
         include(joinpath(testdir, "test_simulation.jl"))
+    end
+
+    # Earth Environment
+    @time @testset "SatelliteDynamics.EarthEnvironment.NRLMSISE00" begin
+        include(joinpath(testdir, "earth_environment/", "test_nrlmsise00.jl"))
     end
 end
