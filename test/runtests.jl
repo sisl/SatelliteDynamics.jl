@@ -7,6 +7,7 @@ using Logging
 
 # Package under test
 using SatelliteDynamics
+using SatelliteDynamics.EarthEnvironment
 
 # Set logging level
 global_logger(SimpleLogger(stderr, Logging.Debug))
