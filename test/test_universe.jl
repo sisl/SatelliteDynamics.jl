@@ -1,4 +1,6 @@
-# Earth Orientation
+##########################
+# Earth Orientation Data #
+##########################
 
 # Test internal data type
 let 
@@ -14,9 +16,9 @@ end
 # Test Data valutes
 let
     @test UT1_UTC(58483)      == -0.0351914
-    @test POLE_LOCATOR(58483) == (0.088502*AS2RAD, 0.270753*AS2RAD)
-    @test XP(58483)           == 0.088502*AS2RAD
-    @test YP(58483)           == 0.270753*AS2RAD
+    @test POLE_LOCATOR(58483) == (0.088501*AS2RAD, 0.270752*AS2RAD)
+    @test XP(58483)           == 0.088501*AS2RAD
+    @test YP(58483)           == 0.270752*AS2RAD
 end
 
 # Test Set values
@@ -69,7 +71,10 @@ end
 #     update_eop(:FINALS_2000)
 # end
 
-# Gravity Model 
+#################
+# Gravity Model #
+#################
+
 let
     @test typeof(GRAVITY_MODEL.data) == Array{Float64, 2}
 

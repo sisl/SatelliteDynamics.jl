@@ -252,3 +252,16 @@ let
     @test isapprox(output[15].d[9], 0.0000000e+00, rtol=1.0e-6)
     @test isapprox(output[15].d[6], 1.1476677e-07, rtol=1.0e-6)
 end
+
+let
+    # Date and conversions
+    epc  = Epoch(2018,1,1,12,0,0)
+    oe   = [R_EARTH + 500e3, 1e-3, 97.8, 75, 25, 45]
+    eci  = sOSCtoCART(oe, use_degrees=true)
+    ecef = sECItoECEF(epc, eci)
+    geod = sECEFtoGEOD(ecef, use_degrees=true)
+
+    rho = density_nrlmsise00(epc, geod, use_degrees=true)
+
+    @test 0.0 <= rho <= 1.0e-16
+end

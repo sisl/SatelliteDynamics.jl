@@ -8,6 +8,9 @@ Ref: https://www.brodo.de/space/nrlmsise/
 """
 
 using Printf
+using SatelliteDynamics.Time: Epoch, mjd, day_of_year
+using SatelliteDynamics.Coordinates: sECEFtoGEOD
+using SatelliteDynamics.EarthEnvironment.SpaceWeather
 
 ##############
 # Model Data #
@@ -1194,7 +1197,6 @@ end
 
 function gtd7d!(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Output)
     gtd7!(input, flags, output)
-    tselec!(flags)
 
     output.d[6] = 1.66e-24 * (  4.0 * output.d[1] 
                              + 16.0 * output.d[2] 
@@ -1596,6 +1598,92 @@ function gts7!(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Ou
     end
 
     return dm28, meso_tn1, meso_tgn1, dfa, plg, ctloc, stloc, c2tloc, s2tloc, s3tloc, c3tloc
+end
+
+export density_nrlmsise00
+"""
+Computes the local atmospheric density using the NRLMSISE00 atmosphere model.
+
+Arguments:
+- `epc::Epoch`: Epoch of computation. Used to lookup space weather data
+- `x::Array{<:Real, 1}`: Satellite state in geodetic coordinates [lon, lat, alt]
+- `use_degrees:Bool`: If `true` interprets geodetic inputs as being in degrees
+
+Returns:
+- `rho:Float64`: Local atmospheric density [kg/m^3]
+
+Notes:
+1. Uses the gtd7d subroutine of the NRLMSISE00 to compute local atmospheric density. This subroutine includes the contribution of anomalous Oxygen in local density which is important for satellites above 500 km altitude.
+
+References:
+1. _Picone, JM, et al._ NRLMSISE-00 empirical model of the atmosphere: Statistical comparisons and scientific issues _Journal of Geophysical Research: Space Physics_
+"""
+function density_nrlmsise00(epc::Epoch, x::Array{<:Real, 1}; use_degrees::Bool=false)
+    # Create NRLMSISE00 model input
+    input  = NRLMSISE_Input()
+    flags  = NRLMSISE_Flags()
+    output = NRLMSISE_Output()
+
+    # Convert geodetic position
+    lon = x[1]
+    lat = x[2]
+    alt = x[3]
+
+    if use_degrees
+        lon *= 180.0/pi
+        lat *= 180.0/pi
+    end
+
+    # Look-up space weather data
+    mjd_ut1 = mjd(epc, tsys=:UT1)
+    doy     = floor(Int, day_of_year(epc, tsys=:UT1))
+    seconds = (mjd_ut1 - floor(mjd_ut1))*86400.0
+
+    ap_array    = zeros(Float64, 7)
+    ap_array[1] = ApDailyIndex(mjd_ut1)
+    ap_array[2] = ApIndex(epc)
+    ap_array[3] = ApIndex(epc - 3*3600) 
+    ap_array[4] = ApIndex(epc - 6*3600)
+    ap_array[5] = ApIndex(epc - 9*3600)
+
+    # Ap average for 8 3-hour segments before current time
+    n = 0
+    for i in 12:3:33
+        n += 1
+        ap_array[6] += ApIndex(epc - i*3600)
+    end
+    ap_array[6] = ap_array[6]/n
+
+    # Ap average for 8 3-hour segments before current time
+    n = 0
+    for i in 36:3:57
+        n += 1
+        ap_array[7] += ApIndex(epc - i*3600)
+    end
+    ap_array[7] = ap_array[7]/n
+
+    # Set model flags to default
+    flags.switches = ones(Int, 24)
+    
+    # Set input values
+    input.year  = 0         # Unused in model 
+    input.doy   = doy       # Day of Year
+    input.sec   = seconds   # UT
+    input.alt   = alt       # [km]
+    input.g_lat = lat       # [deg]
+    input.g_lon = lon       # [deg]
+    input.lst   = (input.sec/3600.0 + input.g_lon/15.0) # Set LST to be self consistent
+    input.f107A = f107ObservedAvg(mjd_ut1)  # 81 day average of F10.7 flux, centered on day
+    input.f107  = f107Observed(mjd_ut1)     # Daily F10.7 flux for previous day
+    input.ap    = ap_array[1] # Daily magnetic index
+    input.ap_array = ap_array
+
+    # Run NRLMSISE00 Atmospheric model - including anomalous oxygen
+    gtd7d!(input, flags, output)
+
+    # Return local density
+    rho = output.d[6]
+    return rho
 end
 
 end # NRLMSISE00 Module

@@ -68,7 +68,7 @@ Convert a Gregorian calendar date to the equivalent Modified Julian Date represe
 - `second::Real` Seconds
 - `nanoseconds::Real` Nanoseconds
 
-# Returns:
+Returns:
 - `mjd::Float64` Modified Julian Date of Epoch
 """
 function caldate_to_mjd(year::Integer, month::Integer, day::Integer, hour::Integer=0, minute::Integer=0, second::Real=0.0, nanoseconds::Real=0.0)
@@ -86,7 +86,7 @@ Convert a Modified Julian Date to the equivalent Gregorian calendar date represe
 # Aguments:
 - `mjd::Real`: Modified Julian Date of Epoch
 
-# Returns:
+Returns:
 - `year::Int`: Year
 - `year::Int`: Month
 - `year::Int`: Day
@@ -114,7 +114,7 @@ Convert a Gregorian calendar date to the equivalent Julian Date representation o
 - `second::Real`: Seconds
 - `nanoseconds::Real`: Nanoseconds
 
-# Returns:
+Returns:
 - `mjd::Float64`: Julian Date of Epoch
 """
 function caldate_to_jd(year::Integer, month::Integer, day::Integer, hour::Integer=0, minute::Integer=0, second::Real=0.0, nanoseconds::Real=0.0)
@@ -132,7 +132,7 @@ Convert a Julian Date to the equivalent Gregorian calendar date representation o
 # Aguments:
 - `jd::Real`: Julian Date of Epoch
 
-# Returns:
+Returns:
 - `year::Int`: Year
 - `year::Int`: Month
 - `year::Int`: Day
@@ -152,11 +152,11 @@ export elapsed_from_epoch
 """
 Compute the number of elapsed seconds since a given Epoch from the day number. Can be used to compute the elapsed time since a given Julian or Modified Julian Date.
 
-# Arguments:
+Arguments:
 - `day_number::Real`: Day number, can contain fractional days. Asummes all days are a uniform 86400.0 seconds in length.
 - `day_epoch::Real`: Modified Julian Date of Epoch
 
-# Returns:
+Returns:
 - `t::Float`: Number of elapsed seconds between the Provided Modified
     Julian date and the epoch.
 """
@@ -170,11 +170,11 @@ Computes the day number in a given time scale given the elapsed time since epoch
 
 Assumes all days are counted using a uniform 86400.0 seconds over the time span.
 
-# Arguments:
+Arguments:
 - `t::Real`: Elapsed seconds since the `day_epoch`.
 - `day_epoch::Real`: Day number of the epoch. Common values are `SatelliteDynamics.Constants.MJD_ZERO` (to get the Julian Day number) or `SatelliteDynamics.Constants.MJD2000` (to get Modified Julian Days if reckoning time from January 1, 2000 0H)
 
-# Returns:
+Returns:
 - `days::Float`: Number of elapsed days in the time scale.
 """
 function days_from_elapsed(t::Real, day_epoch=0::Real)
@@ -190,10 +190,10 @@ Returns whether a symbol is a valid time system.
 
 Valid systems are: `:GPS`, `:TAI`, `:TT`, `:UTC`, and `:UT1`
 
-# Arguments:
+Arguments:
 - `tsys::Symbol`: time system symbol to check for validity.
 
-# Returns:
+Returns:
 - `valid::Bool`: Return `true` if tsys is a valid time system.
 """
 function valid_time_system(tsys::Symbol)

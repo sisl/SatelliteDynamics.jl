@@ -5,6 +5,7 @@ module Universe
 # Julia Imports #
 #################
 
+using Dates
 
 ###################
 # Package Imports #
@@ -24,6 +25,51 @@ function download_file(url, file)
     run(`curl -S -L $url -o $filepath`)
 end
 
+export download_kp
+"""
+Download geomagnetic indices.
+
+Arguments:
+- `year_start::Int` First year to download data for. Default: 2000
+- `year_end::Int` Last year to download data for. Default: 2019
+
+Notes:
+1. Data source is GFZ Potsdam Geomagnetic WDC tables: https://www.gfz-potsdam.de/en/kp-index/
+"""
+function download_kp(year_start::Int=2000, year_end::Int=Dates.year(Dates.today()))
+    for year in year_start:year_end
+        download_file("ftp://ftp.gfz-potsdam.de/pub/home/obs/kp-ap/wdc/kp$year.wdc", "kp$year.wdc")
+    end
+
+    # Merge Data and clean up
+    open(abspath(joinpath(DATA_DIR, "kpall.wdc")), "w") do fp_kpall
+        # For each file on disk: 1. Open and read it, 2. Write it to all 3. Delete it
+        for year in year_start:year_end
+            kp_filepath = abspath(joinpath(DATA_DIR, "kp$year.wdc"))
+            open(kp_filepath) do fp_kpfile
+                # Read and write all in one operation
+                write(fp_kpall, read(fp_kpfile, String))
+
+                # Delete File from disk
+                rm(kp_filepath)
+            end
+        end 
+    end
+end
+
+export download_solar_flux
+"""
+Download F10.7cm Solar Flux data.
+
+10.7cm solar flux is the standard measure of solar activity in space weather models.
+
+Notes:
+1. Data source is NRC Canada solar flux tables: ftp://ftp.seismo.nrcan.gc.ca/spaceweather/solar_flux/daily_flux_values/fluxtable.txt
+"""
+function download_solar_flux()
+    download_file("ftp://ftp.seismo.nrcan.gc.ca/spaceweather/solar_flux/daily_flux_values/fluxtable.txt", "fluxtable.txt")
+end
+
 export download_all_data
 """
 Downloads package datafiles into folders `\$PACKAGE_ROOT/DIR`
@@ -39,7 +85,11 @@ function download_all_data()
     download_file("https://datacenter.iers.org/data/latestVersion/223_EOP_C04_14.62-NOW.IAU1980223.txt", "EOP_C04_80.62-NOW.IAU2000A.txt")
     download_file("https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt", "FINALS.ALL_IAU2000.txt")
 
+    # Geomagnetic inidies
+    download_kp()
 
+    # Solar Flux
+    download_solar_flux()
 end
 
 ##########################
@@ -62,11 +112,11 @@ _radians_, and _radians_, respectively. `xp` and `yp` are the x- and
 y-components of Earth's polar motion. The dictionary key is the Epoch the 
 parameters are for as a Modified Julian Day at 0h UTC.
 
-# Arguments:
+Arguments:
 - `product::Symbol` The IERS product type can be `:C04_14`, `:C04_80`, or `:FINALS_2000`
 """
 struct EarthOrientationData
-    data::Dict
+    data::Dict{Int, Tuple{Float64, Float64, Float64}}
 end
 
 
@@ -133,12 +183,12 @@ export UT1_UTC
 """
 Compute the offset between the UT1 and UTC time systems in seconds. If the EarthOrientationData argument is ommitted the function will use the default module-global value.
 
-# Arguments:
+Arguments:
 - `eop::EarthOrientationData` EarthOrientationData object to use to compute the offset
 - `mjd::Real` Modified Julian Date in UTC of the Epoch for which the UT1-UTC offset is desired.
 - `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
 
-# Returns:
+Returns:
 - `ut1_utc::Float` UT1 - UTC offset. [s] 
 """
 function UT1_UTC(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
@@ -160,12 +210,12 @@ export POLE_LOCATOR
 """
 Compute the location of the pole. Returns x- and y- components as a tuple with the units of [radians].  If the EarthOrientationData argument is ommitted the function will use the default module-global value.
 
-# Arguments:
+Arguments:
 - `eop::EarthOrientationData` EarthOrientationData object to use to compute the offset
 - `mjd::Real` Modified Julian Date in UTC of the Epoch for which the pole locator is desired.
 - `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
 
-# Returns:
+Returns:
 - `pole_locator::Tuple{ -Float, Float}` (x, y) pole location in radians.
 """
 function POLE_LOCATOR(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
@@ -189,12 +239,12 @@ export XP
 """
 Compute the x-component of the pole locator in [radians]. If the first EarthOrientationData argument is ommitted the function will use the default module-global value.
 
-# Arguments:
+Arguments:
 - `eop::EarthOrientationData` EarthOrientationData object to use to compute the offset
 - `mjd::Real` Modified Julian Date in UTC of the Epoch for which the xp value is desired.
 - `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
 
-# Returns:
+Returns:
 - `xp::Float` x-component of pole locator in radians.
 """
 function XP(eop::EarthOrientationData, mjd::Real; interp=false)
@@ -216,12 +266,12 @@ export YP
 """
 Compute the y-component of the pole locator in [radians]. If the first EarthOrientationData argument is ommitted the function will use the default module-global value.
 
-# Arguments:
+Arguments:
 - `eop::EarthOrientationData` EarthOrientationData object to use to compute the offset
 - `mjd::Real` Modified Julian Date in UTC of the Epoch for which the yp value is desired.
 - `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
 
-# Returns:
+Returns:
 - `yp::Float` y-component of pole locator in radians.
 """
 function YP(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
@@ -243,7 +293,7 @@ export set_eop
 """
 Set Earth orientation data values for a specific date in the module global EarthOrientationData object.
 
-# Arguments:
+Arguments:
 - `mjd::Real` Modified Julian Date in UTC of the Epoch for which the Earth orientation data is aligned to.
 - `ut1_utc::Real` Offset between UT1 and UTC in seconds.
 - `xp::Real` x-component of the pole locator in radians.
@@ -257,7 +307,7 @@ export load_eop
 """
 Load new Earth orientation data into the module global EarthOrientationData object. The product can be one of the symbols: `:C04_14`, `:C04_80`, or `:FINALS_2000`.
 
-# Arguments:
+Arguments:
 - `product::Symbol` Loads a different set of EarthOrientationData values into the module-wide global EarthOrientationData parameters.
 """
 function load_eop(product::Symbol)
@@ -290,7 +340,7 @@ GravModel stores a spherical harmonic gravity field in memory. Can store normali
 
 Additional gravity field models can be downloaded from: <http://icgem.gfz-potsdam.de/home>
 
-# Arguments:
+Arguments:
 - `filepath::string` Path to spherical harmonic gravity model file.
 """
 struct GravModel
@@ -377,7 +427,7 @@ export load_gravity_model
 """
 Load new gravity model into module global EarthOrientationData object. The product can be one of the symbols: `:EGM2008_20`, `:EGM2008_90`, `:GGM01S`, `:GGM05S`, or the filepath to a text-encoded gravity model file.
 
-# Arguments:
+Arguments:
 - `gfc_file::String` File path of gravity field model
 - `product_name::Symbol` _OR_ a symbol of a known gravity field product. Valid ones are: `:EGM2008_20`, `:EGM2008_90`, `:GGM01S`, `:GGM05S`
 """

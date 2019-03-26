@@ -144,10 +144,10 @@ CIRS intermediate reference frame. This transformation corrects for the
 bias, precession, and nutation of Celestial Intermediate Origin (CIO) with
 respect to inertial space.
 
-# Arguments:
+Arguments:
 - `epc::Epoch`: Epoch of transformation
 
-# Returns:
+Returns:
 - `rc2i::Array{<:Real, 2}`: 3x3 Rotation matrix transforming GCRS -> CIRS
 """
 function bias_precession_nutation(epc::Epoch)
@@ -175,10 +175,10 @@ Computes the Earth rotation matrix transforming the CIRS to the TIRS
 intermediate reference frame. This transformation corrects for the Earth
 rotation.
 
-# Arguments:
+Arguments:
 - `epc::Epoch`: Epoch of transformation
 
-# Returns:
+Returns:
 - `r::Array{<:Real, 2}`: 3x3 Rotation matrix transforming CIRS -> TIRS
 """
 function earth_rotation(epc::Epoch)

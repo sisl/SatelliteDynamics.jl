@@ -15,6 +15,9 @@ distributed by the IERS. The module also supports IERS C04 product files.
 truncated to order and degree 90.
 
 ```@docs
+download_kp
+download_solar_flux
+download_all_data
 EarthOrientationData
 EOP
 UT1_UTC
@@ -23,8 +26,8 @@ XP
 YP
 set_eop
 load_eop
-update_eop
 GravModel
 GRAVITY_MODEL
 load_gravity_model
+GRAV_COEF
 ```

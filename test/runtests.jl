@@ -48,7 +48,7 @@ end
         include(joinpath(testdir, "test_constants.jl"))
     end
     @time @testset "SatelliteDynamics.Universe" begin
-        include(joinpath(testdir, "test_univ.jl"))
+        include(joinpath(testdir, "test_universe.jl"))
     end
     @time @testset "SatelliteDynamics.Time" begin
         include(joinpath(testdir, "test_time.jl"))
@@ -72,7 +72,10 @@ end
         include(joinpath(testdir, "test_simulation.jl"))
     end
 
-    # Earth Environment
+    # # Earth Environment
+    @time @testset "SatelliteDynamics.EarthEnvironment.NRLMSISE00" begin
+        include(joinpath(testdir, "earth_environment/", "test_spaceweather.jl"))
+    end
     @time @testset "SatelliteDynamics.EarthEnvironment.NRLMSISE00" begin
         include(joinpath(testdir, "earth_environment/", "test_nrlmsise00.jl"))
     end

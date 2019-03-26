@@ -190,7 +190,7 @@ The osculating elements are assumed to be (in order):
 5. _ω_, Argument of Perigee [ramd]
 6. _M_, Mean anomaly [rad]
 
-# Arguments:
+Arguments:
 - x_oe `x::Array{<:Real, 1}`: Osculating orbital elements. See above for desription of the elements and their required order.
 - `use_degrees:Bool`: If `true` interpret input will be interpreted as being in degrees, and output will be returned in degrees.
 - `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.Constants.GM_EARTH` if none is provided.
@@ -245,7 +245,7 @@ The osculating elements are assumed to be (in order):
 5. _ω_, Argument of Perigee [ramd]
 6. _M_, Mean anomaly [rad]
 
-# Arguments:
+Arguments:
 - x `x::Array{<:Real, 1}`: Cartesean inertial state. Returns position and velocity. [m; m/s]
 - `use_degrees:Bool`: If `true` interpret input will be interpreted as being in degrees, and output will be returned in degrees.
 - `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.Constants.GM_EARTH` if none is provided.
