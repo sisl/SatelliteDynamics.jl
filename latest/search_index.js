@@ -341,7 +341,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Universe",
     "title": "Universe",
     "category": "section",
-    "text": "The Universe submodule defines simulation-specific data files which are constants  of most simulations. In particular it provides data structures for storing and accessing Earth orientation parameters and spherical harmonic gravity field  models.The module defines the global variables EOP and GRAVITY_MODEL which are loaded at runtime and .EOP defaults to use the rapid Earth orientation data file finals.all (IAU 2000) distributed by the IERS. The module also supports IERS C04 product files.GRAVITY_MODEL defaults to use the EGM2008 spherical harmonic gravity model,  truncated to order and degree 90.EarthOrientationData\nEOP\nUT1_UTC\nPOLE_LOCATOR\nXP\nYP\nset_eop\nload_eop\nupdate_eop\nGravModel\nGRAVITY_MODEL\nload_gravity_model"
+    "text": "The Universe submodule defines simulation-specific data files which are constants  of most simulations. In particular it provides data structures for storing and accessing Earth orientation parameters and spherical harmonic gravity field  models.The module defines the global variables EOP and GRAVITY_MODEL which are loaded at runtime and .EOP defaults to use the rapid Earth orientation data file finals.all (IAU 2000) distributed by the IERS. The module also supports IERS C04 product files.GRAVITY_MODEL defaults to use the EGM2008 spherical harmonic gravity model,  truncated to order and degree 90.download_kp\ndownload_solar_flux\ndownload_all_data\nEarthOrientationData\nEOP\nUT1_UTC\nPOLE_LOCATOR\nXP\nYP\nset_eop\nload_eop\nGravModel\nGRAVITY_MODEL\nload_gravity_model\nGRAV_COEF"
 },
 
 {
