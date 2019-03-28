@@ -337,11 +337,123 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "modules/universe/#SatelliteDynamics.Universe.download_kp",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.download_kp",
+    "category": "function",
+    "text": "Download geomagnetic indices.\n\nArguments:\n\nyear_start::Int First year to download data for. Default: 2000\nyear_end::Int Last year to download data for. Default: 2019\n\nNotes:\n\nData source is GFZ Potsdam Geomagnetic WDC tables: https://www.gfz-potsdam.de/en/kp-index/\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.download_solar_flux",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.download_solar_flux",
+    "category": "function",
+    "text": "Download F10.7cm Solar Flux data.\n\n10.7cm solar flux is the standard measure of solar activity in space weather models.\n\nNotes:\n\nData source is NRC Canada solar flux tables: ftp://ftp.seismo.nrcan.gc.ca/spaceweather/solarflux/dailyflux_values/fluxtable.txt\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.download_all_data",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.download_all_data",
+    "category": "function",
+    "text": "Downloads package datafiles into folders $PACKAGE_ROOT/DIR\n\nDownloads the following files:\n\nIERS C04 IAU2000A Earth Orientation Data\nIERS C04 IAU1980 Earth Orientation Data\nIERS Bulletin A/B IAU2000 Earth Orientation Data\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.EarthOrientationData",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.EarthOrientationData",
+    "category": "type",
+    "text": "The EarthOrientationData constains a single data member of type  Dict{Int, Tuple{Float64, Float64, Float64}} that stores the Earth Orientation parameters UT1-UTC, xp, and yp whose units are meters,  radians, and radians, respectively. xp and yp are the x- and  y-components of Earth\'s polar motion. The dictionary key is the Epoch the  parameters are for as a Modified Julian Day at 0h UTC.\n\nArguments:\n\nproduct::Symbol The IERS product type can be :C04_14, :C04_80, or :FINALS_2000\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.EOP",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.EOP",
+    "category": "constant",
+    "text": "Module-wide global EarthOrientationData object. This data object is used as the default source of Earth Orientation Data by reference system transformations if no explicit EarthOrientationData file is provided to those transformations.\n\nThis value can be overridden in your own code as follows:\n\nSatelliteDynamics.EOP = EarthOrientationData(:EOP_PRODUCT_CHOICE)\n\nThis global variable defaults to use the module\'s internal version of :FINALS_2000  if it is not otherwise set/provided.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.UT1_UTC",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.UT1_UTC",
+    "category": "function",
+    "text": "Compute the offset between the UT1 and UTC time systems in seconds. If the EarthOrientationData argument is ommitted the function will use the default module-global value.\n\nArguments:\n\neop::EarthOrientationData EarthOrientationData object to use to compute the offset\nmjd::Real Modified Julian Date in UTC of the Epoch for which the UT1-UTC offset is desired.\ninterp::Bool Whether to linearly interpolate the parameter data to the input MJD.\n\nReturns:\n\nut1_utc::Float UT1 - UTC offset. [s] \n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.POLE_LOCATOR",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.POLE_LOCATOR",
+    "category": "function",
+    "text": "Compute the location of the pole. Returns x- and y- components as a tuple with the units of [radians].  If the EarthOrientationData argument is ommitted the function will use the default module-global value.\n\nArguments:\n\neop::EarthOrientationData EarthOrientationData object to use to compute the offset\nmjd::Real Modified Julian Date in UTC of the Epoch for which the pole locator is desired.\ninterp::Bool Whether to linearly interpolate the parameter data to the input MJD.\n\nReturns:\n\npole_locator::Tuple{ -Float, Float} (x, y) pole location in radians.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.XP",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.XP",
+    "category": "function",
+    "text": "Compute the x-component of the pole locator in [radians]. If the first EarthOrientationData argument is ommitted the function will use the default module-global value.\n\nArguments:\n\neop::EarthOrientationData EarthOrientationData object to use to compute the offset\nmjd::Real Modified Julian Date in UTC of the Epoch for which the xp value is desired.\ninterp::Bool Whether to linearly interpolate the parameter data to the input MJD.\n\nReturns:\n\nxp::Float x-component of pole locator in radians.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.YP",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.YP",
+    "category": "function",
+    "text": "Compute the y-component of the pole locator in [radians]. If the first EarthOrientationData argument is ommitted the function will use the default module-global value.\n\nArguments:\n\neop::EarthOrientationData EarthOrientationData object to use to compute the offset\nmjd::Real Modified Julian Date in UTC of the Epoch for which the yp value is desired.\ninterp::Bool Whether to linearly interpolate the parameter data to the input MJD.\n\nReturns:\n\nyp::Float y-component of pole locator in radians.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.set_eop",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.set_eop",
+    "category": "function",
+    "text": "Set Earth orientation data values for a specific date in the module global EarthOrientationData object.\n\nArguments:\n\nmjd::Real Modified Julian Date in UTC of the Epoch for which the Earth orientation data is aligned to.\nut1_utc::Real Offset between UT1 and UTC in seconds.\nxp::Real x-component of the pole locator in radians.\nyp::Real y-component of the pole locator in radians.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.load_eop",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.load_eop",
+    "category": "function",
+    "text": "Load new Earth orientation data into the module global EarthOrientationData object. The product can be one of the symbols: :C04_14, :C04_80, or :FINALS_2000.\n\nArguments:\n\nproduct::Symbol Loads a different set of EarthOrientationData values into the module-wide global EarthOrientationData parameters.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.GravModel",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.GravModel",
+    "category": "type",
+    "text": "GravModel stores a spherical harmonic gravity field in memory. Can store normalized or denomalized coefficients. Package contains EGM2008, GGM01S, and GGM0S gravity models, as well as the default gravity model of EGM2008 truncated to degree and order 90.\n\nAdditional gravity field models can be downloaded from: http://icgem.gfz-potsdam.de/home\n\nArguments:\n\nfilepath::string Path to spherical harmonic gravity model file.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.GRAVITY_MODEL",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.GRAVITY_MODEL",
+    "category": "constant",
+    "text": "Module-wide global GravityModel object. This data object is used as the default spherical harmonic gravity field unless one is otherwise provided.\n\nThis value can be overridden in your own code as follows:\n\nSatelliteDynamics.GravityModel = GravityModel(PATH_TO_YOUR_GRAVITY_MODEL)\n\nThis global variable defaults to use the module\'s internal version of the EGM2008 model truncated to order and degree 90, if it is not otherwise set.\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/universe/#SatelliteDynamics.Universe.load_gravity_model",
+    "page": "Universe",
+    "title": "SatelliteDynamics.Universe.load_gravity_model",
+    "category": "function",
+    "text": "Load new gravity model into module global EarthOrientationData object. The product can be one of the symbols: :EGM2008_20, :EGM2008_90, :GGM01S, :GGM05S, or the filepath to a text-encoded gravity model file.\n\nArguments:\n\ngfc_file::String File path of gravity field model\nproduct_name::Symbol OR a symbol of a known gravity field product. Valid ones are: :EGM2008_20, :EGM2008_90, :GGM01S, :GGM05S\n\n\n\n\n\n"
+},
+
+{
     "location": "modules/universe/#Universe-1",
     "page": "Universe",
     "title": "Universe",
     "category": "section",
-    "text": "The Universe submodule defines simulation-specific data files which are constants  of most simulations. In particular it provides data structures for storing and accessing Earth orientation parameters and spherical harmonic gravity field  models.The module defines the global variables EOP and GRAVITY_MODEL which are loaded at runtime and .EOP defaults to use the rapid Earth orientation data file finals.all (IAU 2000) distributed by the IERS. The module also supports IERS C04 product files.GRAVITY_MODEL defaults to use the EGM2008 spherical harmonic gravity model,  truncated to order and degree 90.download_kp\ndownload_solar_flux\ndownload_all_data\nEarthOrientationData\nEOP\nUT1_UTC\nPOLE_LOCATOR\nXP\nYP\nset_eop\nload_eop\nGravModel\nGRAVITY_MODEL\nload_gravity_model\nGRAV_COEF"
+    "text": "The Universe submodule defines simulation-specific data files which are constants  of most simulations. In particular it provides data structures for storing and accessing Earth orientation parameters and spherical harmonic gravity field  models.The module defines the global variables EOP and GRAVITY_MODEL which load default data values at runtime.EOP defaults to use the rapid Earth orientation data file finals.all (IAU 2000) distributed by the IERS. The module also supports IERS C04 product files.GRAVITY_MODEL defaults to use the EGM2008 spherical harmonic gravity model,  truncated to order and degree 90.All data files in the module can be updated by running the command download_all_data() in the Julia REPL.download_kp\ndownload_solar_flux\ndownload_all_data\nEarthOrientationData\nEOP\nUT1_UTC\nPOLE_LOCATOR\nXP\nYP\nset_eop\nload_eop\nGravModel\nGRAVITY_MODEL\nload_gravity_model"
 },
 
 {
@@ -913,139 +1025,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.deriv_orbit_earth",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.deriv_orbit_earth",
-    "category": "function",
-    "text": "Compute the state derivative.\n\nArguments:\n\nepc::Epoch: Current epoch\nx::Array{<:Real, 1}: Satellite state vector\nmass::Real: Satellite mass [kg]\narea_drag: Velocity-facing area affected by drag. [m^2]\ncoef_drag: Coefficient of drag [dimensionless]\narea_srp: Velocity-facing area affected by drag. [m^2]\ncoef_srp: Coefficient of reflectivity [dimensionless]  \nn_grav::Integer: Gravity model degree (Default: 20)\nm_grav::Integer: Gravity model order (Default: 20)\ndrag::Bool: Include cannonball atomospheric drag in force model (Default: true)\nsrp::Bool: Include flat-plate solar radiation pressure in force model (Default: true)\nmoon::Bool: Include thridbody lunar gravity in force model (Default: true)\nsun::Bool: Include thirdbody solar in force model (Default: true)\nrelativity::Bool: Include relativistic effects in force model (Default: true)\n\nReturns:\n\ndx::Array{<:Float64, 1}: Satellite state derivative, velocity and accelerations [m; m/s]\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_point_mass",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.accel_point_mass",
-    "category": "function",
-    "text": "Computes the acceleration of a satellite caused by a point-mass approximation  of the central body. Returns the acceleration vector of the satellite.\n\nAssumes the satellite is much, much less massive than the central body.\n\nArguments:\n\nr_sat::Array{<:Real, 1}: satellite position in a commonn inertial frame [m]\nr_body::Array{<:Real, 1}: position of body in a commonn inertial frame [m]\nGM::Array{<:Real, 1}: gravitational coeffient of attracting body [m^3/s^2] Default: SatelliteDynamics.Constants.GM_EARTH)\n\n(Default: SatelliteDynamics.Constants.GM_EARTH\n\nReturn:\n\na::Array{<:Real, 1}: Acceleration in X, Y, and Z inertial directions [m/s^2]\n\n\n\n\n\nComputes the acceleration on a satellite caused by a point-mass approximation  of a massive body. Returns the acceleration vector of the satellite.\n\nArguments:\n\nr_sat::Array{<:Real, 1}: satellite position in the inertial frame [m]\nGM::Array{<:Real, 1}: gravitational coeffient of attracting body [m^3/s^2] Default: SatelliteDynamics.Constants.GM_EARTH)\n\n(Default: SatelliteDynamics.Constants.GM_EARTH\n\nReturn:\n\na::Array{<:Real, 1}: Acceleration in X, Y, and Z inertial directions [m/s^2]\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_gravity",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.accel_gravity",
-    "category": "function",
-    "text": "Computes the accleration caused by Earth gravity as modeled by a spherical  harmonic gravity field.\n\nArguments:\n\nr_sat::Array{<:Real, 1}: Satellite position in the inertial frame [m]\nR_eci_ecef::Array{<:Real, 2}: Rotation matrix transforming a vector from the inertial to body-fixed reference frames. \nn_max::Integer: Maximum degree coefficient to use in expansion\nm_max::Integer: Maximum order coefficient to use in the expansion. Must be less than the degree.\n\nReturn:\n\na::Array{<:Real, 1}: Gravitational acceleration in X, Y, and Z inertial directions [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.56-68.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.sun_position",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.sun_position",
-    "category": "function",
-    "text": "Compute the Sun\'s position in the EME2000 inertial frame through the use of low-precision analytical functions.\n\nArgument:\n\nepc::Epoch: Epoch\n\nReturns:\n\nr_sun::Array{<:Real, 1}: Position vector of the Sun in the Earth-centered inertial fame.\n\nNotes:\n\nThe EME2000 inertial frame is for most purposes equivalent to the GCRF frame.\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.70-73.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.moon_position",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.moon_position",
-    "category": "function",
-    "text": "Compute the Moon\'s position in the EME2000 inertial frame through the use of low-precision analytical functions.\n\nArgument:\n\nepc::Epoch: Epoch\n\nReturns:\n\nr_moon::Array{<:Real, 1}: Position vector of the Moon in the Earth-centered inertial fame.\n\nNotes:\n\nThe EME2000 inertial frame is for most purposes equivalent to the GCRF frame.\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.70-73.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_thirdbody_sun",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.accel_thirdbody_sun",
-    "category": "function",
-    "text": "Computes the acceleration of a satellite in the inertial frame due to the gravitational attraction of the Sun.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nr_sun::Array{<:Real, 1}: Position of sun in inertial frame.\n\nReturn:\n\na::Array{<:Real, 1}: Acceleration due to the Sun\'s gravity in the inertial frame [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.69-70.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_thirdbody_moon",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.accel_thirdbody_moon",
-    "category": "function",
-    "text": "Computes the acceleration of a satellite in the inertial frame due to the gravitational attraction of the Moon.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nr_moon::Array{<:Real, 1}: Position of moon in inertial frame.\n\nReturns:\n\na::Array{<:Real, 1}: Acceleration due to the Moon\'s gravity in the inertial frame [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.69-70.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.density_harris_priester",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.density_harris_priester",
-    "category": "function",
-    "text": "Computes the local density using the Harris-Priester density model.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nr_sun::Array{<:Real, 1}: Position of sun in inertial frame.\n\nReturns:\n\nrho:Float64: Local atmospheric density [kg/m^3]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.89-91.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_drag",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.accel_drag",
-    "category": "function",
-    "text": "Computes the perturbing, non-conservative acceleration caused by atmospheric drag assuming that the ballistic properties of the spacecraft are captured by the coefficient of drag.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nrho::Real: atmospheric density [kg/m^3]\nmass::Real: Spacecraft mass [kg]\narea::Real: Wind-facing cross-sectional area [m^2]\nCd::Real: coefficient of drag [dimensionless]\nT::Array{<:Real, 2}: Rotation matrix from the inertial to the true-of-date frame\n\nReturn:\n\na::Array{<:Real, 1}: Acceleration due to drag in the X, Y, and Z inertial directions. [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.83-86.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.eclipse_cylindrical",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.eclipse_cylindrical",
-    "category": "function",
-    "text": "Computes the illumination fraction of a satellite in Earth orbit using a cylindrical Earth shadow model.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nr_sun::Array{<:Real, 1}: Position of sun in inertial frame.\n\nReturn:\n\nnu::Float64: Illumination fraction (0 <= nu <= 1). nu = 0 means spacecraft in complete shadow, nu = 1 mean spacecraft fully illuminated by sun.\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.80-83.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.eclipse_conical",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.eclipse_conical",
-    "category": "function",
-    "text": "Computes the illumination fraction of a satellite in Earth orbit using a conical Earth shadow model.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\nr_sun::Array{<:Real, 1}: Position of sun in inertial frame.\n\nReturn:\n\nnu::Float64: Illumination fraction (0 <= nu <= 1). nu = 0 means spacecraft in complete shadow, nu = 1 mean spacecraft fully illuminated by sun.\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.80-83.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_srp",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.accel_srp",
-    "category": "function",
-    "text": "Computes the perturbing acceleration due to direct solar radiation  pressure assuming the reflecting surface is a flat plate pointed directly at the Sun.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\n\nReturns:\n\na::Array{<:Real, 1}: Satellite acceleration due to solar radiation pressure [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.77-79.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/orbit_dynamics/#SatelliteDynamics.OrbitDynamics.accel_relativity",
-    "page": "Orbit Dynamics",
-    "title": "SatelliteDynamics.OrbitDynamics.accel_relativity",
-    "category": "function",
-    "text": "Computes perturbation accleration of a satellite in the Inertial frame due to the combined effects of special and general relativity.\n\nArguments:\n\nx::Array{<:Real, 1}: Satellite Cartesean state in the inertial reference frame [m; m/s]\n\nReturns:\n\na::Array{<:Real, 1}: Satellite acceleration due to relativity. [m/s^2]\n\nReferences:\n\nO. Montenbruck, and E. Gill, Satellite Orbits: Models, Methods and Applications, 2012, p.110-112.\n\n\n\n\n\n"
-},
-
-{
     "location": "modules/orbit_dynamics/#OrbitDynamics-1",
     "page": "Orbit Dynamics",
     "title": "OrbitDynamics",
     "category": "section",
     "text": "The OrbitDynamics module provides implementations of various force and orbit perturbation models used in orbit simulation.deriv_orbit_earth\naccel_point_mass\naccel_gravity\nsun_position\nmoon_position\naccel_thirdbody_sun\naccel_thirdbody_moon\ndensity_harris_priester\naccel_drag\neclipse_cylindrical\neclipse_conical\naccel_srp\naccel_relativity"
-},
-
-{
-    "location": "modules/simulation/#",
-    "page": "Simulation",
-    "title": "Simulation",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "modules/simulation/#SatelliteDynamics.Simulation.propagate_orbit",
-    "page": "Simulation",
-    "title": "SatelliteDynamics.Simulation.propagate_orbit",
-    "category": "function",
-    "text": "Simulate orbit dynamics\n\nArguments:\n\nepc0::Epoch: Propagation start Epoch\neci0::Epoch: Initial Cartesean inertial state [m; m/s]\nepcf::Epoch: Final to simulate to.\ntimestep::Real: Timestep to use for simulation (Default: 5.0)\nsolver: Solver to use to solve ODEProblem\natol::Real: Absolute tolerate limit for differential equation solution (Default: 1.0e-9)\natol::Real: Absolute tolerate limit for differential equation solution (Default: 1.0e-9)\nmass::Real: Satellite mass (Default: 100.0) [kg]\narea_drag::Real: Area of drag (cannon-ball model) (Default: 1.0) [m^2]\ncoef_drag::Real: Coefficient of drag (Default: 2.3) [dimensionless]\narea_srp::Real: Area of solar radiation prerssure (Default: 1.0) [m^2]\ncoef_srp::Real: Coefficient of reflectivity (Default: 1.8) [dimensionless]\nn_grav::Integer: Degree of gravity field (Default: 0.0) [dimensionless]\nm_grav::Integer: Order of gravity field (Default: 0.0) [dimensionless]\ndrag::Bool: Apply drag perturbation (Default: false)\nsrp::Bool: Apply solar radiation pressure perturbation (Default: false)\nmoon::Bool: Apply third-body lunar gravity perturbation (Default: false)\nsun::Bool: Apply third-body solar gravity perturbation (Default: false)\nrelativity::Bool: Apply relativistic perturbations (Default: false)\n\nReturns:\n\nt::Array{Float64, 1}: Simulation output times at elapsed seconds from initial Epoch\nepc::Array{Epoch, 1}: Simulation output times as absolute Epochs\neci::Array{Float64, 2}: Propgated inertial state. Time is aligned with column dimension.\n\n\n\n\n\n"
-},
-
-{
-    "location": "modules/simulation/#Simulation-1",
-    "page": "Simulation",
-    "title": "Simulation",
-    "category": "section",
-    "text": "The Simulation module provides the capability to simulate satellite orbit and  attitude dynamics by combining the dynamics functions provided in this module  with the numerical integration capabilities of DifferentialEquations.jl.The goal is to provide straight forward, and easily customizable interfaces for simulations of orbit and attitude dynamics.propagate_orbit"
 },
 
 {
@@ -1134,6 +1118,134 @@ var documenterSearchIndex = {"docs": [
     "title": "Simulation",
     "category": "section",
     "text": "Modules = [SatelliteDynamics.Simulation]"
+},
+
+{
+    "location": "modules/earth_environment/space_weather/#",
+    "page": "Space Weather",
+    "title": "Space Weather",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/earth_environment/space_weather/#Space-Weather-1",
+    "page": "Space Weather",
+    "title": "Space Weather",
+    "category": "section",
+    "text": "The Space Weather submodule provides classes to store and access space weather  data files. In particular Solar Flux and Geomagnetic index data.The module defines the global variables GEOMAGNETIC_DATA and SOLAR_FLUX_DATA which are loaded at runtime and GEOMAGNETIC_DATA stores Geomagnetic Kp and Ap indicies used in models of  Earth\'s atmosphere.SOLAR_FLUX_DATA stores F10.7 cm solar flux data which is a measurement of  solar activity and another input to most atmospheric models.GeomagneticIndexData\nGEOMAGNETIC_DATA\nKpIndices\nKpIndex\nKpDailyIndex\nApIndices\nApIndex\nApDailyIndex\nSolarFluxData\nSOLAR_FLUX_DATA\nf107Data\nf107Observed\nf107Adjusted\nf107ObservedAvg\nf107AdjustedAvg"
+},
+
+{
+    "location": "modules/earth_environment/nrlmsise00/#",
+    "page": "NRLMSISE00",
+    "title": "NRLMSISE00",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/earth_environment/nrlmsise00/#NRLMSISE00-1",
+    "page": "NRLMSISE00",
+    "title": "NRLMSISE00",
+    "category": "section",
+    "text": "The NRLMSISE00 module provides a pure-Julia implementation of the NRLMSISE00  Earth atmospheric model.The implementation is based off of Daniel Brodo\'s C implementation which can be  found here.Most of the module code is for purple internal only. The density should only be retrieved through the density_nrlmsise00 function which will properly  compute the required model inputs for the given time.Unforunately because the Geomagnetic and solar flux data has no predicted  component this density model is currently restricted to computing density in the past.density_nrlmsise00"
+},
+
+{
+    "location": "modules/simulation/integrators/#",
+    "page": "Integrators",
+    "title": "Integrators",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/simulation/integrators/#SatelliteDynamics.Simulation.Integrators.RK4",
+    "page": "Integrators",
+    "title": "SatelliteDynamics.Simulation.Integrators.RK4",
+    "category": "type",
+    "text": "RK4 is a numerical integrator object which stores a function of signature  f(epc, x,...; kwargs...) along with its associated settings parameters.\n\nArguments:\n\nf::Function Function for integration. \nauxParams::Dict\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/simulation/integrators/#SatelliteDynamics.Simulation.Integrators.istep",
+    "page": "Integrators",
+    "title": "SatelliteDynamics.Simulation.Integrators.istep",
+    "category": "function",
+    "text": "Performs single integration step of numerical integrator.\n\nArguments:\n\nrk4::RK4 4-th order Runge-Kutta numerical integrator object\nepc::Union{Real, Epoch} Absolute time of start of integration step\ndt::Real Integration step size\nx::Array{<:Real, 1} State vector\nphi::Array{<:Real, 2} State transition matrix at start of integration step\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/simulation/integrators/#Integrators-1",
+    "page": "Integrators",
+    "title": "Integrators",
+    "category": "section",
+    "text": "The Integrators module is meant to provide built in numerical integration  capabilities for the module. While the dynamics functions provided as part of of the Simulation module are compatible with the more complete set of numerical  integrators provided in DifferentialEquations.jl, the integrators implemented here make other useful functionality such as integration of the Variational Equations, and incorporating impulsive maneuvers easier to implement.Currently only the RK4 integrator is supported.Normally it is easier to use the propagators defined in the Propagators module  for simulation, but the class and method provided here can be used for the  implementation of custom numerical propagators.RK4\nistep"
+},
+
+{
+    "location": "modules/simulation/propagators/#",
+    "page": "Propagators",
+    "title": "Propagators",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "modules/simulation/propagators/#SatelliteDynamics.Simulation.Propagators.fderiv_earth_orbit",
+    "page": "Propagators",
+    "title": "SatelliteDynamics.Simulation.Propagators.fderiv_earth_orbit",
+    "category": "function",
+    "text": "Compute the state derivative.\n\nArguments:\n\nepc::Epoch: Current epoch\nx::Array{<:Real, 1}: Satellite state vector\nmass::Real: Satellite mass [kg]\narea_drag: Velocity-facing area affected by drag. [m^2]\ncoef_drag: Coefficient of drag [dimensionless]\narea_srp: Velocity-facing area affected by drag. [m^2]\ncoef_srp: Coefficient of reflectivity [dimensionless]  \nn_grav::Integer: Gravity model degree (Default: 20)\nm_grav::Integer: Gravity model order (Default: 20)\ndrag::Bool: Include cannonball atomospheric drag in force model (Default: true)\nsrp::Bool: Include flat-plate solar radiation pressure in force model (Default: true)\nmoon::Bool: Include thridbody lunar gravity in force model (Default: true)\nsun::Bool: Include thirdbody solar in force model (Default: true)\nrelativity::Bool: Include relativistic effects in force model (Default: true)\n\nReturns:\n\ndx::Array{<:Float64, 1}: Satellite state derivative, velocity and accelerations [m; m/s]\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/simulation/propagators/#SatelliteDynamics.Simulation.Propagators.EarthInertialState",
+    "page": "Propagators",
+    "title": "SatelliteDynamics.Simulation.Propagators.EarthInertialState",
+    "category": "type",
+    "text": "Satellite orbit state vector using an Earth inertial state representation and dynamics model.\n\nIf an initial state transition matrix is provided it will be used for propagation if there is no state transition matrix then only the state will be propagated.\n\nAttributes: -rk4::RK4 Internal numerical integrator used for state propagation -dt::Real Default propagation time step. All steps will be this size unless  the state vector is requested to propagate to a time smaller than this step size, which it will do. -epc::Epoch Epoch of state -x::Array{Float64, 1} State vector. Earth-centered inertial Cartesian state. -phi::Union{Nothing, Array{Float64, 2}} State transition matrix, or the matrix of partial derivatives of the state at the current time with respect to the  start of propagation.\n\nThe following force model parametters can be set as keyword arguments\n\nParameters:\n\nmass::Real: Satellite mass [kg]\narea_drag: Velocity-facing area affected by drag. [m^2]\ncoef_drag: Coefficient of drag [dimensionless]\narea_srp: Velocity-facing area affected by drag. [m^2]\ncoef_srp: Coefficient of reflectivity [dimensionless]  \nn_grav::Integer: Gravity model degree (Default: 20)\nm_grav::Integer: Gravity model order (Default: 20)\ndrag::Bool: Include cannonball atomospheric drag in force model (Default: true)\nsrp::Bool: Include flat-plate solar radiation pressure in force model (Default: true)\nmoon::Bool: Include thridbody lunar gravity in force model (Default: true)\nsun::Bool: Include thirdbody solar in force model (Default: true)\nrelativity::Bool: Include relativistic effects in force model (Default: true)\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/simulation/propagators/#SatelliteDynamics.Simulation.Propagators.step!",
+    "page": "Propagators",
+    "title": "SatelliteDynamics.Simulation.Propagators.step!",
+    "category": "function",
+    "text": "Step dynamics state the specified time.\n\nArguments: -state::EarthInertialState State vector to propagate -dt::Real Step size. If no value is provided will use default state stepsize\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/simulation/propagators/#SatelliteDynamics.Simulation.Propagators.stepto!",
+    "page": "Propagators",
+    "title": "SatelliteDynamics.Simulation.Propagators.stepto!",
+    "category": "function",
+    "text": "Step dynamics state to the specified time. Will take as many internal steps as  required to advance the propagator to the correct time. No internal step will  exceed the size specified in the state propagator.\n\nArguments: -state::EarthInertialState State vector to propagate -time::Union{Real, Epoch} Time to propagate internal state too. Can be either a real number to advance the state by or the Epoch\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/simulation/propagators/#SatelliteDynamics.Simulation.Propagators.sim!",
+    "page": "Propagators",
+    "title": "SatelliteDynamics.Simulation.Propagators.sim!",
+    "category": "function",
+    "text": "Simulate the sttate dynamics to the specified time. Takes same inputs as stepto! but instead of just updating the state vector to the specified time, this  function also returns the timesteps, state values, and state transition matrices for each time step.\n\nArguments: -state::EarthInertialState State vector to propagate -time::Union{Real, Epoch} Time to propagate internal state too. Can be either a real number to advance the state by or the Epoch\n\nReturns: -t::Array{Float64, 1} Elapsed time as a scalar from the initial simulation epoch  -epc::Array{Epoch, 1} Epoch at each timestep  -x::Array{Float64, 2} State vectors at each time step. Time is along second axis -Phi::Array{Float64, 2} Stacked array of state transition matrices\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/simulation/propagators/#SatelliteDynamics.Simulation.Propagators.reinit!",
+    "page": "Propagators",
+    "title": "SatelliteDynamics.Simulation.Propagators.reinit!",
+    "category": "function",
+    "text": "Reinitialize State transition matrix to identity at the current time step.\n\nUsed to reinitialize the state transition matrix value to identity\n\n\n\n\n\n"
+},
+
+{
+    "location": "modules/simulation/propagators/#Propagators-1",
+    "page": "Propagators",
+    "title": "Propagators",
+    "category": "section",
+    "text": "The Propagators module aims to provide straight forward, easy to use, interfaces for simulations of orbit and attitude dynamics. The module both defines the state  derivative dynamics functions as well as methods to propagate the state vector in time.It is important to note the default behavior and documentation for each function because functionality can change dramatically (simulation of state-only for full integration of the variational equations) depending on the inputs provided.fderiv_earth_orbit\nEarthInertialState\nstep!\nstepto!\nsim!\nreinit!"
 },
 
 {
