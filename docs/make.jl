@@ -28,8 +28,8 @@ makedocs(
                 "NRLMSISE00" => "modules/earth_environment/nrlmsise00.md"
             ],
             "Simulation" => Any[
-                "modules/integrators.md"
-                "modules/propagators.md"
+                "modules/simulation/integrators.md"
+                "modules/simulation/propagators.md"
             ]
         ],
         "Tutorials" => Any[

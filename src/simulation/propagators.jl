@@ -270,7 +270,9 @@ function sim!(state::EarthInertialState, time::Union{Real, Epoch}=0.0)
         epc[idx]  = state.epc
         t[idx]    = epc[idx] - epc[1]
         x[:, idx] = state.x
-        A[(1+n*(idx-1)):(n*idx), :] = state.phi
+        if state.phi != nothing
+            A[(1+n*(idx-1)):(n*idx), :] = state.phi
+        end
     end
 
     # Output

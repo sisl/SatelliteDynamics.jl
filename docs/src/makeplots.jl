@@ -1,4 +1,7 @@
 using Plots, LaTeXStrings
+
+using SatelliteDynamics.Simulation
+
 Plots.gr()
 
 function example_orbit_propagation_kepler(plot_dir)
@@ -11,15 +14,16 @@ function example_orbit_propagation_kepler(plot_dir)
     eci0 = sOSCtoCART(oe0, use_degrees=true)
 
     # Simulate orbit for one orbit
-    epcf = epc0 + orbit_period(oe0[1])
-    orb = EarthInertialState(epc0, eci0, dt=1.0,
+    T    = orbit_period(oe0[1])
+    epcf = epc0 + T
+    orb  = EarthInertialState(epc0, eci0, dt=1.0,
             mass=1.0, n_grav=0, m_grav=0,
             drag=false, srp=false,
             moon=false, sun=false,
             relativity=false
     )
 
-    t, epc, x = sim!(orb, epcf)
+    t, epc, eci = sim!(orb, epcf)
 
     # Create plot with one series
     AX_LIM = R_EARTH + 1000e3
@@ -84,15 +88,16 @@ function example_orbit_propagation_fullforce(plot_dir)
     eci0 = sOSCtoCART(oe0, use_degrees=true)
 
     # Simulate orbit for one orbit
-    epcf = epc0 + orbit_period(oe0[1])
-    orb = EarthInertialState(epc0, eci0, dt=1.0,
+    T    = orbit_period(oe0[1])
+    epcf = epc0 + T
+    orb  = EarthInertialState(epc0, eci0, dt=1.0,
             mass=100.0, n_grav=20, m_grav=20,
             drag=true, srp=true,
             moon=true, sun=true,
             relativity=true
     )
 
-    t, epc, x = sim!(orb, epcf)
+    t, epc, eci = sim!(orb, epcf)
 
     # Create plot with one series
     AX_LIM = R_EARTH + 1000e3
