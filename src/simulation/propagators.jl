@@ -109,13 +109,13 @@ If an initial state transition matrix is provided it will be used for propagatio
 if there is no state transition matrix then only the state will be propagated.
 
 Attributes:
--`rk4::RK4` Internal numerical integrator used for state propagation
--`dt::Real` Default propagation time step. All steps will be this size unless 
+- `rk4::RK4` Internal numerical integrator used for state propagation
+- `dt::Real` Default propagation time step. All steps will be this size unless 
 the state vector is requested to propagate to a time smaller than this step size,
 which it will do.
--`epc::Epoch` Epoch of state
--`x::Array{Float64, 1}` State vector. Earth-centered inertial Cartesian state.
--`phi::Union{Nothing, Array{Float64, 2}}` State transition matrix, or the matrix
+- `epc::Epoch` Epoch of state
+- `x::Array{Float64, 1}` State vector. Earth-centered inertial Cartesian state.
+- `phi::Union{Nothing, Array{Float64, 2}}` State transition matrix, or the matrix
 of partial derivatives of the state at the current time with respect to the 
 start of propagation.
 
@@ -154,8 +154,8 @@ export step!
 Step dynamics state the specified time.
 
 Arguments:
--`state::EarthInertialState` State vector to propagate
--`dt::Real` Step size. If no value is provided will use default state stepsize
+- `state::EarthInertialState` State vector to propagate
+- `dt::Real` Step size. If no value is provided will use default state stepsize
 """
 function step!(state::EarthInertialState, dt::Real=0.0)
     # Set step size
@@ -182,8 +182,8 @@ required to advance the propagator to the correct time. No internal step will
 exceed the size specified in the state propagator.
 
 Arguments:
--`state::EarthInertialState` State vector to propagate
--`time::Union{Real, Epoch}` Time to propagate internal state too. Can be either
+- `state::EarthInertialState` State vector to propagate
+- `time::Union{Real, Epoch}` Time to propagate internal state too. Can be either
 a real number to advance the state by or the Epoch
 """
 function stepto!(state::EarthInertialState, time::Union{Real, Epoch}=0.0)
@@ -213,15 +213,15 @@ function also returns the timesteps, state values, and state transition
 matrices for each time step.
 
 Arguments:
--`state::EarthInertialState` State vector to propagate
--`time::Union{Real, Epoch}` Time to propagate internal state too. Can be either
+- `state::EarthInertialState` State vector to propagate
+- `time::Union{Real, Epoch}` Time to propagate internal state too. Can be either
 a real number to advance the state by or the Epoch
 
 Returns:
--`t::Array{Float64, 1}` Elapsed time as a scalar from the initial simulation epoch 
--`epc::Array{Epoch, 1}` Epoch at each timestep 
--`x::Array{Float64, 2}` State vectors at each time step. Time is along second axis
--`Phi::Array{Float64, 2}` Stacked array of state transition matrices
+- `t::Array{Float64, 1}` Elapsed time as a scalar from the initial simulation epoch 
+- `epc::Array{Epoch, 1}` Epoch at each timestep 
+- `x::Array{Float64, 2}` State vectors at each time step. Time is along second axis
+- `Phi::Array{Float64, 2}` Stacked array of state transition matrices
 """
 function sim!(state::EarthInertialState, time::Union{Real, Epoch}=0.0)
     if typeof(time) <: Real

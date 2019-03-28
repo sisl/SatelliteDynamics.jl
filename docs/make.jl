@@ -22,7 +22,6 @@ makedocs(
             "modules/coordinates.md",
             "modules/astrodynamics.md",
             "Orbit Dynamics" => "modules/orbit_dynamics.md",
-            "Function Index" => "modules/function_index.md",
             "Earth Environment" => Any[
                 "Space Weather" => "modules/earth_environment/space_weather.md"
                 "NRLMSISE00" => "modules/earth_environment/nrlmsise00.md"
@@ -35,6 +34,7 @@ makedocs(
         "Tutorials" => Any[
             "tutorials/orbit_propagation_example.md",
         ],
+        "Function Index" => "modules/function_index.md",
     ]
 )
 

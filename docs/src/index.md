@@ -23,7 +23,9 @@ using SatelliteDynamics
 
 ## Package Structure
 
-The package is divided into a number of submodules each designed to provide a single, well-defined set of functions. The details of each specific module can be found on the relevant documentation page.
+The package is divided into a number of submodules each designed to provide a single, 
+well-defined set of functions. The details of each specific module can be found 
+on the relevant documentation page.
 
 ```@contents
 Pages = [
@@ -35,9 +37,29 @@ Pages = [
 "modules/coordinates.md",
 "modules/astrodynamics.md",
 "modules/orbit_dynamics.md",
-"modules/simulation.md",
 ]
 Depth = 2
+```
+
+There are also two subpackages which provide additional functionality in a 
+self-contained manner. These are `EarthEnvrionment` and `Simulation`.
+
+**EarthEnvrionment:**
+```@contents
+Pages = [
+"modules/earth_environment/space_weather.md",
+"modules/earth_environment/nrlmsise00.md",
+]
+Depth = 3
+```
+
+**Simulation:**
+```@contents
+Pages = [
+"modules/simulation/integrators.md",
+"modules/simulation/propagators.md",
+]
+Depth = 3
 ```
 
 ## Examples

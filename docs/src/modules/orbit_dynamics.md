@@ -3,7 +3,6 @@
 The OrbitDynamics module provides implementations of various force and orbit perturbation models used in orbit simulation.
 
 ```@docs
-deriv_orbit_earth
 accel_point_mass
 accel_gravity
 sun_position
