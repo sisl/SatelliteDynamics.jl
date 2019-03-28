@@ -1,4 +1,5 @@
 let
+    using SatelliteDynamics.EarthEnvironment.NRLMSISE00: NRLMSISE_Input, NRLMSISE_Output, NRLMSISE_Flags, gtd7!
     # Test core NRLMSISE - Test cases match Daniel Brodo's C implementation
     input  = NRLMSISE_Input[NRLMSISE_Input() for i in 1:17]
     output = NRLMSISE_Output[NRLMSISE_Output() for i in 1:17]

@@ -4,7 +4,7 @@ include("src/makeplots.jl")
 
 # Generate documents
 makedocs(
-    modules   = [SatelliteDynamics],
+    modules   = [SatelliteDynamics, SatelliteDynamics.EarthEnvironment, SatelliteDynamics.Simulation],
     doctest   = false,
     clean     = true,
     linkcheck = true,
@@ -22,8 +22,15 @@ makedocs(
             "modules/coordinates.md",
             "modules/astrodynamics.md",
             "Orbit Dynamics" => "modules/orbit_dynamics.md",
-            "Simulation" => "modules/simulation.md",
             "Function Index" => "modules/function_index.md",
+            "Earth Environment" => Any[
+                "Space Weather" => "modules/earth_environment/space_weather.md"
+                "NRLMSISE00" => "modules/earth_environment/nrlmsise00.md"
+            ],
+            "Simulation" => Any[
+                "modules/integrators.md"
+                "modules/propagators.md"
+            ]
         ],
         "Tutorials" => Any[
             "tutorials/orbit_propagation_example.md",

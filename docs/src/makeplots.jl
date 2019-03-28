@@ -11,9 +11,15 @@ function example_orbit_propagation_kepler(plot_dir)
     eci0 = sOSCtoCART(oe0, use_degrees=true)
 
     # Simulate orbit for one orbit
-    T    = orbit_period(oe0[1])
-    epcf = epc0 + T
-    t, epc, eci = propagate_orbit(epc0, eci0, epcf, timestep=0.1, dtmax=1)
+    epcf = epc0 + orbit_period(oe0[1])
+    orb = EarthInertialState(epc0, eci0, dt=1.0,
+            mass=1.0, n_grav=0, m_grav=0,
+            drag=false, srp=false,
+            moon=false, sun=false,
+            relativity=false
+    )
+
+    t, epc, x = sim!(orb, epcf)
 
     # Create plot with one series
     AX_LIM = R_EARTH + 1000e3
@@ -78,16 +84,15 @@ function example_orbit_propagation_fullforce(plot_dir)
     eci0 = sOSCtoCART(oe0, use_degrees=true)
 
     # Simulate orbit for one orbit
-    T    = orbit_period(oe0[1])
-    epcf = epc0 + T
-    t, epc, eci = propagate_orbit(epc0, eci0, epcf, timestep=0.1, dtmax=1,
-                                mass=100.0, 
-                                area_drag=1.0, coef_drag=2.3, 
-                                area_srp=1.0, coef_srp=1.8, 
-                                n_grav=20, m_grav=20, 
-                                drag=true, srp=true, 
-                                moon=true, sun=true, 
-                                relativity=true)
+    epcf = epc0 + orbit_period(oe0[1])
+    orb = EarthInertialState(epc0, eci0, dt=1.0,
+            mass=100.0, n_grav=20, m_grav=20,
+            drag=true, srp=true,
+            moon=true, sun=true,
+            relativity=true
+    )
+
+    t, epc, x = sim!(orb, epcf)
 
     # Create plot with one series
     AX_LIM = R_EARTH + 1000e3

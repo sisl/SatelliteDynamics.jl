@@ -13,7 +13,6 @@ include("attitude.jl")
 include("coordinates.jl")
 include("astrodynamics.jl")
 include("orbit_dynamics.jl")
-include("simulation.jl")
 
 # Export Values
 @reexport using SatelliteDynamics.Constants
@@ -24,10 +23,9 @@ include("simulation.jl")
 @reexport using SatelliteDynamics.Coordinates
 @reexport using SatelliteDynamics.Astrodynamics
 @reexport using SatelliteDynamics.OrbitDynamics
-@reexport using SatelliteDynamics.Simulation
 
 # Export EarthEnvironment submodule
-# println(joinpath("earth_environment", "earth_environment.jl"))
 include(joinpath(".", "earth_environment", "earth_environment.jl"))
+include(joinpath(".", "simulation", "simulation.jl"))
 
 end # module

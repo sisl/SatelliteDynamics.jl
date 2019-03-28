@@ -2,12 +2,13 @@
 using Test
 using Random
 using LinearAlgebra
-using OrdinaryDiffEq
 using Logging
+using Printf
 
 # Package under test
 using SatelliteDynamics
 using SatelliteDynamics.EarthEnvironment
+using SatelliteDynamics.Simulation
 
 # Set logging level
 global_logger(SimpleLogger(stderr, Logging.Debug))
@@ -68,15 +69,21 @@ end
     @time @testset "SatelliteDynamics.OrbitDynamics" begin
         include(joinpath(testdir, "test_orbitdynamics.jl"))
     end
-    @time @testset "SatelliteDynamics.Simulation" begin
-        include(joinpath(testdir, "test_simulation.jl"))
-    end
 
-    # # Earth Environment
+    # Earth Environment
     @time @testset "SatelliteDynamics.EarthEnvironment.NRLMSISE00" begin
         include(joinpath(testdir, "earth_environment/", "test_spaceweather.jl"))
     end
     @time @testset "SatelliteDynamics.EarthEnvironment.NRLMSISE00" begin
         include(joinpath(testdir, "earth_environment/", "test_nrlmsise00.jl"))
     end
+
+    # Simulation Tools
+    @time @testset "SatelliteDynamics.Simulation.Integrators" begin
+        include(joinpath(testdir, "simulation/", "test_integrators.jl"))
+    end
+    @time @testset "SatelliteDynamics.Simulation.Propagators" begin
+        include(joinpath(testdir, "simulation/", "test_propagators.jl"))
+    end
+
 end

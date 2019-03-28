@@ -2,14 +2,6 @@ let
     epc   = Epoch(2018, 3, 20, 16, 15, 0) # Test on Vernal equinox
     oe    = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
     x     = sOSCtoCART(oe, use_degrees = true)
-
-    dx = deriv_orbit_earth(epc, x, mass=50, area_drag=5, area_srp=5)
-end
-
-let
-    epc   = Epoch(2018, 3, 20, 16, 15, 0) # Test on Vernal equinox
-    oe    = [R_EARTH + 500e3, 0, 90.0, 0, 0, 0]
-    x     = sOSCtoCART(oe, use_degrees = true)
     R     = rECItoECEF(epc)
 
     a_grav_point = accel_point_mass(x[1:3])

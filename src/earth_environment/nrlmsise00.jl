@@ -22,8 +22,8 @@ include("nrlmsise00_data.jl")
 # Model Structure #
 ###################
 
-export NRLMSISE_Flags
 """
+Internal data structure used for setting model parameters
 """
 mutable struct NRLMSISE_Flags
     switches::Array{<:Int, 1}
@@ -37,7 +37,6 @@ mutable struct NRLMSISE_Flags
     end
 end
 
-export NRLMSISE_Input
 """
 Internal structure for storing model input
 
@@ -71,7 +70,6 @@ mutable struct NRLMSISE_Input
     end
 end
 
-export NRLMSISE_Output
 """
 # Output variables
 d = zeros(Float64, 9)
@@ -1034,8 +1032,7 @@ function glob7s(p::Array{<:Real, 1}, input::NRLMSISE_Input, flags::NRLMSISE_Flag
 
     return tt
 end
-
-export gtd7!
+!
 function gtd7!(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Output)
     # Working output varriable 
     soutput = NRLMSISE_Output()
