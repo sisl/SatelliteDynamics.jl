@@ -50,8 +50,16 @@ eci0 = sOSCtoCART(oe0, use_degrees=true)
 T    = orbit_period(oe0[1])
 epcf = epc0 + T
 
+# Initialize State Vector
+orb  = EarthInertialState(epc0, eci0, dt=1.0,
+            mass=1.0, n_grav=0, m_grav=0,
+            drag=false, srp=false,
+            moon=false, sun=false,
+            relativity=false
+)
+
 # Propagate the orbit
-t, epc, eci = simulate(epc0, eci0, epcf, timestep=1, dtmax=1)
+t, epc, eci = sim!(orb, epcf)
 ```
 
 And that's it! All it took was 6 lines of code with the SatelliteDynamics 
@@ -84,15 +92,16 @@ eci0 = sOSCtoCART(oe0, use_degrees=true)
 T    = orbit_period(oe0[1])
 epcf = epc0 + T
 
+# Initialize State Vector
+orb  = EarthInertialState(epc0, eci0, dt=1.0,
+        mass=100.0, n_grav=20, m_grav=20,
+        drag=true, srp=true,
+        moon=true, sun=true,
+        relativity=true
+)
+
 # Propagate the orbit
-t, epc, eci = simulate(epc0, eci0, epcf, timestep=1, dtmax=1
-                        mass=100.0, 
-                        area_drag=1.0, coef_drag=2.3, 
-                        area_srp=1.0, coef_srp=1.8, 
-                        n_grav=20, m_grav=20, 
-                        drag=true, srp=true, 
-                        moon=true, sun=true, 
-                        relativity=true)
+t, epc, eci = sim!(orb, epcf)
 ```
 
 We can visualize the orbit in inertial space:
