@@ -1,7 +1,5 @@
 using Plots, LaTeXStrings
 
-using SatelliteDynamics.Simulation
-
 Plots.gr()
 
 function example_orbit_propagation_kepler(plot_dir)

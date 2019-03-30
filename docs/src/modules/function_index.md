@@ -40,12 +40,18 @@ Modules = [SatelliteDynamics.Astrodynamics]
 Modules = [SatelliteDynamics.OrbitDynamics]
 ```
 
-## EarthEnvrionment
+## Earth Environment
 ```@index
-Modules = [SatelliteDynamics.EarthEnvrionment]
+Modules = [
+SatelliteDynamics.EarthEnvironment.SpaceWeather,
+SatelliteDynamics.EarthEnvironment.NRLMSISE00
+]
 ```
 
 ## Simulation
 ```@index
-Modules = [SatelliteDynamics.Simulation]
+Modules = [
+SatelliteDynamics.Simulation.Integrators,
+SatelliteDynamics.Simulation.Propagators
+]
 ```

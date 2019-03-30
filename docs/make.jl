@@ -1,4 +1,7 @@
-using Documenter, SatelliteDynamics
+using Documenter
+using SatelliteDynamics
+using SatelliteDynamics.EarthEnvironment
+using SatelliteDynamics.Simulation
 
 include("src/makeplots.jl")
 
@@ -23,11 +26,11 @@ makedocs(
             "modules/astrodynamics.md",
             "Orbit Dynamics" => "modules/orbit_dynamics.md",
             "Earth Environment" => Any[
-                "Space Weather" => "modules/earth_environment/space_weather.md"
+                "Space Weather" => "modules/earth_environment/space_weather.md",
                 "NRLMSISE00" => "modules/earth_environment/nrlmsise00.md"
             ],
             "Simulation" => Any[
-                "modules/simulation/integrators.md"
+                "modules/simulation/integrators.md",
                 "modules/simulation/propagators.md"
             ]
         ],
@@ -39,7 +42,7 @@ makedocs(
 )
 
 # Generate plots
-makeplots()
+# makeplots()
 
 deploydocs(
     repo = "github.com/sisl/SatelliteDynamics.jl",
