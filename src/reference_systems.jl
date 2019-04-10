@@ -366,8 +366,8 @@ function sECEFtoECI(epc::Epoch, x::Array{<:Real, 1})
     end
 
     if dim_x >= 9
-        x_eci[7:9] = (rot * bpn)' * ((pm)' * a_ecef + cross(omega_vec, cross(omega_vec, (pm)' * r_eci)) 
-                                 + 2 * cross(omega_vec, (pm)' * v_eci)) 
+        x_eci[7:9] = (rot * bpn)' * ((pm)' * a_ecef + cross(omega_vec, cross(omega_vec, (pm)' * x_eci[1:3])) 
+                                 + 2 * cross(omega_vec, (pm)' * x_eci[4:6])) 
     end
 
     return x_eci

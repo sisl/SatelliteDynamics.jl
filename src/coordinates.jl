@@ -150,7 +150,6 @@ function sECEFtoGEOD(ecef::Array{<:Real, 1} ; use_degrees::Bool=false)
     # Expand ECEF coordinates
     x, y, z = ecef
 
-
     # Compute intermediate quantities
     epsilon  = eps(Float64) * 1.0e3 * WGS84_a # Convergence requirement as function of machine precision
     rho2 = x^2 + y^2                      # Square of the distance from the z-axis
@@ -211,9 +210,9 @@ function rECEFtoENZ(ecef::Array{<:Real, 1} ; conversion::String="geodetic")
 
     # Compute Station Lat-Lon-Altitude
     if conversion == "geodetic"
-        lat, lon, = sECEFtoGEOD(ecef, use_degrees=true)
+        lat, lon, = sECEFtoGEOD(ecef, use_degrees=false)
     elseif conversion == "geocentric"
-        lat, lon, = sECEFtoGEOC(ecef, use_degrees=true)
+        lat, lon, = sECEFtoGEOC(ecef, use_degrees=false)
     else
         throw(ArgumentError("Unknown conversion method: $conversion"))
     end
@@ -366,9 +365,9 @@ function rECEFtoSEZ(ecef::Array{<:Real, 1} ; conversion::String="geodetic")
 
     # Compute Station Lat-Lon-Altitude
     if conversion == "geodetic"
-        lat, lon, = sECEFtoGEOD(ecef, use_degrees=true)
+        lat, lon, = sECEFtoGEOD(ecef, use_degrees=false)
     elseif conversion == "geocentric"
-        lat, lon, = sECEFtoGEOC(ecef, use_degrees=true)
+        lat, lon, = sECEFtoGEOC(ecef, use_degrees=false)
     else
         throw(ArgumentError("Unknown conversion method: $conversion"))
     end

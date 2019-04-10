@@ -338,7 +338,7 @@ let
     azel = sENZtoAZEL(enz)
     @test azel[1] != 0
     @test azel[2] != 0
-    @test azel[2] != 0
+    @test azel[3] != 0
 end
 
 let 
@@ -356,5 +356,5 @@ let
     azel = sSEZtoAZEL(sez)
     @test azel[1] != 0
     @test azel[2] != 0
-    @test azel[2] != 0
+    @test azel[3] != 0
 end
