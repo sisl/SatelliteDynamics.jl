@@ -574,7 +574,7 @@ function sENZtoAZEL(x::Array{<:Real, 1} ; use_degrees::Bool=false)
             azel_rate[1] *= 180/pi
             azel_rate[2] *= 180/pi
         end
-        end
+    end
 
     # Return
     if length(x) == 6
@@ -602,7 +602,7 @@ function sSEZtoAZEL(x::Array{<:Real, 1} ; use_degrees::Bool=false)
     end
 
     # Expand values
-    rS, rE, rZ = x[1], x[2], x[3
+    rS, rE, rZ = x[1], x[2], x[3]
     
     # Range
     rho = norm(x[1:3])
