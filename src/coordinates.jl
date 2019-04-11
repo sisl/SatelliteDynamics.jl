@@ -210,9 +210,9 @@ function rECEFtoENZ(ecef::Array{<:Real, 1} ; conversion::String="geodetic")
 
     # Compute Station Lat-Lon-Altitude
     if conversion == "geodetic"
-        lat, lon, = sECEFtoGEOD(ecef, use_degrees=false)
+        lon, lat, = sECEFtoGEOD(ecef, use_degrees=false)
     elseif conversion == "geocentric"
-        lat, lon, = sECEFtoGEOC(ecef, use_degrees=false)
+        lon, lat, = sECEFtoGEOC(ecef, use_degrees=false)
     else
         throw(ArgumentError("Unknown conversion method: $conversion"))
     end
@@ -365,9 +365,9 @@ function rECEFtoSEZ(ecef::Array{<:Real, 1} ; conversion::String="geodetic")
 
     # Compute Station Lat-Lon-Altitude
     if conversion == "geodetic"
-        lat, lon, = sECEFtoGEOD(ecef, use_degrees=false)
+        lon, lat, = sECEFtoGEOD(ecef, use_degrees=true)
     elseif conversion == "geocentric"
-        lat, lon, = sECEFtoGEOC(ecef, use_degrees=false)
+        lon, lat, = sECEFtoGEOC(ecef, use_degrees=true)
     else
         throw(ArgumentError("Unknown conversion method: $conversion"))
     end
