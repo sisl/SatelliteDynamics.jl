@@ -523,8 +523,6 @@ function sENZtoAZEL(x::Array{<:Real, 1} ; use_degrees::Bool=false)
     # Expand values
     rE, rN, rZ = x[1], x[2], x[3]
     
-    println("$rE, $rN, $rZ")
-    
     # Range
     rho = norm(x[1:3])
 
@@ -604,9 +602,7 @@ function sSEZtoAZEL(x::Array{<:Real, 1} ; use_degrees::Bool=false)
     end
 
     # Expand values
-    rS, rE, rZ = x[1], x[2], x[3]
-
-    println("$rS, $rE, $rZ")
+    rS, rE, rZ = x[1], x[2], x[3
     
     # Range
     rho = norm(x[1:3])
