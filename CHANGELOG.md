@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
     - Fixed bug in topocentric coordinate transforms which invalidates all conversions.
 
+## [0.2.1] - 2019-04-10
+
+### Fixed
+    - Fixed bug in topocentric coordinate transforms which invalidates all conversions.
+
 ## [0.2.0] - 2019-03-31
 ### Added
 - Added `download_all_data()` function to `Universe` module to allow user to update
