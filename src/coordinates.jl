@@ -365,9 +365,9 @@ function rECEFtoSEZ(ecef::Array{<:Real, 1} ; conversion::String="geodetic")
 
     # Compute Station Lat-Lon-Altitude
     if conversion == "geodetic"
-        lon, lat, = sECEFtoGEOD(ecef, use_degrees=true)
+        lon, lat, = sECEFtoGEOD(ecef, use_degrees=false)
     elseif conversion == "geocentric"
-        lon, lat, = sECEFtoGEOC(ecef, use_degrees=true)
+        lon, lat, = sECEFtoGEOC(ecef, use_degrees=false)
     else
         throw(ArgumentError("Unknown conversion method: $conversion"))
     end
@@ -521,7 +521,9 @@ function sENZtoAZEL(x::Array{<:Real, 1} ; use_degrees::Bool=false)
     end
 
     # Expand values
-    rE, rN, rZ = x[1], x[2], x[3]        
+    rE, rN, rZ = x[1], x[2], x[3]
+    
+    println("$rE, $rN, $rZ")
     
     # Range
     rho = norm(x[1:3])
@@ -574,7 +576,7 @@ function sENZtoAZEL(x::Array{<:Real, 1} ; use_degrees::Bool=false)
             azel_rate[1] *= 180/pi
             azel_rate[2] *= 180/pi
         end
-    end
+        end
 
     # Return
     if length(x) == 6
@@ -602,7 +604,9 @@ function sSEZtoAZEL(x::Array{<:Real, 1} ; use_degrees::Bool=false)
     end
 
     # Expand values
-    rS, rE, rZ = x[1], x[2], x[3]        
+    rS, rE, rZ = x[1], x[2], x[3]
+
+    println("$rS, $rE, $rZ")
     
     # Range
     rho = norm(x[1:3])
