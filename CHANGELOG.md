@@ -14,7 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed 
 
 ### Fixed
-    - Fixed bug in topocentric coordinate transforms which invalidates all conversions.
 
 ## [0.2.1] - 2019-04-10
 
