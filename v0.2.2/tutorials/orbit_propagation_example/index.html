@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Orbit Propagation · SatelliteDynamics.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link href="../../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><a href="../../index.html"><img class="logo" src="../../assets/logo.png" alt="SatelliteDynamics.jl logo"/></a><h1>SatelliteDynamics.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../../">Home</a></li><li><span class="toctext">Modules</span><ul><li><a class="toctext" href="../../modules/constants/">Constants</a></li><li><a class="toctext" href="../../modules/universe/">Universe</a></li><li><a class="toctext" href="../../modules/time/">Time</a></li><li><a class="toctext" href="../../modules/reference_systems/">Reference Systems</a></li><li><a class="toctext" href="../../modules/attitude/">Attitude</a></li><li><a class="toctext" href="../../modules/coordinates/">Coordinates</a></li><li><a class="toctext" href="../../modules/astrodynamics/">Astrodynamics</a></li><li><a class="toctext" href="../../modules/orbit_dynamics/">Orbit Dynamics</a></li><li><span class="toctext">Earth Environment</span><ul><li><a class="toctext" href="../../modules/earth_environment/space_weather/">Space Weather</a></li><li><a class="toctext" href="../../modules/earth_environment/nrlmsise00/">NRLMSISE00</a></li></ul></li><li><span class="toctext">Simulation</span><ul><li><a class="toctext" href="../../modules/simulation/integrators/">Integrators</a></li><li><a class="toctext" href="../../modules/simulation/propagators/">Propagators</a></li></ul></li></ul></li><li><span class="toctext">Tutorials</span><ul><li class="current"><a class="toctext" href>Orbit Propagation</a><ul class="internal"><li><a class="toctext" href="#Keplerian-Orbit-1">Keplerian Orbit</a></li><li><a class="toctext" href="#Full-Force-Model-1">Full Force Model</a></li></ul></li></ul></li><li><a class="toctext" href="../../modules/function_index/">Function Index</a></li></ul></nav><article id="docs"><header><nav><ul><li>Tutorials</li><li><a href>Orbit Propagation</a></li></ul><a class="edit-page" href="https://github.com/sisl/SatelliteDynamics.jl/blob/master/docs/src/tutorials/orbit_propagation_example.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Orbit Propagation</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Orbit-Propagation-1" href="#Orbit-Propagation-1">Orbit Propagation</a></h1><p>One of the primary features that SatelliteDynamics.jl aims to make easily accessible to users, is the ability to perform high-fidelity orbit propagation in an easy and customizable manner. In the example we will show how to simulate a satellite orbits using the tools provided in this module.</p><p>To start out we will perform an orbit propagation using the most basic orbit  model possible: a point-mass approximation of Earth&#39;s gravity without any  other perturbation models added on. </p><h2><a class="nav-anchor" id="Keplerian-Orbit-1" href="#Keplerian-Orbit-1">Keplerian Orbit</a></h2><p>First, we must declare the initial conditions for the simulation. This entails  declaring an initial <code>Epoch</code> as well as the inertial Cartesean state of the  statellite at that Epoch. </p><pre><code class="language-julia"># Declare simulation initial Epoch
+epc0 = Epoch(2019, 1, 1, 12, 0, 0, 0.0) 
+
+# Declare initial state in terms of osculating orbital elements
+oe0  = [R_EARTH + 500e3, 0.0, 90.0, 0, 0, 0]
+
+# Convert osculating elements to Cartesean state
+eci0 = sOSCtoCART(oe0, use_degrees=true)</code></pre><p>Next, simulate the orbit:</p><pre><code class="language-julia"># Set the propagation end time to one orbit period after the start
+T    = orbit_period(oe0[1])
+epcf = epc0 + T
+
+# Propagate the orbit
+t, epc, eci = simulate(orb, epcf, timestep=1, dtmax=1)</code></pre><p>Putting it all together we have:</p><pre><code class="language-julia"># Declare simulation initial Epoch
+epc0 = Epoch(2019, 1, 1, 12, 0, 0, 0.0) 
+
+# Declare initial state in terms of osculating orbital elements
+oe0  = [R_EARTH + 500e3, 0.01, 75.0, 45.0, 30.0, 0.0]
+
+# Convert osculating elements to Cartesean state
+eci0 = sOSCtoCART(oe0, use_degrees=true)
+
+# Set the propagation end time to one orbit period after the start
+T    = orbit_period(oe0[1])
+epcf = epc0 + T
+
+# Initialize State Vector
+orb  = EarthInertialState(epc0, eci0, dt=1.0,
+            mass=1.0, n_grav=0, m_grav=0,
+            drag=false, srp=false,
+            moon=false, sun=false,
+            relativity=false
+)
+
+# Propagate the orbit
+t, epc, eci = sim!(orb, epcf)</code></pre><p>And that&#39;s it! All it took was 6 lines of code with the SatelliteDynamics  module to propagate an orbit. </p><p>We can visualize the orbit in inertial space:</p><p><img src="../../plots/keplerian_orbit.svg" alt/></p><p>Or the evolution of the orbital elements:</p><p><img src="../../plots/keplerian_elements.svg" alt/></p><h2><a class="nav-anchor" id="Full-Force-Model-1" href="#Full-Force-Model-1">Full Force Model</a></h2><p>We can also repeat the same propagation with a full force orbit model to see the effect of perturbations on the orbital elements:</p><pre><code class="language-julia"># Declare simulation initial Epoch
+epc0 = Epoch(2019, 1, 1, 12, 0, 0, 0.0) 
+
+# Declare initial state in terms of osculating orbital elements
+oe0  = [R_EARTH + 500e3, 0.01, 75.0, 45.0, 30.0, 0.0]
+
+# Convert osculating elements to Cartesean state
+eci0 = sOSCtoCART(oe0, use_degrees=true)
+
+# Set the propagation end time to one orbit period after the start
+T    = orbit_period(oe0[1])
+epcf = epc0 + T
+
+# Initialize State Vector
+orb  = EarthInertialState(epc0, eci0, dt=1.0,
+        mass=100.0, n_grav=20, m_grav=20,
+        drag=true, srp=true,
+        moon=true, sun=true,
+        relativity=true
+)
+
+# Propagate the orbit
+t, epc, eci = sim!(orb, epcf)</code></pre><p>We can visualize the orbit in inertial space:</p><p><img src="../../plots/fullforce_orbit.svg" alt/></p><p>Or the evolution of the orbital elements:</p><p><img src="../../plots/fullforce_elements.svg" alt/></p><p>From these plots we can see the effect of the orbit perturbations on each of the orbital elements.</p><footer><hr/><a class="previous" href="../../modules/simulation/propagators/"><span class="direction">Previous</span><span class="title">Propagators</span></a><a class="next" href="../../modules/function_index/"><span class="direction">Next</span><span class="title">Function Index</span></a></footer></article></body></html>
