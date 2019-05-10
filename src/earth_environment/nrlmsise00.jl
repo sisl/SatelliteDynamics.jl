@@ -1204,7 +1204,7 @@ function gtd7d!(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_O
                              + 14.0 * output.d[8])
     
     if flags.sw[1] != 0
-        output.d[5] = output.d[5]/1000
+        output.d[6] = output.d[6]/1000
     end
 end
 
@@ -1239,7 +1239,6 @@ function gts7!(input::NRLMSISE_Input, flags::NRLMSISE_Flags, output::NRLMSISE_Ou
         tinf_g7, dfa, plg, ctloc, stloc, c2tloc, s2tloc, c3tloc, s3tloc, apdf, apt = globe7(pt,input,flags)
         # println("globe7 temp: $tinf_g7")
         tinf = ptm[1]*pt[1] * (1.0+flags.sw[17]*tinf_g7)
-        # println("branch 1")
     else
         tinf = ptm[1]*pt[1]
         # println("branch 2")
@@ -1626,7 +1625,7 @@ function density_nrlmsise00(epc::Epoch, x::Array{<:Real, 1}; use_degrees::Bool=f
     lat = x[2]
     alt = x[3]
 
-    if use_degrees
+    if !use_degrees
         lon *= 180.0/pi
         lat *= 180.0/pi
     end
@@ -1663,16 +1662,16 @@ function density_nrlmsise00(epc::Epoch, x::Array{<:Real, 1}; use_degrees::Bool=f
     flags.switches = ones(Int, 24)
     
     # Set input values
-    input.year  = 0         # Unused in model 
-    input.doy   = doy       # Day of Year
-    input.sec   = seconds   # UT
-    input.alt   = alt       # [km]
-    input.g_lat = lat       # [deg]
-    input.g_lon = lon       # [deg]
-    input.lst   = (input.sec/3600.0 + input.g_lon/15.0) # Set LST to be self consistent
-    input.f107A = f107ObservedAvg(mjd_ut1)  # 81 day average of F10.7 flux, centered on day
-    input.f107  = f107Observed(mjd_ut1)     # Daily F10.7 flux for previous day
-    input.ap    = ap_array[1] # Daily magnetic index
+    input.year     = 0         # Unused in model 
+    input.doy      = doy       # Day of Year
+    input.sec      = seconds   # UT
+    input.alt      = alt / 1000.0      # [km]
+    input.g_lat    = lat       # [deg]
+    input.g_lon    = lon       # [deg]
+    input.lst      = (input.sec/3600.0 + input.g_lon/15.0) # Set LST to be self consistent
+    input.f107A    = f107ObservedAvg(mjd_ut1)  # 81 day average of F10.7 flux, centered on day
+    input.f107     = f107Observed(mjd_ut1)     # Daily F10.7 flux for previous day
+    input.ap       = ap_array[1] # Daily magnetic index
     input.ap_array = ap_array
 
     # Run NRLMSISE00 Atmospheric model - including anomalous oxygen

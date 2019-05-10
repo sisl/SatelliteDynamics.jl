@@ -256,13 +256,13 @@ end
 
 let
     # Date and conversions
-    epc  = Epoch(2018,1,1,12,0,0)
-    oe   = [R_EARTH + 500e3, 1e-3, 97.8, 75, 25, 45]
+    epc = Epoch(2018, 1, 1, 12, 0, 0)
+    oe = [R_EARTH + 500e3, 0.001, 97.8, 75, 25, 45]
     eci  = sOSCtoCART(oe, use_degrees=true)
     ecef = sECItoECEF(epc, eci)
     geod = sECEFtoGEOD(ecef, use_degrees=true)
 
     rho = density_nrlmsise00(epc, geod, use_degrees=true)
 
-    @test 0.0 <= rho <= 1.0e-16
+    @test 0.0 <= rho <= 1.0e-13
 end
