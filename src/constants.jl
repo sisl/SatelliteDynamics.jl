@@ -2,6 +2,18 @@ __precompile__(true)
 module Constants
 
 # Mathematical Constants
+export RAD2DEG
+"""
+Constant to convert radians to degrees. Equal to 360/2pi. [deg/rad]
+"""
+const RAD2DEG = 360.0/(2.0*pi)
+
+export DEG2RAD
+"""
+Constant to convert radians to degrees. Equal to 2pi/360. [rad/deg]
+"""
+const DEG2RAD = 2.0*pi/360.0
+
 export AS2RAD
 """
 Constant to convert arcseconds to radians. Equal to 2pi/(360*3600). [rad/as]
@@ -33,6 +45,12 @@ P. Gérard and B. Luzum, IERS Technical Note 36, 2010
 const AU          = 1.49597870700e11            # [m] Astronomical Unit IAU 2010
 
 # Time Consants
+
+export SECONDS_IN_DAY
+"""
+Number of seconds in a day.
+"""
+const SECONDS_IN_DAY = 86400
 
 export MJD_ZERO
 """
