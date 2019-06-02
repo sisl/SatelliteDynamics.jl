@@ -841,7 +841,8 @@ function dspace(irez::Int,
       dedt::Real, del1::Real, del2::Real, del3::Real, didt::Real,
       dmdt::Real, dnodt::Real, domdt::Real, argpo::Real, argpdot::Real,
       t::Real, tc::Real, gsto::Real, xfact::Real, xlamo::Real,
-      no::Real)
+      no::Real, atime::Real, xli::Real, xni::Real, nm::Real,
+      em::Real, argpm::Real, inclm::Real, mm::Real, nodem::Real)
 
     # Constants
     twopi = 2.0 * pi
@@ -895,9 +896,9 @@ function dspace(irez::Int,
     if (irez != 0)
         # sgp4fix streamline check
         if ((atime == 0.0) || (t * atime <= 0.0) || (abs(t) < abs(atime)) )
-            atime  = 0.0
-            xni    = no
-            xli    = xlamo
+            atime = 0.0
+            xni   = no
+            xli   = xlamo
         end
         # sgp4fix move check outside loop
         if (t > 0.0)
@@ -1199,7 +1200,7 @@ function TLE(line1::String, line2::String, opsmode::Char='i')
 
     epoch = Epoch(year, 1, 1, tsys=:UTC) + epochdays*SECONDS_IN_DAY
 
-    mon, day, hr, minute, sec =  days2mdhms( year,epochdays )
+    mon, day, hr, minute, sec =  days2mdhms(year, epochdays)
     jdsatepoch = jday(year, mon, day, hr, minute, sec)
 
     # Near Earth Values
@@ -1364,8 +1365,7 @@ function TLE(line1::String, line2::String, opsmode::Char='i')
             ss5, sz1, sz3, sz11, sz13, sz21, sz23, sz31, sz33, t, tc,
             gsto, mo, mdot, no, nodeo,
             nodedot, xpidot, z1, z3, z11, z13, z21, z23, z31, z33,
-            ecco, eccsq, em, argpm, inclm, mm, nm, nodem
-        )
+            ecco, eccsq, em, argpm, inclm, mm, nm, nodem)
     end
 
     # set variables if not deep space
@@ -1384,6 +1384,9 @@ function TLE(line1::String, line2::String, opsmode::Char='i')
                         6.0 * d2 * d2 +
                         15.0 * cc1sq * (2.0 * d2 + cc1sq))
     end
+
+    # Reset to being uninitialized
+    init = 'n'
     
     # --- Create TLE Object --- #
     tle = TLE(line1, line2, 
@@ -1475,8 +1478,7 @@ function sgp4(tle::TLE, epc::Epoch, opsmode::Char='i')
     inclm = tle.inclo
     if (tle.method == 'd')
         tc = t
-        dspace
-            (
+        atime, em, argpm, inclm, xli, mm, xni, nodem, dndt, nm = dspace(
             tle.irez,
             tle.d2201, tle.d2211, tle.d3210,
             tle.d3222, tle.d4410, tle.d4422,
@@ -1486,10 +1488,8 @@ function sgp4(tle::TLE, epc::Epoch, opsmode::Char='i')
             tle.dmdt,  tle.dnodt, tle.domdt,
             tle.argpo, tle.argpdot, t, tc,
             tle.gsto, tle.xfact, tle.xlamo,
-            tle.no, tle.atime,
-            em, argpm, inclm, tle.xli, mm, tle.xni,
-            nodem, dndt, nm
-            )
+            tle.no, tle.atime, tle.xli, tle.xni, nm,
+            em, argpm, inclm, mm, nodem)
     end
 
     if (nm <= 0.0)
@@ -1535,25 +1535,24 @@ function sgp4(tle::TLE, epc::Epoch, opsmode::Char='i')
     sinip  = sinim
     cosip  = cosim
     if (tle.method == 'd')
-        ep, xincp, nodep, argpp, mp = dpper(tle.e3,   tle.ee2,  tle.peo,
+        ep, xincp, nodep, argpp, mp = dpper(tle.e3, tle.ee2, tle.peo,
             tle.pgho, tle.pho,  tle.pinco,
             tle.plo,  tle.se2,  tle.se3,
             tle.sgh2, tle.sgh3, tle.sgh4,
             tle.sh2,  tle.sh3,  tle.si2,
             tle.si3,  tle.sl2,  tle.sl3,
-            tle.sl4,  t,    tle.xgh2,
+            tle.sl4,  t,        tle.xgh2,
             tle.xgh3, tle.xgh4, tle.xh2,
             tle.xh3,  tle.xi2,  tle.xi3,
             tle.xl2,  tle.xl3,  tle.xl4,
             tle.zmol, tle.zmos, tle.inclo,
             ep, xincp, nodep, argpp, mp,
-            'n', opsmode
-        )
+            'n', opsmode)
 
         if (xincp < 0.0)
-            xincp  = -xincp
+            xincp = -xincp
             nodep = nodep + pi
-            argpp  = argpp - pi
+            argpp = argpp - pi
         end
 
         if ((ep < 0.0 ) || ( ep > 1.0))
@@ -1703,7 +1702,10 @@ export ecef
 Compute the satellite state in the Earth-fixed frame.
 ```
 function ecef(tle::TLE, epc::Epoch)
-    
+    s = state(tle, epc)
+    ecef = s
+
+    return ecef
 end
 
 export eci
@@ -1711,7 +1713,10 @@ export eci
 Compute the satellite state in the Earth-centered inertial.
 ```
 function eci(tle::TLE, epc::Epoch)
-    
+    s = state(tle, epc)
+    eci = s
+
+    return eci
 end
 
 
