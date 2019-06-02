@@ -69,6 +69,9 @@ end
     @time @testset "SatelliteDynamics.OrbitDynamics" begin
         include(joinpath(testdir, "test_orbitdynamics.jl"))
     end
+    @time @testset "SatelliteDynamics.SGPModels" begin
+        include(joinpath(testdir, "test_sgp_models.jl"))
+    end
 
     # Earth Environment
     @time @testset "SatelliteDynamics.EarthEnvironment.NRLMSISE00" begin
@@ -85,5 +88,4 @@ end
     @time @testset "SatelliteDynamics.Simulation.Propagators" begin
         include(joinpath(testdir, "simulation/", "test_propagators.jl"))
     end
-
 end

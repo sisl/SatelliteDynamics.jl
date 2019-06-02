@@ -630,7 +630,7 @@ function dsinit(
     xpidot::Real, z1::Real,     z3::Real,      z11::Real,    z13::Real,
     z21::Real,    z23::Real,    z31::Real,     z33::Real,    ecco::Real,
     eccsq::Real,   em::Real,     argpm::Real,   inclm::Real,  mm::Real,
-     nm::Real,     nodem::Real)
+    nm::Real,     nodem::Real)
 
     # local variables
     twopi = 2.0 * pi
@@ -647,6 +647,14 @@ function dsinit(
     x2o3   = 2.0 / 3.0
     znl    = 1.5835218e-4
     zns    = 1.19459e-5
+
+    # Return variables
+    atime = 0.0
+    d2201, d2211, d3210, d3222, d4410 = 0.0, 0.0, 0.0, 0.0, 0.0
+    d4422, d5220, d5232, d5421, d5433 = 0.0, 0.0, 0.0, 0.0, 0.0
+    dedt, didt, dmdt, dndt, dnodt = 0.0, 0.0, 0.0, 0.0, 0.0
+    domdt, del1, del2, del3, xfact = 0.0, 0.0, 0.0, 0.0, 0.0
+    xlamo, xli, xni = 0.0, 0.0, 0.0
 
     # sgp4fix identify constants and allow alternate values
     # getgravconst( whichconst, tumin, mu, radiusearthkm, xke, j2, j3, j4, j3oj2 )
@@ -754,7 +762,7 @@ function dsinit(
                 g532 =-40023.880 + 170470.89 * em - 242699.48 * emsq + 115605.82 * eoc
             end
 
-            sini2=  sinim * sinim
+            sini2 =  sinim * sinim
             f220 =  0.75 * (1.0 + 2.0 * cosim+cosisq)
             f221 =  1.5 * sini2
             f321 =  1.875 * sinim  *  (1.0 - 2.0 * cosim - 3.0 * cosisq)
