@@ -454,8 +454,8 @@ function dpper(e3::Real,     ee2::Real,    peo::Real,     pgho::Real,   pho::Rea
     xgh2::Real,   xgh3::Real,   xgh4::Real,    xh2::Real,    xh3::Real,
     xi2::Real,    xi3::Real,    xl2::Real,     xl3::Real,    xl4::Real,
     zmol::Real,   zmos::Real,   inclo::Real,
-    init::Char,
     ep::Real, inclp::Real, nodep::Real, argpp::Real, mp::Real,
+    init::Char,
     opsmode::Char
     )
     # ---------------------- constants ----------------------------- */
@@ -1349,8 +1349,8 @@ function TLE(line1::String, line2::String, opsmode::Char='i')
             xgh2,xgh3,xgh4, xh2,
             xh3, xi2, xi3,  xl2,
             xl3, xl4, zmol, zmos, inclm, 
-            init,
             ecco, inclo, nodeo, argpo, mo,
+            init,
             opsmode
         )
 
@@ -1535,7 +1535,7 @@ function sgp4(tle::TLE, epc::Epoch, opsmode::Char='i')
     sinip  = sinim
     cosip  = cosim
     if (tle.method == 'd')
-        inclo, nodeo, argpo, mo = dpper(tle.e3,   tle.ee2,  tle.peo,
+        ep, xincp, nodep, argpp, mp = dpper(tle.e3,   tle.ee2,  tle.peo,
             tle.pgho, tle.pho,  tle.pinco,
             tle.plo,  tle.se2,  tle.se3,
             tle.sgh2, tle.sgh3, tle.sgh4,
@@ -1545,7 +1545,8 @@ function sgp4(tle::TLE, epc::Epoch, opsmode::Char='i')
             tle.xgh3, tle.xgh4, tle.xh2,
             tle.xh3,  tle.xi2,  tle.xi3,
             tle.xl2,  tle.xl3,  tle.xl4,
-            tle.zmol, tle.zmos, tle.incl,
+            tle.zmol, tle.zmos, tle.inclo,
+            ep, xincp, nodep, argpp, mp,
             'n', opsmode
         )
 
@@ -1561,21 +1562,23 @@ function sgp4(tle::TLE, epc::Epoch, opsmode::Char='i')
     end
 
     # -------------------- long period periodics ------------------ */
+    aycof = tle.aycof
+    xlcof = tle.xlcof
     if (tle.method == 'd')
         sinip =  sin(xincp)
         cosip =  cos(xincp)
-        tle.aycof = -0.5*j3oj2*sinip
+        aycof = -0.5*j3oj2*sinip
         # sgp4fix for divide by zero for xincp = 180 deg
         if (abs(cosip+1.0) > 1.5e-12)
-            tle.xlcof = -0.25 * j3oj2 * sinip * (3.0 + 5.0 * cosip) / (1.0 + cosip)
+            xlcof = -0.25 * j3oj2 * sinip * (3.0 + 5.0 * cosip) / (1.0 + cosip)
         else
-            tle.xlcof = -0.25 * j3oj2 * sinip * (3.0 + 5.0 * cosip) / temp4
+            xlcof = -0.25 * j3oj2 * sinip * (3.0 + 5.0 * cosip) / temp4
         end
     end
     axnl = ep * cos(argpp)
     temp = 1.0 / (am * (1.0 - ep * ep))
-    aynl = ep* sin(argpp) + temp * tle.aycof
-    xl   = mp + argpp + nodep + temp * tle.xlcof * axnl
+    aynl = ep* sin(argpp) + temp * aycof
+    xl   = mp + argpp + nodep + temp * xlcof * axnl
 
     # --------------------- solve kepler's equation --------------- */
     u    = (xl - nodep) % twopi
@@ -1620,21 +1623,24 @@ function sgp4(tle::TLE, epc::Epoch, opsmode::Char='i')
         temp2  = temp1 * temp
 
         # -------------- update for short period periodics ------------ */
+        con41  = tle.con41
+        x1mth2 = tle.x1mth2
+        x7thm1 = tle.x7thm1
         if (tle.method == 'd')
             cosisq     = cosip * cosip
-            tle.con41  = 3.0*cosisq - 1.0
-            tle.x1mth2 = 1.0 - cosisq
-            tle.x7thm1 = 7.0*cosisq - 1.0
+            con41  = 3.0*cosisq - 1.0
+            x1mth2 = 1.0 - cosisq
+            x7thm1 = 7.0*cosisq - 1.0
         end
 
-        mrt   = rl * (1.0 - 1.5 * temp2 * betal * tle.con41) +
-                0.5 * temp1 * tle.x1mth2 * cos2u
-        su    = su - 0.25 * temp2 * tle.x7thm1 * sin2u
+        mrt   = rl * (1.0 - 1.5 * temp2 * betal * con41) +
+                0.5 * temp1 * x1mth2 * cos2u
+        su    = su - 0.25 * temp2 * x7thm1 * sin2u
         xnode = nodep + 1.5 * temp2 * cosip * sin2u
         xinc  = xincp + 1.5 * temp2 * cosip * sinip * cos2u
-        mvt   = rdotl - nm * temp1 * tle.x1mth2 * sin2u / xke
-        rvdot = rvdotl + nm * temp1 * (tle.x1mth2 * cos2u +
-                1.5 * tle.con41) / xke
+        mvt   = rdotl - nm * temp1 * x1mth2 * sin2u / xke
+        rvdot = rvdotl + nm * temp1 * (x1mth2 * cos2u +
+                1.5 * con41) / xke
 
         # --------------------- orientation vectors ------------------- */
         sinsu =  sin(su)
