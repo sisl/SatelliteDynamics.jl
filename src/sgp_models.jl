@@ -5,7 +5,7 @@ module SGPModels
 using Printf
 using LinearAlgebra
 
-using SatelliteDynamics.Constants: RAD2DEG, DEG2RAD, SECONDS_IN_DAY
+using SatelliteDynamics.Constants: RAD2DEG, DEG2RAD, SECONDS_IN_DAY, OMEGA_EARTH
 using SatelliteDynamics.Time: Epoch
 using SatelliteDynamics.Attitude: Rz
 using SatelliteDynamics.ReferenceSystems: sECEFtoECI
@@ -2238,7 +2238,7 @@ function sgp4(tle::TLE, tsince::Real)
 end
 
 function sgp4(tle::TLE, epc::Epoch)
-    return sgp4(tle, epc - tle.epoch)
+    return sgp4(tle, (epc - tle.epoch)/60.0)
 end
 
 # Constructor to initialize from just strings
@@ -2440,7 +2440,7 @@ function ecef(tle::TLE, epc::Epoch)
     s    = state(tle, epc)
     ecef = zeros(Float64, 6)
     gst  = gstime(epc - tle.epoch + 2433281.5)
-    omega_vec = [0, 0, gst]
+    omega_vec = [0, 0, OMEGA_EARTH]
     R = Rz(gst)
     ecef[1:3] = R * s[1:3]
     ecef[4:6] = R * s[4:6] - cross(omega_vec, R * s[1:3])
