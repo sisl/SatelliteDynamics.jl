@@ -1631,8 +1631,8 @@ function density_nrlmsise00(epc::Epoch, x::Array{<:Real, 1}; use_degrees::Bool=f
     end
 
     # Look-up space weather data
-    mjd_ut1 = mjd(epc, tsys=:UT1)
-    doy     = floor(Int, day_of_year(epc, tsys=:UT1))
+    mjd_ut1 = mjd(epc, tsys="UT1")
+    doy     = floor(Int, day_of_year(epc, tsys="UT1"))
     seconds = (mjd_ut1 - floor(mjd_ut1))*86400.0
 
     ap_array    = zeros(Float64, 7)

@@ -157,7 +157,7 @@ function bias_precession_nutation(epc::Epoch)
     dy06   = -0.0002259*DMAS2R
 
     # Compute X, Y, s terms using low-precision series terms
-    x, y, s = iauXys00b(MJD_ZERO, mjd(epc, tsys=:TT))
+    x, y, s = iauXys00b(MJD_ZERO, mjd(epc, tsys="TT"))
 
     # Apply IAU2006 Offsets
     x += dx06
@@ -183,7 +183,7 @@ Returns:
 """
 function earth_rotation(epc::Epoch)
     # Compute Earth rotation angle
-    era = iauEra00(MJD_ZERO, mjd(epc, tsys=:UT1))
+    era = iauEra00(MJD_ZERO, mjd(epc, tsys="UT1"))
 
     # Rotate Matrix and return
     r = iauRz(era, Matrix{Float64}(I, 3, 3))
@@ -205,10 +205,10 @@ frame.
 """
 function polar_motion(epc::Epoch)
 
-    xp, yp = POLE_LOCATOR(mjd(epc, tsys=:UTC))
+    xp, yp = POLE_LOCATOR(mjd(epc, tsys="UTC"))
 
     # Compute transformation and return
-    rpm = iauPom00(xp, yp, iauSp00(MJD_ZERO, mjd(epc, tsys=:TT)))
+    rpm = iauPom00(xp, yp, iauSp00(MJD_ZERO, mjd(epc, tsys="TT")))
 
     return rpm
 end

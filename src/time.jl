@@ -14,9 +14,9 @@ using SatelliteDynamics.Universe: UT1_UTC
 Defines valid time systems usable as inputs in the time module, and in functions
 pertaining to the `Epoch` class.
 
-Valid systems are: `:GPS`, `:TAI`, `:TT`, `:UTC`, and `:UT1`
+Valid systems are: `"GPS"`, `"TAI"`, `"TT"`, `"UTC"`, and `"UT1"`
 """
-VALID_TIME_SYSTEMS = [:GPS, :TAI, :TT, :UTC, :UT1]
+VALID_TIME_SYSTEMS = ["GPS", "TAI", "TT", "UTC", "UT1"]
 
 
 ####################
@@ -188,15 +188,15 @@ end
 """
 Returns whether a symbol is a valid time system.
 
-Valid systems are: `:GPS`, `:TAI`, `:TT`, `:UTC`, and `:UT1`
+Valid systems are: `"GPS"`, `"TAI"`, `"TT"`, `"UTC"`, and `"UT1"`
 
 Arguments:
-- `tsys::Symbol`: time system symbol to check for validity.
+- `tsys::String`: time system symbol to check for validity.
 
 Returns:
 - `valid::Bool`: Return `true` if tsys is a valid time system.
 """
-function valid_time_system(tsys::Symbol)
+function valid_time_system(tsys::String)
     return tsys in VALID_TIME_SYSTEMS
 end
 
@@ -224,7 +224,7 @@ Arguments:
 - `minute::Int` Minute (optional)
 - `second::Real` Seconds (optional)
 - `nanoseconds::Real` Nanoseconds (optional)
-- `tsys::Symbol`: Time system of the epoch at initialization
+- `tsys::String`: Time system of the epoch at initialization
 
 The Epoch class can be also be initialized from a string. Examples of Valid String constructors are: 
 
@@ -246,11 +246,11 @@ struct Epoch
     days::Int # Total days [0, ∞)
     seconds::Int # Integer seconds [0, 86400)
     nanoseconds::Float64 # Fractional seconds [0, 1)
-    tsys::Symbol # Time system of epoch
+    tsys::String # Time system of epoch
 end
 
 function Epoch(year::Real, month::Real, day::Real, hour::Real=0, minute::Real=0, 
-               second::Real=0, nanosecond::Real=0.0; tsys::Symbol=:TAI)
+               second::Real=0, nanosecond::Real=0.0; tsys::String="TAI")
     if !valid_time_system(tsys)
         error("Invalid time system $(String(tsys))")
     end
@@ -266,7 +266,7 @@ function Epoch(year::Real, month::Real, day::Real, hour::Real=0, minute::Real=0,
     end
 
     # Get time system offset based on days and fractional days using SOFA
-    tsys_offset     = time_system_offset(jd, fd, tsys, :TAI)
+    tsys_offset     = time_system_offset(jd, fd, tsys, "TAI")
     foffset, offset = modf(tsys_offset)
 
     # Ensure days is an integer number, add entire fractional component to the
@@ -328,7 +328,7 @@ function Epoch(str::String)
     minute      = 0
     second      = 0.0
     nanoseconds = 0.0
-    tsys        = :UTC
+    tsys        = "UTC"
 
     m = nothing
     # Iterate through valid regex string 
@@ -355,7 +355,11 @@ function Epoch(str::String)
                 if m[7] != ""
                     nanoseconds = string_to_nanoseconds(m[7])
                 end
-                tsys = Symbol(string(m[8]))
+                tsys = string(m[8])
+
+                if !(tsys in VALID_TIME_SYSTEMS)
+                    throw(ErrorException("Parsed invalid time system: \"$tsys\""))
+                end
             end
 
             # Exit early since a match has been found
@@ -417,7 +421,7 @@ end
 
 
 function Base.show(io::IO, epc::Epoch)
-    year, month, day, hour, minute, second, nanodseconds = caldate(epc, tsys=:UTC)
+    year, month, day, hour, minute, second, nanodseconds = caldate(epc, tsys="UTC")
 
     s = @sprintf "Epoch(%02d-%02d-%02dT%02d:%02d:%02d.%03dZ)" year month day hour minute second floor(nanodseconds/1.0e6);
 
@@ -430,14 +434,14 @@ Compute the two-part date format used by SOFA.jl functions forr a given Epoch.
 
 Arguments:
 - `epc::Epoch`: Epoch
-- `tsys::Symbol`: Time system to return output in
+- `tsys::String`: Time system to return output in
 
 Returns:
 - `d1::Real`: First part of two part date. [days]
 - `d2::Real`: Second part of two part date. [days]
 """
-function epoch_to_jdfd(epc::Epoch; tsys::Symbol=epc.tsys)
-    offset = time_system_offset(epc, :TAI, tsys)
+function epoch_to_jdfd(epc::Epoch; tsys::String=epc.tsys)
+    offset = time_system_offset(epc, "TAI", tsys)
 
     return epc.days, (epc.seconds + offset + epc.nanoseconds/1.0e9)/86400.0
 end
@@ -448,7 +452,7 @@ Return the Gregorian calendar date for a specific
 
 Arguments:
 - `epc::Epoch`: Input epoch
-- `tsys::Symbol`: Time system to compute output in.
+- `tsys::String`: Time system to compute output in.
 
 Returns:
 - `year::Int`: Year of epoch
@@ -459,8 +463,8 @@ Returns:
 - `second::Int`: Second of epoch
 - `nanoseconds::Int`: Year of epoch
 """
-function caldate(epc::Epoch; tsys::Symbol=epc.tsys)
-    offset = time_system_offset(epc, :TAI, tsys)
+function caldate(epc::Epoch; tsys::String=epc.tsys)
+    offset = time_system_offset(epc, "TAI", tsys)
 
     status, iy, im, id, ihmsf = iauD2dtf("TAI", 9, 
                                     epc.days, 
@@ -475,13 +479,13 @@ Compute the Julian Date for a specific epoch
 
 Arguments:
 - `epc::Epoch`: Epoch
-- `tsys::Symbol`: Time system to return output in
+- `tsys::String`: Time system to return output in
 
 Returns:
 - `jd::Real`: Julian date of the epoch in the requested time system
 """
-function jd(epc::Epoch; tsys::Symbol=epc.tsys)
-    offset = time_system_offset(epc, :TAI, tsys)
+function jd(epc::Epoch; tsys::String=epc.tsys)
+    offset = time_system_offset(epc, "TAI", tsys)
 
     return (epc.days + (epc.seconds + epc.nanoseconds/1.0e9 + offset)/86400.0)
 end
@@ -492,13 +496,13 @@ Compute the Modified Julian Date for a specific epoch
 
 Arguments:
 - `epc::Epoch`: Epoch
-- `tsys::Symbol`: Time system to return output in
+- `tsys::String`: Time system to return output in
 
 Returns:
 - `mjd::Real`: Julian date of the epoch in the requested time system
 """
-function mjd(epc::Epoch; tsys::Symbol=epc.tsys)
-    offset = time_system_offset(epc, :TAI, tsys)
+function mjd(epc::Epoch; tsys::String=epc.tsys)
+    offset = time_system_offset(epc, "TAI", tsys)
 
     return (epc.days + (epc.seconds + epc.nanoseconds/1.0e9 + offset)/86400.0) - Constants.MJD_ZERO
 end
@@ -512,18 +516,18 @@ January 1 0h of each year will return 1.
 
 Arguments:
 - `epc::Epoch`: Epoch
-- `tsys::Symbol`: Time system to return output in
+- `tsys::String`: Time system to return output in
 
 Returns:
 - `doy::Real`: Day of year number. 
 """
-function day_of_year(epc::Epoch; tsys::Symbol=epc.tsys)
+function day_of_year(epc::Epoch; tsys::String=epc.tsys)
     # Compute MJD of first day of yearr
     year, month, day, hour, minute, second, = caldate(epc, tsys=tsys)
     mjd0 = caldate_to_mjd(year, 1, 1)
 
     # Compute MJD of current day
-    offset = time_system_offset(epc, :TAI, tsys)
+    offset = time_system_offset(epc, "TAI", tsys)
     mjd = (epc.days + (epc.seconds + epc.nanoseconds/1.0e9 + offset)/86400.0) - Constants.MJD_ZERO
 
     # Get day of year is the difference
@@ -544,8 +548,8 @@ Returns:
 - `gmst::Real`: Greenwich Mean Sidereal Time [rad/deg]
 """
 function gmst(epc::Epoch; use_degrees::Bool=false)
-    uta, utb = epoch_to_jdfd(epc, tsys=:UT1)
-    tta, ttb = epoch_to_jdfd(epc, tsys=:TT)
+    uta, utb = epoch_to_jdfd(epc, tsys="UT1")
+    tta, ttb = epoch_to_jdfd(epc, tsys="TT")
 
     gmst = iauGmst06(uta, utb, tta, ttb)
 
@@ -565,8 +569,8 @@ Returns:
 - `gast::Real`: Greenwich Apparent Sidereal Time [rad/deg]
 """
 function gast(epc::Epoch; use_degrees::Bool=false)
-    uta, utb = epoch_to_jdfd(epc, tsys=:UT1)
-    tta, ttb = epoch_to_jdfd(epc, tsys=:TT)
+    uta, utb = epoch_to_jdfd(epc, tsys="UT1")
+    tta, ttb = epoch_to_jdfd(epc, tsys="TT")
 
     gast = iauGst06a(uta, utb, tta, ttb)
 
@@ -575,7 +579,8 @@ end
 
 # Hash function
 function Base.hash(epc::Epoch, h::UInt)
-    return hash(epc.days, hash(epc.seconds, hash(epc.nanoseconds, hash(epc.tsys, hash(:Epoch, h)))))
+    return hash(epc.days, hash(epc.seconds, hash(epc.nanoseconds, hash(:Epoch, h))))
+    # return hash(epc.days, hash(epc.seconds, hash(:Epoch, h)))
 end
 
 # Comparison operators
@@ -652,13 +657,13 @@ Epoch.
 Arguments:
 - `jd::Real`: Part 1 of two-part date (Julian days)
 - `fd::Real`: Part 2 of two-part date (Fractional days)
-- `tsys_src::Symbol`: Base time system
-- `tsys_dest::Symbol`: Destination time system
+- `tsys_src::String`: Base time system
+- `tsys_dest::String`: Destination time system
 
 Returns:
 - `offset::Float`: Offset between soruce and destination time systems in seconds.
 """
-function time_system_offset(jd, fd, tsys_src::Symbol, tsys_dest::Symbol)
+function time_system_offset(jd, fd, tsys_src::String, tsys_dest::String)
     # If no transformation is needed needed return early
     if tsys_src == tsys_dest
         return 0.0
@@ -667,15 +672,15 @@ function time_system_offset(jd, fd, tsys_src::Symbol, tsys_dest::Symbol)
     offset = 0.0
 
     # Convert To TAI 
-    if tsys_src == :GPS
+    if tsys_src == "GPS"
         offset += TAI_GPS
-    elseif tsys_src == :TT
+    elseif tsys_src == "TT"
         offset += TAI_TT
-    elseif tsys_src == :UTC
+    elseif tsys_src == "UTC"
         status, iy, im, id, ihmsf = iauD2dtf("UTC", 6, jd, fd) # Returns TAI-UTC
         status, dutc = iauDat(iy, im, id, (ihmsf[1]*3600 + ihmsf[2]*60 + ihmsf[3] + ihmsf[4]/1e6)/86400.0)
         offset += dutc
-    elseif tsys_src == :UT1
+    elseif tsys_src == "UT1"
         # Convert UT1 -> UTC
         offset -= UT1_UTC((jd - Constants.MJD_ZERO) + fd)
 
@@ -683,16 +688,16 @@ function time_system_offset(jd, fd, tsys_src::Symbol, tsys_dest::Symbol)
         status, iy, im, id, ihmsf = iauD2dtf("UTC", 6, jd, fd + offset) # Returns TAI-UTC
         status, dutc = iauDat(iy, im, id, (ihmsf[1]*3600 + ihmsf[2]*60 + ihmsf[3] + ihmsf[4]/1e6)/86400.0)
         offset += dutc
-    elseif tsys_src == :TAI
+    elseif tsys_src == "TAI"
         # Do nothing in this case
     end
 
     # Covert from TAI to source
-    if tsys_dest == :GPS
+    if tsys_dest == "GPS"
         offset += GPS_TAI
-    elseif tsys_dest == :TT
+    elseif tsys_dest == "TT"
         offset += TT_TAI
-    elseif tsys_dest == :UTC
+    elseif tsys_dest == "UTC"
         # Initial UTC guess
         u1, u2 = jd, fd + offset/86400.0
 
@@ -710,7 +715,7 @@ function time_system_offset(jd, fd, tsys_src::Symbol, tsys_dest::Symbol)
 
         status, dutc = iauDat(iy, im, id, (ihmsf[1]*3600 + ihmsf[2]*60 + ihmsf[3] + ihmsf[4]/1e6)/86400.0)
         offset -= dutc
-    elseif tsys_dest == :UT1
+    elseif tsys_dest == "UT1"
         # Initial UTC guess
         u1, u2 = jd, fd + offset/86400.0
 
@@ -731,14 +736,14 @@ function time_system_offset(jd, fd, tsys_src::Symbol, tsys_dest::Symbol)
 
         # Convert UTC to UT1
         offset += UT1_UTC(u1 + u2 + offset/86400.0 - Constants.MJD_ZERO)
-    elseif tsys_dest == :TAI
+    elseif tsys_dest == "TAI"
         # Do nothing in this case
     end
 
     return offset
 end
 
-function time_system_offset(epc::Epoch, tsys_src::Symbol, tsys_dest::Symbol)
+function time_system_offset(epc::Epoch, tsys_src::String, tsys_dest::String)
     jd = epc.days
     fd = (epc.seconds + epc.nanoseconds/1.0e9)/86400.0
     return time_system_offset(jd, fd, tsys_src, tsys_dest)

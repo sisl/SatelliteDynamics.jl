@@ -105,7 +105,7 @@ function KpIndices(geoindices::GeomagneticIndexData, mjd::Real)
 end
 
 KpIndices(mjd::Real)  = KpIndices(GEOMAGNETIC_DATA, mjd)
-KpIndices(epc::Epoch) = KpIndices(GEOMAGNETIC_DATA, mjd(epc, tsys=:UT1))
+KpIndices(epc::Epoch) = KpIndices(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
 
 export KpIndex
 """
@@ -125,7 +125,7 @@ function KpIndex(geoindices::GeomagneticIndexData, mjd::Real)
 end
 
 KpIndex(mjd::Real)  = KpIndex(GEOMAGNETIC_DATA, mjd)
-KpIndex(epc::Epoch) = KpIndex(GEOMAGNETIC_DATA, mjd(epc, tsys=:UT1))
+KpIndex(epc::Epoch) = KpIndex(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
 
 export KpDailyIndex
 """
@@ -140,7 +140,7 @@ function KpDailyIndex(geoindices::GeomagneticIndexData, mjd::Real)
 end
 
 KpDailyIndex(mjd::Real)  = KpDailyIndex(GEOMAGNETIC_DATA, mjd)
-KpDailyIndex(epc::Epoch) = KpDailyIndex(GEOMAGNETIC_DATA, mjd(epc, tsys=:UT1))
+KpDailyIndex(epc::Epoch) = KpDailyIndex(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
 
 export ApIndices
 """
@@ -155,7 +155,7 @@ function ApIndices(geoindices::GeomagneticIndexData, mjd::Real)
 end
 
 ApIndices(mjd::Real)  = ApIndices(GEOMAGNETIC_DATA, mjd)
-ApIndices(epc::Epoch) = ApIndices(GEOMAGNETIC_DATA, mjd(epc, tsys=:UT1))
+ApIndices(epc::Epoch) = ApIndices(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
 
 export ApIndex
 """
@@ -175,7 +175,7 @@ function ApIndex(geoindices::GeomagneticIndexData, mjd::Real)
 end
 
 ApIndex(mjd::Real)  = ApIndex(GEOMAGNETIC_DATA, mjd)
-ApIndex(epc::Epoch) = ApIndex(GEOMAGNETIC_DATA, mjd(epc, tsys=:UT1))
+ApIndex(epc::Epoch) = ApIndex(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
 
 export ApDailyIndex
 """
@@ -190,7 +190,7 @@ function ApDailyIndex(geoindices::GeomagneticIndexData, mjd::Real)
 end
 
 ApDailyIndex(mjd::Real)  = ApDailyIndex(GEOMAGNETIC_DATA, mjd)
-ApDailyIndex(epc::Epoch) = ApDailyIndex(GEOMAGNETIC_DATA, mjd(epc, tsys=:UT1))
+ApDailyIndex(epc::Epoch) = ApDailyIndex(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
 
 ###################
 # Solar Flux Data #
@@ -316,7 +316,7 @@ function f107Data(solarflux::SolarFluxData, mjd::Real)
 end
 
 f107Data(mjd::Real)  = f107Data(SOLAR_FLUX_DATA, mjd)
-f107Data(epc::Epoch) = f107Data(SOLAR_FLUX_DATA, mjd(epc, tsys=:UT1))
+f107Data(epc::Epoch) = f107Data(SOLAR_FLUX_DATA, mjd(epc, tsys="UT1"))
 
 export f107Observed
 """
@@ -331,7 +331,7 @@ function f107Observed(solarflux::SolarFluxData, mjd::Real)
 end
 
 f107Observed(mjd::Real)  = f107Observed(SOLAR_FLUX_DATA, mjd)
-f107Observed(epc::Epoch) = f107Observed(SOLAR_FLUX_DATA, mjd(epc, tsys=:UT1))
+f107Observed(epc::Epoch) = f107Observed(SOLAR_FLUX_DATA, mjd(epc, tsys="UT1"))
 
 export f107Adjusted
 """
@@ -347,7 +347,7 @@ function f107Adjusted(solarflux::SolarFluxData, mjd::Real)
 end
 
 f107Adjusted(mjd::Real)  = f107Adjusted(SOLAR_FLUX_DATA, mjd)
-f107Adjusted(epc::Epoch) = f107Adjusted(SOLAR_FLUX_DATA, mjd(epc, tsys=:UT1))
+f107Adjusted(epc::Epoch) = f107Adjusted(SOLAR_FLUX_DATA, mjd(epc, tsys="UT1"))
 
 export f107ObservedAvg
 """
@@ -363,7 +363,7 @@ function f107ObservedAvg(solarflux::SolarFluxData, mjd::Real)
 end
 
 f107ObservedAvg(mjd::Real)  = f107ObservedAvg(SOLAR_FLUX_DATA, mjd)
-f107ObservedAvg(epc::Epoch) = f107ObservedAvg(SOLAR_FLUX_DATA, mjd(epc, tsys=:UT1))
+f107ObservedAvg(epc::Epoch) = f107ObservedAvg(SOLAR_FLUX_DATA, mjd(epc, tsys="UT1"))
 
 export f107AdjustedAvg
 """
@@ -379,6 +379,6 @@ function f107AdjustedAvg(solarflux::SolarFluxData, mjd::Real)
 end
 
 f107AdjustedAvg(mjd::Real)  = f107AdjustedAvg(SOLAR_FLUX_DATA, mjd)
-f107AdjustedAvg(epc::Epoch) = f107AdjustedAvg(SOLAR_FLUX_DATA, mjd(epc, tsys=:UT1))
+f107AdjustedAvg(epc::Epoch) = f107AdjustedAvg(SOLAR_FLUX_DATA, mjd(epc, tsys="UT1"))
 
 end # SpaceWeather

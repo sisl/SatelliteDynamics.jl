@@ -53,7 +53,7 @@ let
 end
 
 let 
-    epc = Epoch(2007, 4, 5, 12, 0, 0, tsys=:UTC)
+    epc = Epoch(2007, 4, 5, 12, 0, 0, tsys="UTC")
 
     set_eop(54195.5, -0.072073685, 0.0349282, 0.4833163)
 
@@ -74,7 +74,7 @@ let
 end
 
 let 
-    epc = Epoch(2007, 4, 5, 12, 0, 0, tsys=:UTC)
+    epc = Epoch(2007, 4, 5, 12, 0, 0, tsys="UTC")
 
     set_eop(54195.5, -0.072073685, 0.0349282, 0.4833163)
 
@@ -95,7 +95,7 @@ let
 end
 
 let 
-    epc = Epoch(2007, 4, 5, 12, 0, 0, tsys=:UTC)
+    epc = Epoch(2007, 4, 5, 12, 0, 0, tsys="UTC")
 
     set_eop(54195.5, -0.072073685, 0.0349282, 0.4833163)
 
@@ -116,7 +116,7 @@ let
 end
 
 let 
-    epc = Epoch(2007, 4, 5, 12, 0, 0, tsys=:UTC)
+    epc = Epoch(2007, 4, 5, 12, 0, 0, tsys="UTC")
 
     set_eop(54195.5, -0.072073685, 0.0349282, 0.4833163)
 

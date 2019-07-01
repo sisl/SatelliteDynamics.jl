@@ -279,7 +279,7 @@ References:
 """
 function sun_position(epc::Epoch)
     # Constants
-    mjd_tt  = mjd(epc, tsys=:TT)      # MJD of epoch in TT
+    mjd_tt  = mjd(epc, tsys="TT")      # MJD of epoch in TT
     epsilon = 23.43929111*pi/180.0     # Obliquity of J2000 ecliptic
     T       = (mjd_tt-MJD2000)/36525.0 # Julian cent. since J2000
 
@@ -315,7 +315,7 @@ References:
 """
 function moon_position(epc::Epoch)
     # Constants
-    mjd_tt  = mjd(epc, tsys=:TT)      # MJD of epoch in TT
+    mjd_tt  = mjd(epc, tsys="TT")      # MJD of epoch in TT
     epsilon = 23.43929111*pi/180.0     # Obliquity of J2000 ecliptic
     T       = (mjd_tt-MJD2000)/36525.0 # Julian cent. since J2000
 

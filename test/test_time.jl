@@ -47,13 +47,13 @@ let
 end
 
 let
-    @test SatelliteDynamics.Time.valid_time_system(:GPS) == true
-    @test SatelliteDynamics.Time.valid_time_system(:TAI) == true
-    @test SatelliteDynamics.Time.valid_time_system(:TT) == true
-    @test SatelliteDynamics.Time.valid_time_system(:UTC) == true
-    @test SatelliteDynamics.Time.valid_time_system(:UT1) == true
+    @test SatelliteDynamics.Time.valid_time_system("GPS") == true
+    @test SatelliteDynamics.Time.valid_time_system("TAI") == true
+    @test SatelliteDynamics.Time.valid_time_system("TT") == true
+    @test SatelliteDynamics.Time.valid_time_system("UTC") == true
+    @test SatelliteDynamics.Time.valid_time_system("UT1") == true
 
-    @test SatelliteDynamics.Time.valid_time_system(:SAT) == false
+    @test SatelliteDynamics.Time.valid_time_system("BLAH") == false
 end
 
 let
@@ -62,53 +62,53 @@ let
     dutc = -37.0
 
     # GPS
-    @test time_system_offset(jd, 0, :GPS, :GPS) == 0
-    @test time_system_offset(jd, 0, :GPS, :TT)  == TT_GPS
-    @test time_system_offset(jd, 0, :GPS, :UTC) == -18
-    @test isapprox(time_system_offset(jd, 0, :GPS, :UT1), -17.92267, atol=1e-4)
-    @test time_system_offset(jd, 0, :GPS, :TAI) == TAI_GPS
+    @test time_system_offset(jd, 0, "GPS", "GPS") == 0
+    @test time_system_offset(jd, 0, "GPS", "TT")  == TT_GPS
+    @test time_system_offset(jd, 0, "GPS", "UTC") == -18
+    @test isapprox(time_system_offset(jd, 0, "GPS", "UT1"), -17.92267, atol=1e-4)
+    @test time_system_offset(jd, 0, "GPS", "TAI") == TAI_GPS
 
     # TT
-    @test time_system_offset(jd, 0, :TT, :GPS) == GPS_TT
-    @test time_system_offset(jd, 0, :TT, :TT)  == 0
-    @test time_system_offset(jd, 0, :TT, :UTC) == dutc + TAI_TT
-    @test isapprox(time_system_offset(jd, 0, :TT, :UT1), -69.10667, atol=1e-4)
-    @test time_system_offset(jd, 0, :TT, :TAI) == TAI_TT
+    @test time_system_offset(jd, 0, "TT", "GPS") == GPS_TT
+    @test time_system_offset(jd, 0, "TT", "TT")  == 0
+    @test time_system_offset(jd, 0, "TT", "UTC") == dutc + TAI_TT
+    @test isapprox(time_system_offset(jd, 0, "TT", "UT1"), -69.10667, atol=1e-4)
+    @test time_system_offset(jd, 0, "TT", "TAI") == TAI_TT
 
     # UTC
-    @test time_system_offset(jd, 0, :UTC, :GPS) == 18
-    @test time_system_offset(jd, 0, :UTC, :TT)  == -dutc + TT_TAI
-    @test time_system_offset(jd, 0, :UTC, :UTC) == 0.0
-    @test isapprox(time_system_offset(jd, 0, :UTC, :UT1), 0.0769968, atol=1e-4)
-    @test time_system_offset(jd, 0, :UTC, :TAI) == -dutc
+    @test time_system_offset(jd, 0, "UTC", "GPS") == 18
+    @test time_system_offset(jd, 0, "UTC", "TT")  == -dutc + TT_TAI
+    @test time_system_offset(jd, 0, "UTC", "UTC") == 0.0
+    @test isapprox(time_system_offset(jd, 0, "UTC", "UT1"), 0.0769968, atol=1e-4)
+    @test time_system_offset(jd, 0, "UTC", "TAI") == -dutc
 
     # UT1
-    @test isapprox(time_system_offset(jd, 0, :UT1, :GPS), 17.9230032, atol=1e-4)
-    @test isapprox(time_system_offset(jd, 0, :UT1, :TT), 69.1070032, atol=1e-4)
-    @test isapprox(time_system_offset(jd, 0, :UT1, :UTC), -0.0769968, atol=1e-4)
-    @test time_system_offset(jd, 0, :UT1, :UT1) == 0
-    @test isapprox(time_system_offset(jd, 0, :UT1, :TAI), 36.9230032, atol=1e-4)
+    @test isapprox(time_system_offset(jd, 0, "UT1", "GPS"), 17.9230032, atol=1e-4)
+    @test isapprox(time_system_offset(jd, 0, "UT1", "TT"), 69.1070032, atol=1e-4)
+    @test isapprox(time_system_offset(jd, 0, "UT1", "UTC"), -0.0769968, atol=1e-4)
+    @test time_system_offset(jd, 0, "UT1", "UT1") == 0
+    @test isapprox(time_system_offset(jd, 0, "UT1", "TAI"), 36.9230032, atol=1e-4)
 
     # TAI
-    @test time_system_offset(jd, 0, :TAI, :GPS) == GPS_TAI
-    @test time_system_offset(jd, 0, :TAI, :TT)  == TT_TAI
-    @test time_system_offset(jd, 0, :TAI, :UTC) == dutc
-    @test isapprox(time_system_offset(jd, 0, :TAI, :UT1), -36.92267, atol=1e-4)
-    @test time_system_offset(jd, 0, :TAI, :TAI) == 0
+    @test time_system_offset(jd, 0, "TAI", "GPS") == GPS_TAI
+    @test time_system_offset(jd, 0, "TAI", "TT")  == TT_TAI
+    @test time_system_offset(jd, 0, "TAI", "UTC") == dutc
+    @test isapprox(time_system_offset(jd, 0, "TAI", "UT1"), -36.92267, atol=1e-4)
+    @test time_system_offset(jd, 0, "TAI", "TAI") == 0
 end
 
 let
-    epc = Epoch(2018, 12, 20, 0, 0, 0, 0.0, tsys=:TAI)
+    epc = Epoch(2018, 12, 20, 0, 0, 0, 0.0, tsys="TAI")
     @test epc.days        == 2458472
     @test epc.seconds     == 43200
     @test epc.nanoseconds == 0.0
-    @test epc.tsys        == :TAI
+    @test epc.tsys        == "TAI"
 
-    epc = Epoch(2018, 12, 20, 0, 0, .5, 1.0001, tsys=:TAI)
+    epc = Epoch(2018, 12, 20, 0, 0, .5, 1.0001, tsys="TAI")
     @test epc.days        == 2458472
     @test epc.seconds     == 43200
     @test epc.nanoseconds == 500000001.0001
-    @test epc.tsys        == :TAI
+    @test epc.tsys        == "TAI"
 end
 
 # String constructor
@@ -122,7 +122,7 @@ let
     @test minute      == 0
     @test seconds     == 0
     @test nanoseconds == 0.0
-    @test epc.tsys    == :UTC
+    @test epc.tsys    == "UTC"
 
     epc = Epoch("2018-12-20T16:22:19.0Z")
     year, month, day, hour, minute, seconds, nanoseconds = caldate(epc)
@@ -133,7 +133,7 @@ let
     @test minute      == 22
     @test seconds     == 19
     @test nanoseconds == 0.0
-    @test epc.tsys    == :UTC
+    @test epc.tsys    == "UTC"
 
     epc = Epoch("2018-12-20T16:22:19.123Z")
     year, month, day, hour, minute, seconds, nanoseconds = caldate(epc)
@@ -144,7 +144,7 @@ let
     @test minute      == 22
     @test seconds     == 19
     @test nanoseconds == 123000000
-    @test epc.tsys    == :UTC
+    @test epc.tsys    == "UTC"
 
     epc = Epoch("2018-12-20T16:22:19.123456789Z")
     year, month, day, hour, minute, seconds, nanoseconds = caldate(epc)
@@ -155,7 +155,7 @@ let
     @test minute      == 22
     @test seconds     == 19
     @test nanoseconds == 123456789
-    @test epc.tsys    == :UTC
+    @test epc.tsys    == "UTC"
 
     epc = Epoch("2018-12-20T16:22:19Z")
     year, month, day, hour, minute, seconds, nanoseconds = caldate(epc)
@@ -166,7 +166,7 @@ let
     @test minute      == 22
     @test seconds     == 19
     @test nanoseconds == 0.0
-    @test epc.tsys    == :UTC
+    @test epc.tsys    == "UTC"
 
     epc = Epoch("20181220T162219Z")
     year, month, day, hour, minute, seconds, nanoseconds = caldate(epc)
@@ -177,7 +177,7 @@ let
     @test minute      == 22
     @test seconds     == 19
     @test nanoseconds == 0.0
-    @test epc.tsys    == :UTC
+    @test epc.tsys    == "UTC"
 
     epc = Epoch("2018-12-01 16:22:19 GPS")
     year, month, day, hour, minute, seconds, nanoseconds = caldate(epc)
@@ -188,7 +188,7 @@ let
     @test minute      == 22
     @test seconds     == 19
     @test nanoseconds == 0.0
-    @test epc.tsys    == :GPS
+    @test epc.tsys    == "GPS"
 
     epc = Epoch("2018-12-01 16:22:19.0 GPS")
     year, month, day, hour, minute, seconds, nanoseconds = caldate(epc)
@@ -199,7 +199,7 @@ let
     @test minute      == 22
     @test seconds     == 19
     @test nanoseconds == 0.0
-    @test epc.tsys    == :GPS
+    @test epc.tsys    == "GPS"
 
     epc = Epoch("2018-12-01 16:22:19.123 GPS")
     year, month, day, hour, minute, seconds, nanoseconds = caldate(epc)
@@ -210,7 +210,7 @@ let
     @test minute      == 22
     @test seconds     == 19
     @test nanoseconds == 123000000
-    @test epc.tsys    == :GPS
+    @test epc.tsys    == "GPS"
 
     epc = Epoch("2018-12-01 16:22:19.123456789 GPS")
     year, month, day, hour, minute, seconds, nanoseconds = caldate(epc)
@@ -221,7 +221,7 @@ let
     @test minute      == 22
     @test seconds     == 19
     @test nanoseconds == 123456789
-    @test epc.tsys    == :GPS
+    @test epc.tsys    == "GPS"
 
 end
 
@@ -270,7 +270,7 @@ let
     @test minute      == 0
     @test second      == 0
     @test nanoseconds == 1
-    @test epc.tsys    == :TAI
+    @test epc.tsys    == "TAI"
 
     for i in 1:40*365.25*86400
         epc += 1
@@ -284,7 +284,7 @@ let
     @test minute      == 0
     @test second      == 0
     @test nanoseconds == 1
-    @test epc.tsys    == :TAI
+    @test epc.tsys    == "TAI"
 end
 
 # Direct conversion
@@ -303,7 +303,7 @@ end
 # Conversion into different time system
 let
     epc = Epoch("2018-12-20T16:22:19.123456789Z")
-    year, month, day, hour, minute, second, nanoseconds = caldate(epc, tsys=:TAI)
+    year, month, day, hour, minute, second, nanoseconds = caldate(epc, tsys="TAI")
     @test year        == 2018
     @test month       == 12
     @test day         == 20
@@ -313,7 +313,7 @@ let
     @test nanoseconds == 123456789.0
 
     epc = Epoch("2018-12-20T16:22:19.123456789Z")
-    year, month, day, hour, minute, second, nanoseconds = caldate(epc, tsys=:GPS)
+    year, month, day, hour, minute, second, nanoseconds = caldate(epc, tsys="GPS")
     @test year        == 2018
     @test month       == 12
     @test day         == 20
@@ -326,13 +326,13 @@ end
 let
     epc = Epoch(2000, 1, 1)
     @test jd(epc) == 2451544.5
-    @test jd(epc, tsys=:UTC) < 2451544.5
+    @test jd(epc, tsys="UTC") < 2451544.5
 end
 
 let
     epc = Epoch(2000, 1, 1, 0)
     @test mjd(epc) == 51544
-    @test mjd(epc, tsys=:UTC) < 51544
+    @test mjd(epc, tsys="UTC") < 51544
 end
 
 let

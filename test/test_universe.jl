@@ -9,8 +9,8 @@ end
 
 # Test constructors
 let
-    finals_2000 = EarthOrientationData(:FINALS_2000)
-    eop_c04     = EarthOrientationData(:C04_14)
+    finals_2000 = EarthOrientationData("FINALS_2000")
+    eop_c04     = EarthOrientationData("C04_14")
 end
 
 # Test Data valutes
@@ -57,18 +57,18 @@ end
 
 # Test loading new products into project global vairable
 let 
-    load_eop(:C04_14)
+    load_eop("C04_14")
     @test UT1_UTC(37665) == 0.0326338
 
     # Return to original state
-    load_eop(:FINALS_2000)
+    load_eop("FINALS_2000")
 end
 
 # Test Update of EOP
 # let
-#     update_eop(:C04_14)
-#     update_eop(:C04_80)
-#     update_eop(:FINALS_2000)
+#     update_eop("C04_14")
+#     update_eop("C04_80")
+#     update_eop("FINALS_2000")
 # end
 
 #################

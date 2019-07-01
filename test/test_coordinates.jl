@@ -266,7 +266,7 @@ let
     # Test taken from Montenbruck and Gill Exercise 2.4
     # It mixes geodetic and geocentric coordinations in a strange way, but the
     # mixing is retained here for consistenty with the source material test
-    epc = Epoch(1997, 1, 1, 0, 0, 0, tsys=:UTC)
+    epc = Epoch(1997, 1, 1, 0, 0, 0, tsys="UTC")
     oe  = [6378.137e3 + 960e3, 0, 97, 130.7, 0, 0]
     dt  = 15*60
 

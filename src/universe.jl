@@ -98,9 +98,9 @@ end
 
 # Define product dictionary
 eop_products = Dict(
-    :C04_14 => ("https://datacenter.iers.org/data/latestVersion/224_EOP_C04_14.62-NOW.IAU2000A224.txt", abspath(string(@__DIR__), "../data/EOP_C04_14.62-NOW.IAU2000A.txt")),
-    :C04_80 => ("https://datacenter.iers.org/data/latestVersion/223_EOP_C04_14.62-NOW.IAU1980223.txt", abspath(string(@__DIR__), "../data/EOP_C04_80.62-NOW.IAU2000A.txt")),
-    :FINALS_2000 => ("https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt", abspath(string(@__DIR__), "../data/FINALS.ALL_IAU2000.txt"))
+    "C04_14" => ("https://datacenter.iers.org/data/latestVersion/224_EOP_C04_14.62-NOW.IAU2000A224.txt", abspath(string(@__DIR__), "../data/EOP_C04_14.62-NOW.IAU2000A.txt")),
+    "C04_80" => ("https://datacenter.iers.org/data/latestVersion/223_EOP_C04_14.62-NOW.IAU1980223.txt", abspath(string(@__DIR__), "../data/EOP_C04_80.62-NOW.IAU2000A.txt")),
+    "FINALS_2000" => ("https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt", abspath(string(@__DIR__), "../data/FINALS.ALL_IAU2000.txt"))
 )
 
 export EarthOrientationData
@@ -113,19 +113,19 @@ y-components of Earth's polar motion. The dictionary key is the Epoch the
 parameters are for as a Modified Julian Day at 0h UTC.
 
 Arguments:
-- `product::Symbol` The IERS product type can be `:C04_14`, `:C04_80`, or `:FINALS_2000`
+- `product::Symbol` The IERS product type can be `"C04_14"`, `"C04_80"`, or `"FINALS_2000"`
 """
 struct EarthOrientationData
     data::Dict{Int, Tuple{Float64, Float64, Float64}}
 end
 
 
-function EarthOrientationData(product::Symbol) 
+function EarthOrientationData(product::String) 
     # Initialize Data Array
     eop_data = Dict{Int, Tuple{Float64, Float64, Float64}}()
 
     # Load in Data from filepath
-    if product == :FINALS_2000
+    if product == "FINALS_2000"
         for line in readlines(eop_products[product][2])
             if line[17] == 'P' || line[17] == 'I'
                 mjd_utc = parse(Int, line[8:12])            # MJD (UTC)
@@ -136,7 +136,7 @@ function EarthOrientationData(product::Symbol)
                 eop_data[mjd_utc] = (ut1_utc, xp, yp)
             end
         end
-    elseif product == :C04_14 || product == :C04_80
+    elseif product == "C04_14" || product == "C04_80"
         open(eop_products[product][2], "r") do product_file
             for i in 1:14
                 # Read first 14 lines to skip to data
@@ -173,10 +173,10 @@ This value can be overridden in your own code as follows:
 SatelliteDynamics.EOP = EarthOrientationData(:EOP_PRODUCT_CHOICE)
 ```
 
-This global variable defaults to use the module's internal version of `:FINALS_2000` 
+This global variable defaults to use the module's internal version of `"FINALS_2000"` 
 if it is not otherwise set/provided.
 """
-global EOP = EarthOrientationData(:FINALS_2000)
+global EOP = EarthOrientationData("FINALS_2000")
 
 # Access Methods
 export UT1_UTC
@@ -305,13 +305,13 @@ end
 
 export load_eop
 """
-Load new Earth orientation data into the module global EarthOrientationData object. The product can be one of the symbols: `:C04_14`, `:C04_80`, or `:FINALS_2000`.
+Load new Earth orientation data into the module global EarthOrientationData object. The product can be one of the symbols: `"C04_14"`, `"C04_80"`, or `"FINALS_2000"`.
 
 Arguments:
-- `product::Symbol` Loads a different set of EarthOrientationData values into the module-wide global EarthOrientationData parameters.
+- `product::String` Loads a different set of EarthOrientationData values into the module-wide global EarthOrientationData parameters.
 """
-function load_eop(product::Symbol)
-    global EOP = EarthOrientationData(product::Symbol) 
+function load_eop(product::String)
+    global EOP = EarthOrientationData(product::String) 
 end
 
 #################
@@ -431,7 +431,7 @@ Arguments:
 - `gfc_file::String` File path of gravity field model
 - `product_name::Symbol` _OR_ a symbol of a known gravity field product. Valid ones are: `:EGM2008_20`, `:EGM2008_90`, `:GGM01S`, `:GGM05S`
 """
-function load_gravity_model(gfc_file::String)
+function load_gravity_model_file(gfc_file::String)
     global GRAVITY_MODEL = GravModel(gfc_file::String) 
 end
 

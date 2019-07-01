@@ -2273,7 +2273,7 @@ function TLE(line1::String, line2::String, whichconst::gravconsttype=wgs84, afsp
     classification = 'U'
     intldesg       = ""
     epochyr        = 0
-    epoch          = Epoch(2000, 1, 1, tsys=:UTC)
+    epoch          = Epoch(2000, 1, 1, tsys="UTC")
     elnum          = 0
     revnum         = 0
     method         = 'n'
@@ -2393,7 +2393,7 @@ function TLE(line1::String, line2::String, whichconst::gravconsttype=wgs84, afsp
 
     tle.epochyr = year
     tle.jdsatepoch = jday(year,mon,day,hr,minute,sec)
-    tle.epoch = Epoch(year, mon, day, hr, minute, sec, tsys=:UTC)
+    tle.epoch = Epoch(year, mon, day, hr, minute, sec, tsys="UTC")
     #  ---------------- initialize the orbit at sgp4epoch -------------------
     sgp4init(whichconst, afspc_mode, tle.satnum, tle.jdsatepoch-2433281.5, tle.bstar,
              tle.ecco, tle.argpo, tle.inclo, tle.mo, tle.no,
