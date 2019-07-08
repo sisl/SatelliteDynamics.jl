@@ -169,6 +169,13 @@ mutable struct TLE
     error::UInt8
 end
 
+function Base.show(io::IO, tle::TLE)
+
+    s = @sprintf "TLE(epoch: %s, line1: %s,  line2: %s)" tle.epoch tle.line1 tle.line2
+
+    print(io, s)
+end
+
 ##################
 # SGP4 Internals #
 ##################
