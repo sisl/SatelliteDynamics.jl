@@ -3,10 +3,15 @@ module ReferenceSystems
 
 using LinearAlgebra
 
+using StaticArrays: SVector
+
 using SOFA
 using SatelliteDynamics.Constants
 using SatelliteDynamics.Universe: UT1_UTC, POLE_LOCATOR
 using SatelliteDynamics.Time: Epoch, mjd
+
+const idx123 = SVector(1, 2, 3)
+const idx456 = SVector(4, 5, 6)
 
 ##############
 # RTN | LVLH #
@@ -21,18 +26,19 @@ beinto the equivalent relative position in the ECI frame.
 The RTN frame is also commonly refered to as the local-vertical, local-horizontal (LVLH) frame.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Inertial state (position and velocity) of primary (observing) satellite
-- `xt::Array{<:Real, 1}`: Inertial state (position and velocity) of the target satellite
+- `x::AbstractVector{<:Real}`: Inertial state (position and velocity) of primary (observing) satellite
+- `xt::AbstractVector{<:Real}`: Inertial state (position and velocity) of the target satellite
 
 Returns:
-- `R_rtn_to_eci::Array{<:Real, 1}`: Rotation matrix transforming _from_ the RTN frame _to_ the ECI frame.
+- `R_rtn_to_eci::AbstractVector{<:Real}`: Rotation matrix transforming _from_ the RTN frame _to_ the ECI frame.
 """
-function rRTNtoECI(x::Array{<:Real, 1})
-    r = x[1:3]
-    v = x[4:6]
+function rRTNtoECI(x::AbstractVector{<:Real})
+    r = x[idx123]
+    v = x[idx456]
+    n = cross(r, v)
 
-    R = r/norm(r)
-    N = cross(r, v)/norm(cross(r, v))
+    R = normalize(r)
+    N = normalize(n)
     T = cross(N, R)
 
     R_rtn2eci = hcat(R, T, N)
@@ -49,13 +55,13 @@ transform that vector into the equivalent position vector in the RTN frame.
 The RTN frame is also commonly refered to as the local-vertical, local-horizontal (LVLH) frame.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Inertial state (position and velocity) of primary (observing) satellite
-- `xt::Array{<:Real, 1}`: Inertial state (position and velocity) of the target satellite
+- `x::AbstractVector{<:Real}`: Inertial state (position and velocity) of primary (observing) satellite
+- `xt::AbstractVector{<:Real}`: Inertial state (position and velocity) of the target satellite
 
 Returns:
-- `R_eci_to_rtn::Array{<:Real, 1}`: Rotation matrix transforming _from_ the ECI frame _to_ the RTN frame.
+- `R_eci_to_rtn::AbstractVector{<:Real}`: Rotation matrix transforming _from_ the ECI frame _to_ the RTN frame.
 """
-function rECItoRTN(x::Array{<:Real, 1})
+function rECItoRTN(x::AbstractVector{<:Real})
     return rRTNtoECI(x)'
 end
 
@@ -66,13 +72,13 @@ Compute the radial, along-track, cross-track (RTN) coordinates of a target satel
 The RTN frame is also commonly refered to as the local-vertical, local-horizontal (LVLH) frame.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Inertial state (position and velocity) of primary (observing) satellite
-- `xt::Array{<:Real, 1}`: Inertial state (position and velocity) of the target satellite
+- `x::AbstractVector{<:Real}`: Inertial state (position and velocity) of primary (observing) satellite
+- `xt::AbstractVector{<:Real}`: Inertial state (position and velocity) of the target satellite
 
 Returns:
-- `rtn::Array{<:Real, 1}`: Position and velocity of the target relative of the observing satellite in the RTN.
+- `rtn::AbstractVector{<:Real}`: Position and velocity of the target relative of the observing satellite in the RTN.
 """
-function sECItoRTN(x::Array{<:Real, 1}, xt::Array{<:Real, 1}; is_relative::Bool=false)
+function sECItoRTN(x::AbstractVector{<:Real}, xt::AbstractVector{<:Real}; is_relative::Bool=false)
     # Create RTN rotation matrix
     R_eci2rtn = rECItoRTN(x)
 
@@ -103,13 +109,13 @@ Compute the Earth-center
 The RTN frame is also commonly refered to as the local-vertical, local-horizontal (LVLH) frame.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Inertial state (position and velocity) of primary (observing) satellite
-- `xt::Array{<:Real, 1}`: Inertial state (position and velocity) of the target satellite
+- `x::AbstractVector{<:Real}`: Inertial state (position and velocity) of primary (observing) satellite
+- `xt::AbstractVector{<:Real}`: Inertial state (position and velocity) of the target satellite
 
 Returns:
-- `rtn::Array{<:Real, 1}`: Position and velocity of the target relative of the observing satellite in the RTN.
+- `rtn::AbstractVector{<:Real}`: Position and velocity of the target relative of the observing satellite in the RTN.
 """
-function sRTNtoECI(x::Array{<:Real, 1}, xrtn::Array{<:Real, 1})
+function sRTNtoECI(x::AbstractVector{<:Real}, xrtn::AbstractVector{<:Real})
     # Create RTN rotation matrix
     R_rtn2eci = rRTNtoECI(x)
 
@@ -252,7 +258,7 @@ the SOFA C transformation cookbook.
 - `epc::Epoch`: Epoch of transformation
 
 # Returns
-- `r::Array{<:Real, 1}`: 3x3 Rotation matrix transforming ITRF -> GCRF
+- `r::AbstractVector{<:Real}`: 3x3 Rotation matrix transforming ITRF -> GCRF
 """
 function rECEFtoECI(epc::Epoch)
     # Compute intermediate transformations
@@ -274,12 +280,12 @@ the SOFA C transformation cookbook.
 
 # Arguments
 - `epc::Epoch`: Epoch of transformation
-- `x::Array{<:Real, 1}`: Inertial state (position, velocity) [m; m/s]
+- `x::AbstractVector{<:Real}`: Inertial state (position, velocity) [m; m/s]
 
 # Returns
-- `x_ecef::Array{<:Real, 1}`: Earth-fixed state (position, velocity)
+- `x_ecef::AbstractVector{<:Real}`: Earth-fixed state (position, velocity)
 """
-function sECItoECEF(epc::Epoch, x::Array{<:Real, 1})
+function sECItoECEF(epc::Epoch, x::AbstractVector{<:Real})
     dim_x  = length(x)
     x_ecef = zeros(Float64, dim_x)
 
@@ -329,12 +335,12 @@ the SOFA C transformation cookbook.
 
 # Arguments
 - `epc::Epoch`: Epoch of transformation
-- `x::Array{<:Real, 1}`: Earth-fixed state (position, velocity) [m; m/s]
+- `x::AbstractVector{<:Real}`: Earth-fixed state (position, velocity) [m; m/s]
 
 # Returns
-- `x_ecef::Array{<:Real, 1}`: Inertial state (position, velocity)
+- `x_ecef::AbstractVector{<:Real}`: Inertial state (position, velocity)
 """
-function sECEFtoECI(epc::Epoch, x::Array{<:Real, 1})
+function sECEFtoECI(epc::Epoch, x::AbstractVector{<:Real})
     # Set state variable size
     dim_x = length(x)
     x_eci = zeros(Float64, dim_x)
