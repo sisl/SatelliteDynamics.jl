@@ -228,7 +228,7 @@ Arguments:
 - `epc::Epoch`: Epoch of transformation
 
 Returns:
-- `rc2i::Array{<:Real, 2}`: 3x3 Rotation matrix transforming GCRS -> CIRS
+- `rc2i::Matrix{<:Real}`: 3x3 Rotation matrix transforming GCRS -> CIRS
 """
 function bias_precession_nutation(epc::Epoch)
     # Constants of IAU 2006A transofrmation
@@ -260,7 +260,7 @@ Arguments:
 - `epc::Epoch`: Epoch of transformation
 
 Returns:
-- `r::Array{<:Real, 2}`: 3x3 Rotation matrix transforming CIRS -> TIRS
+- `r::Matrix{<:Real}`: 3x3 Rotation matrix transforming CIRS -> TIRS
 """
 function earth_rotation(epc::Epoch)
     # Compute Earth rotation angle
@@ -282,7 +282,7 @@ frame.
 - `epc::Epoch`: Epoch of transformation
 
 # Returns
-- `rpm::Array{<:Real, 2}`: 3x3 Rotation matrix transforming TIRS -> ITRF
+- `rpm::Matrix{<:Real}`: 3x3 Rotation matrix transforming TIRS -> ITRF
 """
 function polar_motion(epc::Epoch)
     xp, yp = POLE_LOCATOR(mjd(epc, tsys="UTC"))
@@ -308,7 +308,7 @@ the SOFA C transformation cookbook.
 - `epc::Epoch`: Epoch of transformation
 
 # Returns
-- `r::Array{<:Real, 2}`: 3x3 Rotation matrix transforming GCRF -> ITRF
+- `r::Matrix{<:Real}`: 3x3 Rotation matrix transforming GCRF -> ITRF
 """
 function rECItoECEF(epc::Epoch)
     # Compute intermediate transformations
@@ -334,7 +334,7 @@ the SOFA C transformation cookbook.
 - `epc::Epoch`: Epoch of transformation
 
 # Returns
-- `r::AbstractVector{<:Real}`: 3x3 Rotation matrix transforming ITRF -> GCRF
+- `r::Matrix{<:Real}`: 3x3 Rotation matrix transforming ITRF -> GCRF
 """
 function rECEFtoECI(epc::Epoch)
     # Compute intermediate transformations
@@ -359,7 +359,7 @@ the SOFA C transformation cookbook.
 - `x::AbstractVector{<:Real}`: Inertial state (position, velocity) [m; m/s]
 
 # Returns
-- `x_ecef::AbstractVector{<:Real}`: Earth-fixed state (position, velocity)
+- `x_ecef::Vector{<:Real}`: Earth-fixed state (position, velocity)
 """
 function sECItoECEF(epc::Epoch, x::AbstractVector{<:Real})
     dim_x  = length(x)
@@ -413,7 +413,7 @@ the SOFA C transformation cookbook.
 - `x::AbstractVector{<:Real}`: Earth-fixed state (position, velocity) [m; m/s]
 
 # Returns
-- `x_ecef::AbstractVector{<:Real}`: Inertial state (position, velocity)
+- `x_eci::Vector{<:Real}`: Inertial state (position, velocity)
 """
 function sECEFtoECI(epc::Epoch, x::AbstractVector{<:Real})
     # Set state variable size
