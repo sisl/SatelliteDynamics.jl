@@ -10,9 +10,9 @@ using SatelliteDynamics.Constants
 using SatelliteDynamics.Universe: UT1_UTC, POLE_LOCATOR
 using SatelliteDynamics.Time: Epoch, mjd
 
-const idx123    = SVector(1, 2, 3)
-const idx456    = SVector(4, 5, 6)
-const idx123456 = SVector(1, 2, 3, 4, 5, 6)
+const idx1t3 = SVector(1, 2, 3)
+const idx4t6 = SVector(4, 5, 6)
+const idx1t6 = SVector(1, 2, 3, 4, 5, 6)
 
 
 ##############
@@ -34,8 +34,8 @@ Returns:
 - `R_rtn2eci::SMatrix{3,3}`: Rotation matrix transforming _from_ the RTN frame _to_ the ECI frame
 """
 function rRTNtoECI(x::AbstractVector{<:Real})
-    r = x[idx123]
-    v = x[idx456]
+    r = x[idx1t3]
+    v = x[idx4t6]
     n = cross(r, v)
 
     R = normalize(r)
@@ -63,8 +63,8 @@ Returns:
 - `R_eci2rtn::SMatrix{3,3}`: Rotation matrix transforming _from_ the ECI frame _to_ the RTN frame
 """
 function rECItoRTN(x::AbstractVector{<:Real})
-    r = x[idx123]
-    v = x[idx456]
+    r = x[idx1t3]
+    v = x[idx4t6]
     n = cross(r, v)
 
     R = normalize(r)
@@ -92,9 +92,9 @@ Returns:
 """
 function sECItoRTN(x::AbstractVector{<:Real}, xt::AbstractVector{<:Real})
     if length(xt) >= 6
-        return sECItoRTN(x, xt[idx123456])
+        return sECItoRTN(x, xt[idx1t6])
     else
-        return sECItoRTN(x, xt[idx123])
+        return sECItoRTN(x, xt[idx1t3])
     end
 end
 
@@ -111,8 +111,8 @@ function sECItoRTN(x::AbstractVector{<:Real}, xt::SVector{3,<:Real})
     R_eci2rtn = rECItoRTN(x)
 
     # Transform Position
-    r     = x[idx123]
-    rho   = xt[idx123] - r
+    r     = x[idx1t3]
+    rho   = xt[idx1t3] - r
     r_rtn = R_eci2rtn*rho
 
     return r_rtn
@@ -131,14 +131,14 @@ function sECItoRTN(x::AbstractVector{<:Real}, xt::SVector{6,<:Real})
     R_eci2rtn = rECItoRTN(x)
 
     # Transform Position
-    r     = x[idx123]
-    rho   = xt[idx123] - r
+    r     = x[idx1t3]
+    rho   = xt[idx1t3] - r
     r_rtn = R_eci2rtn*rho
 
-    v       = x[idx456]
+    v       = x[idx4t6]
     f_dot   = norm(cross(r, v)) / norm(r)^2
     omega   = SVector(0, 0, f_dot)
-    rho_dot = xt[idx456] - v
+    rho_dot = xt[idx4t6] - v
     v_rtn   = R_eci2rtn*rho_dot - cross(omega, r_rtn)
 
     return vcat(r_rtn, v_rtn)
@@ -160,9 +160,9 @@ Returns:
 """
 function sRTNtoECI(x::AbstractVector{<:Real}, xrtn::AbstractVector{<:Real})
     if length(xrtn) >= 6
-        return sRTNtoECI(x, xrtn[idx123456])
+        return sRTNtoECI(x, xrtn[idx1t6])
     else
-        return sRTNtoECI(x, xrtn[idx123])
+        return sRTNtoECI(x, xrtn[idx1t3])
     end
 end
 
@@ -179,7 +179,7 @@ function sRTNtoECI(x::AbstractVector{<:Real}, xrtn::SVector{3,<:Real})
     R_rtn2eci = rRTNtoECI(x)
 
     # Transform position
-    r   = x[idx123]
+    r   = x[idx1t3]
     r_t = R_rtn2eci*xrtn + r
 
     return r_t
@@ -198,13 +198,13 @@ function sRTNtoECI(x::AbstractVector{<:Real}, xrtn::SVector{6,<:Real})
     R_rtn2eci = rRTNtoECI(x)
 
     # Transform position
-    r     = x[idx123]
-    r_rtn = xrtn[idx123]
+    r     = x[idx1t3]
+    r_rtn = xrtn[idx1t3]
     r_t   = R_rtn2eci*r_rtn + r
 
     # Transform velocity
-    v     = x[idx456]
-    v_rtn = xrtn[idx456]
+    v     = x[idx4t6]
+    v_rtn = xrtn[idx4t6]
     f_dot = norm(cross(r, v)) / norm(r)^2
     omega = SVector(0, 0, f_dot)
     v_t   = R_rtn2eci*(v_rtn + cross(omega, r_rtn)) + v
