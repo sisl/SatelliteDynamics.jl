@@ -1,18 +1,3 @@
-__precompile__(true)
-module Universe
-
-#################
-# Julia Imports #
-#################
-
-using Dates
-
-###################
-# Package Imports #
-###################
-
-using SatelliteDynamics.Constants
-
 ###############
 # Remote Data #
 ###############
@@ -444,5 +429,3 @@ function GRAV_COEF(i::Int, j::Int)
     # Offset into matrix to deal with julia indexing
     return GRAVITY_MODEL.data[i+1, j+1]
 end
-
-end # End Module

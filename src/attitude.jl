@@ -1,8 +1,3 @@
-__precompile__(true)
-module Attitude
-
-using LinearAlgebra
-
 #############
 # Rotations #
 #############
@@ -836,5 +831,3 @@ end
 ####################
 # Type Conversions #
 ####################
-
-end # End module Coordinates

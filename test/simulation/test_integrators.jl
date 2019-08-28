@@ -76,9 +76,6 @@ let
 end
 
 let
-    # Import varmat 
-    using SatelliteDynamics.Simulation.Integrators: varmat
-
     # Initialize integrator
     rk4 = RK4(point_earth)
 

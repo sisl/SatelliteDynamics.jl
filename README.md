@@ -31,3 +31,10 @@ using SatelliteDynamics
 The documentation for the package can be found here: <https://sisl.github.io/SatelliteDynamics.jl/latest>
 
 More example code and more thorough documentation will be added as time permits.
+
+## Development Roadmap
+
+These are currently features lacking from SatelliteDynamics, but being considered
+for future development. Please feel free to leave feedback or comments here:
+
+[Future Feature List](https://github.com/sisl/SatelliteDynamics.jl/issues/4)

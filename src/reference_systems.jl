@@ -1,20 +1,3 @@
-__precompile__(true)
-module ReferenceSystems
-
-using LinearAlgebra
-
-using StaticArrays: SVector, SMatrix
-
-using SOFA
-using SatelliteDynamics.Constants
-using SatelliteDynamics.Universe: UT1_UTC, POLE_LOCATOR
-using SatelliteDynamics.Time: Epoch, mjd
-
-const idx1t3 = SVector(1, 2, 3)
-const idx4t6 = SVector(4, 5, 6)
-const idx1t6 = SVector(1, 2, 3, 4, 5, 6)
-
-
 ##############
 # RTN | LVLH #
 ##############
@@ -452,6 +435,4 @@ function sECEFtoECI(epc::Epoch, x::AbstractVector{<:Real})
     end
 
     return x_eci
-end
-
 end

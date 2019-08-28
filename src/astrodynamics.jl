@@ -1,11 +1,3 @@
-__precompile__(true)
-module Astrodynamics
-
-
-using LinearAlgebra
-using SatelliteDynamics.Constants: GM_EARTH, R_EARTH, J2_EARTH
-
-
 export mean_motion
 """
 Compute the mean motion given a semi-major axis.
@@ -13,7 +5,7 @@ Compute the mean motion given a semi-major axis.
 Arguments:
 - `a::Real`: Semi-major axis. [m]
 - `use_degrees:Bool`: If `true` returns result in units of degrees
-- `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.Constants.GM_EARTH` if none is provided.
+- `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.GM_EARTH` if none is provided.
 
 Returns:
 - `n::Real`: Orbital mean motion. [rad/s] or [deg/s]
@@ -35,7 +27,7 @@ Calculate semi-major axis given mean-motion.
 Arguments:
 - `n::Real`: Orbital mean motion. [rad/s] or [deg/s]
 - `use_degrees:Bool`: If `true` interpret input as being in degrees.
-- `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.Constants.GM_EARTH` if none is provided.
+- `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.GM_EARTH` if none is provided.
 
 Returns:
 - `a::Real`: Semi-major axis. [m]
@@ -56,7 +48,7 @@ Compute the satellite orbital period given the semi-major axis.
 
 Arguments:
 - `a::Real`: Semi-major axis. [m]
-- `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.Constants.GM_EARTH` if none is provided.
+- `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.GM_EARTH` if none is provided.
 
 Returns:
 - `T::Real`: Orbital period. [s]
@@ -193,7 +185,7 @@ The osculating elements are assumed to be (in order):
 Arguments:
 - x_oe `x::Array{<:Real, 1}`: Osculating orbital elements. See above for desription of the elements and their required order.
 - `use_degrees:Bool`: If `true` interpret input will be interpreted as being in degrees, and output will be returned in degrees.
-- `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.Constants.GM_EARTH` if none is provided.
+- `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.GM_EARTH` if none is provided.
 
 # Returns
 - x `x::Array{<:Real, 1}`: Cartesean inertial state. Returns position and velocity. [m; m/s]
@@ -248,7 +240,7 @@ The osculating elements are assumed to be (in order):
 Arguments:
 - x `x::Array{<:Real, 1}`: Cartesean inertial state. Returns position and velocity. [m; m/s]
 - `use_degrees:Bool`: If `true` interpret input will be interpreted as being in degrees, and output will be returned in degrees.
-- `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.Constants.GM_EARTH` if none is provided.
+- `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.GM_EARTH` if none is provided.
 
 # Returns
 - x_oe `x::Array{<:Real, 1}`: Osculating orbital elements. See above for desription of the elements and their required order.
@@ -299,6 +291,4 @@ function sCARTtoOSC(x::Array{<:Real, 1}; use_degrees::Bool=false, GM::Real=GM_EA
     end
 
     return x_oe
-end
-
 end

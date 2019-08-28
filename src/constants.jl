@@ -1,6 +1,3 @@
-__precompile__(true)
-module Constants
-
 # Mathematical Constants
 export RAD2DEG
 """
@@ -308,5 +305,3 @@ O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and
 Applications_, 2012.
 """
 const GM_PLUTO    = 977.000000*1e9
-
-end

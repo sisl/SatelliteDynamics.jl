@@ -3,8 +3,8 @@ let
     line1 = "1 00005U 58002B   00179.78495062  .00000023  00000-0  28098-4 0  4753"
     line2 = "2 00005  34.2682 348.7242 1859667 331.7664  19.3264 10.82419157413667"
 
-    csum1 = SGPModels.tle_checksum(line1[1:end-1])
-    csum2 = SGPModels.tle_checksum(line2[1:end-1])
+    csum1 = tle_checksum(line1[1:end-1])
+    csum2 = tle_checksum(line2[1:end-1])
 
     @test csum1 == parse(Int, line1[end])
     @test csum2 == parse(Int, line2[end])

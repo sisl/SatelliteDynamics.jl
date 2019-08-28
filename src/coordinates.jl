@@ -1,10 +1,3 @@
-__precompile__(true)
-module Coordinates
-
-using LinearAlgebra
-
-using SatelliteDynamics.Constants: WGS84_a, WGS84_f
-
 ####################
 # Helper Constants #
 ####################
@@ -663,6 +656,4 @@ function sSEZtoAZEL(x::Array{<:Real, 1} ; use_degrees::Bool=false)
     else
         return azel
     end
-end
-
 end

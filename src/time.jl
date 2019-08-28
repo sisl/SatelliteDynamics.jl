@@ -1,11 +1,3 @@
-__precompile__(true)
-module Time
-
-using Printf
-using SOFA
-using SatelliteDynamics.Constants
-using SatelliteDynamics.Universe: UT1_UTC
-
 #############
 # Constants #
 #############
@@ -74,7 +66,7 @@ Returns:
 function caldate_to_mjd(year::Integer, month::Integer, day::Integer, hour::Integer=0, minute::Integer=0, second::Real=0.0, nanoseconds::Real=0.0)
     status, jd, fd = iauDtf2d("TAI", year, month, day, hour, minute, second + nanoseconds/1.0e9)
 
-    mjd = (jd - Constants.MJD_ZERO) + fd
+    mjd = (jd - MJD_ZERO) + fd
 
     return mjd
 end
@@ -96,7 +88,7 @@ Returns:
 - `nanoseconds::Float64`: Nanoseconds
 """
 function mjd_to_caldate(mjd::Real)
-    status, iy, im, id, ihmsf = iauD2dtf("TAI", 9, Constants.MJD_ZERO, mjd)
+    status, iy, im, id, ihmsf = iauD2dtf("TAI", 9, MJD_ZERO, mjd)
 
     return iy, im, id, ihmsf[1], ihmsf[2], ihmsf[3], ihmsf[4]/1.0e9
 end
@@ -172,7 +164,7 @@ Assumes all days are counted using a uniform 86400.0 seconds over the time span.
 
 Arguments:
 - `t::Real`: Elapsed seconds since the `day_epoch`.
-- `day_epoch::Real`: Day number of the epoch. Common values are `SatelliteDynamics.Constants.MJD_ZERO` (to get the Julian Day number) or `SatelliteDynamics.Constants.MJD2000` (to get Modified Julian Days if reckoning time from January 1, 2000 0H)
+- `day_epoch::Real`: Day number of the epoch. Common values are `SatelliteDynamics.MJD_ZERO` (to get the Julian Day number) or `SatelliteDynamics.MJD2000` (to get Modified Julian Days if reckoning time from January 1, 2000 0H)
 
 Returns:
 - `days::Float`: Number of elapsed days in the time scale.
@@ -504,7 +496,7 @@ Returns:
 function mjd(epc::Epoch; tsys::String=epc.tsys)
     offset = time_system_offset(epc, "TAI", tsys)
 
-    return (epc.days + (epc.seconds + epc.nanoseconds/1.0e9 + offset)/86400.0) - Constants.MJD_ZERO
+    return (epc.days + (epc.seconds + epc.nanoseconds/1.0e9 + offset)/86400.0) - MJD_ZERO
 end
 
 
@@ -528,7 +520,7 @@ function day_of_year(epc::Epoch; tsys::String=epc.tsys)
 
     # Compute MJD of current day
     offset = time_system_offset(epc, "TAI", tsys)
-    mjd = (epc.days + (epc.seconds + epc.nanoseconds/1.0e9 + offset)/86400.0) - Constants.MJD_ZERO
+    mjd = (epc.days + (epc.seconds + epc.nanoseconds/1.0e9 + offset)/86400.0) - MJD_ZERO
 
     # Get day of year is the difference
     doy = mjd - mjd0 + 1.0
@@ -682,7 +674,7 @@ function time_system_offset(jd, fd, tsys_src::String, tsys_dest::String)
         offset += dutc
     elseif tsys_src == "UT1"
         # Convert UT1 -> UTC
-        offset -= UT1_UTC((jd - Constants.MJD_ZERO) + fd)
+        offset -= UT1_UTC((jd - MJD_ZERO) + fd)
 
         # Convert UTC -> TAI
         status, iy, im, id, ihmsf = iauD2dtf("UTC", 6, jd, fd + offset) # Returns TAI-UTC
@@ -735,7 +727,7 @@ function time_system_offset(jd, fd, tsys_src::String, tsys_dest::String)
         offset -= dutc
 
         # Convert UTC to UT1
-        offset += UT1_UTC(u1 + u2 + offset/86400.0 - Constants.MJD_ZERO)
+        offset += UT1_UTC(u1 + u2 + offset/86400.0 - MJD_ZERO)
     elseif tsys_dest == "TAI"
         # Do nothing in this case
     end
@@ -748,5 +740,3 @@ function time_system_offset(epc::Epoch, tsys_src::String, tsys_dest::String)
     fd = (epc.seconds + epc.nanoseconds/1.0e9)/86400.0
     return time_system_offset(jd, fd, tsys_src, tsys_dest)
 end
-
-end # Time

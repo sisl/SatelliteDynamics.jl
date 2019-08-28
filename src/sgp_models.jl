@@ -1,15 +1,3 @@
-__precompile__(true)
-module SGPModels
-
-# Imports
-using Printf
-using LinearAlgebra
-
-using SatelliteDynamics.Constants: RAD2DEG, DEG2RAD, SECONDS_IN_DAY, OMEGA_EARTH
-using SatelliteDynamics.Time: Epoch
-using SatelliteDynamics.Attitude: Rz
-using SatelliteDynamics.ReferenceSystems: sECEFtoECI
-
 ########################
 # Two Line Element Set #
 ########################
@@ -181,7 +169,7 @@ end
 ##################
 
 
-
+export tle_checksum
 """
 Compute Two-Line Element checksum for a given line string.
 
@@ -2464,6 +2452,3 @@ function eci(tle::TLE, epc::Epoch)
 
     return sECEFtoECI(epc, s)
 end
-
-
-end # Module

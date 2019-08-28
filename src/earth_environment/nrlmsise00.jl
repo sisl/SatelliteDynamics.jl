@@ -1,16 +1,7 @@
-__precompile__(true)
-module NRLMSISE00
-"""
-Julia NRLMSISE00 implementation is Dominik Brodowski's C implmenation adapted
-for Julia.
-
-Ref: https://www.brodo.de/space/nrlmsise/
-"""
-
-using Printf
-using SatelliteDynamics.Time: Epoch, mjd, day_of_year
-using SatelliteDynamics.Coordinates: sECEFtoGEOD
-using SatelliteDynamics.EarthEnvironment.SpaceWeather
+# Julia NRLMSISE00 implementation is Dominik Brodowski's C implmenation adapted
+# for Julia.
+#
+# Ref: https://www.brodo.de/space/nrlmsise/
 
 ##############
 # Model Data #
@@ -1681,5 +1672,3 @@ function density_nrlmsise00(epc::Epoch, x::Array{<:Real, 1}; use_degrees::Bool=f
     rho = output.d[6]
     return rho
 end
-
-end # NRLMSISE00 Module

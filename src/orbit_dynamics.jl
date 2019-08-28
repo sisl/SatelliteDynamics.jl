@@ -1,14 +1,3 @@
-__precompile__(true)
-module OrbitDynamics
-
-using SatelliteDynamics.Constants
-using SatelliteDynamics.Universe
-using SatelliteDynamics.Time: Epoch, mjd
-using SatelliteDynamics.Coordinates: sECEFtoGEOD
-using SatelliteDynamics.Attitude: Rx, Ry, Rz
-using SatelliteDynamics.ReferenceSystems
-using LinearAlgebra
-
 #####################
 # Utility Functions #
 #####################
@@ -65,8 +54,8 @@ Assumes the satellite is much, much less massive than the central body.
 Arguments:
 - `r_sat::Array{<:Real, 1}`: satellite position in a commonn inertial frame [m]
 - `r_body::Array{<:Real, 1}`: position of body in a commonn inertial frame [m]
-- `GM::Array{<:Real, 1}`: gravitational coeffient of attracting body [m^3/s^2] Default: SatelliteDynamics.Constants.GM_EARTH)
-(Default: SatelliteDynamics.Constants.GM_EARTH
+- `GM::Array{<:Real, 1}`: gravitational coeffient of attracting body [m^3/s^2] Default: SatelliteDynamics.GM_EARTH)
+(Default: SatelliteDynamics.GM_EARTH
 
 Return:
 - `a::Array{<:Real, 1}`: Acceleration in X, Y, and Z inertial directions [m/s^2]
@@ -91,8 +80,8 @@ of a massive body. Returns the acceleration vector of the satellite.
 
 Arguments:
 - `r_sat::Array{<:Real, 1}`: satellite position in the inertial frame [m]
-- `GM::Array{<:Real, 1}`: gravitational coeffient of attracting body [m^3/s^2] Default: SatelliteDynamics.Constants.GM_EARTH)
-(Default: SatelliteDynamics.Constants.GM_EARTH
+- `GM::Array{<:Real, 1}`: gravitational coeffient of attracting body [m^3/s^2] Default: SatelliteDynamics.GM_EARTH)
+(Default: SatelliteDynamics.GM_EARTH
 
 Return:
 - `a::Array{<:Real, 1}`: Acceleration in X, Y, and Z inertial directions [m/s^2]
@@ -738,6 +727,4 @@ function accel_relativity(x::Array{<:Real, 1})
     a_rel = GM_EARTH/r2 * ( (4*GM_EARTH/(c2*norm_r) - v2/c2)*er + 4*v2/c2*dot(er, ev)*ev)
 
     return a_rel
-end
-
 end

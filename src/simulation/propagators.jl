@@ -1,15 +1,3 @@
-__precompile__(true)
-module Propagators
-
-# Julia Imports
-using LinearAlgebra: diagm
-using SatelliteDynamics.Time: Epoch
-using SatelliteDynamics.Coordinates: sECEFtoGEOD
-using SatelliteDynamics.ReferenceSystems
-using SatelliteDynamics.OrbitDynamics
-using SatelliteDynamics.EarthEnvironment.NRLMSISE00: density_nrlmsise00
-using SatelliteDynamics.Simulation.Integrators: RK4, istep
-
 ###################
 # Dynamics Models #
 ###################
@@ -294,5 +282,3 @@ Used to reinitialize the state transition matrix value to identity
 function reinit!(state::EarthInertialState)
     state.phi = diagm(0 => ones(Float64, length(state.x)))
 end
-
-end # Module

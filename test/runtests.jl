@@ -7,8 +7,6 @@ using Printf
 
 # Package under test
 using SatelliteDynamics
-using SatelliteDynamics.EarthEnvironment
-using SatelliteDynamics.Simulation
 
 # Set logging level
 global_logger(SimpleLogger(stderr, Logging.Debug))
@@ -74,18 +72,18 @@ end
     end
 
     # Earth Environment
-    @time @testset "SatelliteDynamics.EarthEnvironment.NRLMSISE00" begin
+    @time @testset "SatelliteDynamics.NRLMSISE00" begin
         include(joinpath(testdir, "earth_environment/", "test_spaceweather.jl"))
     end
-    @time @testset "SatelliteDynamics.EarthEnvironment.NRLMSISE00" begin
+    @time @testset "SatelliteDynamics.NRLMSISE00" begin
         include(joinpath(testdir, "earth_environment/", "test_nrlmsise00.jl"))
     end
 
     # Simulation Tools
-    @time @testset "SatelliteDynamics.Simulation.Integrators" begin
+    @time @testset "SatelliteDynamics.Integrators" begin
         include(joinpath(testdir, "simulation/", "test_integrators.jl"))
     end
-    @time @testset "SatelliteDynamics.Simulation.Propagators" begin
+    @time @testset "SatelliteDynamics.Propagators" begin
         include(joinpath(testdir, "simulation/", "test_propagators.jl"))
     end
 end

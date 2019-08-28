@@ -1,9 +1,8 @@
 let
-    using SatelliteDynamics.EarthEnvironment.NRLMSISE00: NRLMSISE_Input, NRLMSISE_Output, NRLMSISE_Flags, gtd7!
     # Test core NRLMSISE - Test cases match Daniel Brodo's C implementation
-    input  = NRLMSISE_Input[NRLMSISE_Input() for i in 1:17]
-    output = NRLMSISE_Output[NRLMSISE_Output() for i in 1:17]
-    flags  = NRLMSISE_Flags()
+    input  = SatelliteDynamics.NRLMSISE_Input[SatelliteDynamics.NRLMSISE_Input() for i in 1:17]
+    output = SatelliteDynamics.NRLMSISE_Output[SatelliteDynamics.NRLMSISE_Output() for i in 1:17]
+    flags  = SatelliteDynamics.NRLMSISE_Flags()
 
     # Set input values
     aph = ones(Float64, 7).*100.0
@@ -46,16 +45,16 @@ let
     input[17].ap_array = aph
 
     # Run model
-    gtd7!(input[1], flags, output[1])
+    SatelliteDynamics.gtd7!(input[1], flags, output[1])
 
     # Evalute 1 to 15
     for i in 1:15
-        gtd7!(input[i], flags, output[i])
+        SatelliteDynamics.gtd7!(input[i], flags, output[i])
     end
 
     # Evaluate 16 and 17
     for i in 16:17
-        gtd7!(input[i], flags, output[i])
+        SatelliteDynamics.gtd7!(input[i], flags, output[i])
     end
 
     # Test Case 1

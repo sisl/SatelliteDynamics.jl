@@ -1,9 +1,3 @@
-__precompile__(true)
-module SpaceWeather
-
-# Julia Imports
-using SatelliteDynamics.Time: caldate_to_mjd, Epoch, mjd
-
 ##########################
 # Geomagnetic Index Data #
 ##########################
@@ -380,5 +374,3 @@ end
 
 f107AdjustedAvg(mjd::Real)  = f107AdjustedAvg(SOLAR_FLUX_DATA, mjd)
 f107AdjustedAvg(epc::Epoch) = f107AdjustedAvg(SOLAR_FLUX_DATA, mjd(epc, tsys="UT1"))
-
-end # SpaceWeather

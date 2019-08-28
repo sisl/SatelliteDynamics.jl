@@ -47,13 +47,13 @@ let
 end
 
 let
-    @test SatelliteDynamics.Time.valid_time_system("GPS") == true
-    @test SatelliteDynamics.Time.valid_time_system("TAI") == true
-    @test SatelliteDynamics.Time.valid_time_system("TT") == true
-    @test SatelliteDynamics.Time.valid_time_system("UTC") == true
-    @test SatelliteDynamics.Time.valid_time_system("UT1") == true
+    @test SatelliteDynamics.valid_time_system("GPS") == true
+    @test SatelliteDynamics.valid_time_system("TAI") == true
+    @test SatelliteDynamics.valid_time_system("TT") == true
+    @test SatelliteDynamics.valid_time_system("UTC") == true
+    @test SatelliteDynamics.valid_time_system("UT1") == true
 
-    @test SatelliteDynamics.Time.valid_time_system("BLAH") == false
+    @test SatelliteDynamics.valid_time_system("BLAH") == false
 end
 
 let

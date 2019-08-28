@@ -1,11 +1,4 @@
-__precompile__(true)
-module Integrators
-
-# Imports
-using SatelliteDynamics.Time: Epoch
-
 # Exports
-
 export RK4, istep
 
 #######
@@ -126,5 +119,3 @@ function istep(rk4::RK4, epc::Union{Real,Epoch}, dt::Real, x::Array{<:Real, 1}, 
 
     return xu, phiu
 end
-
-end # Module
