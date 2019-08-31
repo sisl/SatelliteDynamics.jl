@@ -15,10 +15,12 @@ end
 
 # Test Data valutes
 let
-    @test UT1_UTC(58483)      == -0.0351914
-    @test POLE_LOCATOR(58483) == (0.088501*AS2RAD, 0.270752*AS2RAD)
-    @test XP(58483)           == 0.088501*AS2RAD
-    @test YP(58483)           == 0.270752*AS2RAD
+    @test isapprox(UT1_UTC(58483), -0.0351948, atol=1e-5)
+    xp, yp = POLE_LOCATOR(58483)
+    @test isapprox(xp, 0.088504*AS2RAD, atol=1e-5)
+    @test isapprox(yp, 0.270753*AS2RAD, atol=1e-5)
+    @test isapprox(XP(58483), 0.088504*AS2RAD, atol=1e-5)
+    @test isapprox(YP(58483), 0.270753*AS2RAD, atol=1e-5)
 end
 
 # Test Set values
