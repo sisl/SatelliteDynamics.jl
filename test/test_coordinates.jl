@@ -315,12 +315,15 @@ let
     azel_enz = sENZtoAZEL(enz, use_degrees=true)
     azel_sez = sSEZtoAZEL(sez, use_degrees=true)
 
-    @test azel_enz[1] == azel_sez[1]
-    @test azel_enz[2] == azel_sez[2]
-    @test azel_enz[3] == azel_sez[3]
-    @test azel_enz[4] == azel_sez[4]
-    @test azel_enz[5] == azel_sez[5]
-    @test azel_enz[6] == azel_sez[6]
+
+    tol = 1e-7
+    @test isapprox(azel_enz[1], azel_sez[1], atol=tol)
+    @test isapprox(azel_enz[2], azel_sez[2], atol=tol)
+    @test isapprox(azel_enz[3], azel_sez[3], atol=tol)
+    @test isapprox(azel_enz[4], azel_sez[4], atol=tol)
+    @test isapprox(azel_enz[5], azel_sez[5], atol=tol)
+    @test isapprox(azel_enz[6], azel_sez[6], atol=tol)
+
 end
 
 let 
