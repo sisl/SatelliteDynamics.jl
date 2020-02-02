@@ -35,7 +35,7 @@ makedocs(
         "Tutorials" => Any[
             "tutorials/orbit_propagation_example.md",
         ],
-        "Function Index" => "modules/function_index.md",
+        "Function Index" => "function_index.md",
     ]
 )
 
