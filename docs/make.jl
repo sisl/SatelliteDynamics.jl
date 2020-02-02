@@ -40,7 +40,7 @@ makedocs(
 )
 
 # Generate plots
-# makeplots()
+makeplots()
 
 deploydocs(
     repo = "github.com/sisl/SatelliteDynamics.jl",
