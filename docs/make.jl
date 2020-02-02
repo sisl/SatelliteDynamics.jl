@@ -1,13 +1,11 @@
 using Documenter
 using SatelliteDynamics
-using SatelliteDynamics.EarthEnvironment
-using SatelliteDynamics.Simulation
 
 include("src/makeplots.jl")
 
 # Generate documents
 makedocs(
-    modules   = [SatelliteDynamics, SatelliteDynamics.EarthEnvironment, SatelliteDynamics.Simulation],
+    modules   = [SatelliteDynamics],
     doctest   = false,
     clean     = true,
     linkcheck = true,
