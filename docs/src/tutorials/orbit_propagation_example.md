@@ -30,8 +30,16 @@ Next, simulate the orbit:
 T    = orbit_period(oe0[1])
 epcf = epc0 + T
 
+# Create an EarthInertialState orbit propagagator
+orb  = EarthInertialState(epc0, eci0, dt=1.0,
+            mass=1.0, n_grav=0, m_grav=0,
+            drag=false, srp=false,
+            moon=false, sun=false,
+            relativity=false
+)
+
 # Propagate the orbit
-t, epc, eci = simulate(orb, epcf, timestep=1, dtmax=1)
+t, epc, eci = sim!(orb, epcf)
 ```
 
 Putting it all together we have:
