@@ -121,8 +121,8 @@ function spherical_harmonic_gravity(r::Array{<:Real, 1}, coef::Array{<:Real, 2},
     z0    = r_ref * r[3] / r_sqr
 
     # Initialize Intermediary Matrices
-    V = zeros(Float64, n_max+2, n_max+2)
-    W = zeros(Float64, n_max+2, n_max+2)
+    V = zeros(eltype(r), n_max+2, n_max+2)
+    W = zeros(eltype(r), n_max+2, n_max+2)
 
     # Calculate zonal terms V(n, 0). Set W(n,0)=0.0
     V[0+1, 0+1] = r_ref /sqrt(r_sqr)
