@@ -7,7 +7,16 @@ DATA_DIR = abspath(joinpath(abspath(string(@__DIR__)), "../data"))
 function download_file(url, file)
     filepath = abspath(joinpath(DATA_DIR, file))
     @debug("Downloading datafile. URL: $url DESTINATION: $filepath")
-    run(`curl -S -L $url -o $filepath`)
+    
+    # Remove any temp files
+    run(`rm -f $(filepath)_tmp`)
+
+    # Attempt to download data
+    run(`curl -S -L $url -o $(filepath)_tmp`)
+
+    # Move temporary file into permanent location
+    run(`rm -f $filepath`)
+    run(`mv $(filepath)_tmp $filepath`)
 end
 
 export download_kp
@@ -23,7 +32,7 @@ Notes:
 """
 function download_kp(year_start::Int=2000, year_end::Int=Dates.year(Dates.today()))
     for year in year_start:year_end
-        download_file("ftp://ftp.gfz-potsdam.de/pub/home/obs/kp-ap/wdc/kp$year.wdc", "kp$year.wdc")
+        download_file("ftp://ftp.gfz-potsdam.de/pub/home/obs/kp-ap/wdc/yearly/kp$year.wdc", "kp$year.wdc")
     end
 
     # Merge Data and clean up
