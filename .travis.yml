@@ -7,14 +7,14 @@ os:
 julia:
   - 1.0
   - 1.5
-  - nightly
+  # - nightly
 
 notifications:
   email: true
 
-matrix:
-  allow_failures:
-    - julia: nightly
+# matrix:
+#   allow_failures:
+#     - julia: nightly
 
 before_install:
   # Install TeX and Qt5 to build plots for documentation
