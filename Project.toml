@@ -13,8 +13,8 @@ SOFA = "ad3d3fd0-b5f2-51ee-b274-8cdbe62317e2"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
-SOFA = "^1"
-StaticArrays = "0.12"
+SOFA = "^1.0.2"
+StaticArrays = "^0"
 julia = "1.0.0"
 
 [extras]
