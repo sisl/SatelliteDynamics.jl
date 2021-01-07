@@ -1,7 +1,7 @@
 name = "SatelliteDynamics"
 uuid = "0e7c1a32-1b9f-5532-88a4-e668712d6a4c"
 authors = ["Duncan Eddy <duncan.eddy@gmail.com>"]
-version = "0.4.2"
+version = "0.4.3"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -13,9 +13,9 @@ SOFA = "ad3d3fd0-b5f2-51ee-b274-8cdbe62317e2"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
-julia = "^1.0.0"
 SOFA = "^1.0.2"
 StaticArrays = "^1.0.1"
+julia = "^1.0.0"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
