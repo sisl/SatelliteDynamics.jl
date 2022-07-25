@@ -209,11 +209,11 @@ interpreted as an offset in seconds to add to the Epoch.
 The class also supports all arithmetic operators: `==`, `!=`, `<`, `<=`, `>`, `>=`
 
 Arguments:
-- `year::Int` Year
-- `month::Int` Month
-- `day::Int` Day
-- `hour::Int` Hour (optional)
-- `minute::Int` Minute (optional)
+- `year::Real` Year
+- `month::Real` Month
+- `day::Real` Day
+- `hour::Real` Hour (optional)
+- `minute::Real` Minute (optional)
 - `second::Real` Seconds (optional)
 - `nanoseconds::Real` Nanoseconds (optional)
 - `tsys::String`: Time system of the epoch at initialization
