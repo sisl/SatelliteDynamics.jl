@@ -234,7 +234,7 @@ epc = Epoch("2018-12-01 16:22:19.123456789 GPS")
 ```
 """
 struct Epoch
-    # All days, seconds, and nanoseconds are stored internally in the TAI time scale, conversion to from TAI is done on intpu/output interacting.
+    # All days, seconds, and nanoseconds are stored internally in the TAI time scale, conversion to from TAI is done on intput/output interacting.
     days::Int # Total days [0, ∞)
     seconds::Int # Integer seconds [0, 86400)
     nanoseconds::Float64 # Fractional seconds [0, 1)
