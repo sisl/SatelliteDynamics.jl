@@ -210,8 +210,8 @@ The class also supports all arithmetic operators: `==`, `!=`, `<`, `<=`, `>`, `>
 
 Arguments:
 - `year::Int` Year
-- `year::Int` Month
-- `year::Int` Day
+- `month::Int` Month
+- `day::Int` Day
 - `hour::Int` Hour (optional)
 - `minute::Int` Minute (optional)
 - `second::Real` Seconds (optional)
