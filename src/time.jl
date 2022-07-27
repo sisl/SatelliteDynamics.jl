@@ -209,11 +209,11 @@ interpreted as an offset in seconds to add to the Epoch.
 The class also supports all arithmetic operators: `==`, `!=`, `<`, `<=`, `>`, `>=`
 
 Arguments:
-- `year::Int` Year
-- `year::Int` Month
-- `year::Int` Day
-- `hour::Int` Hour (optional)
-- `minute::Int` Minute (optional)
+- `year::Real` Year
+- `month::Real` Month
+- `day::Real` Day
+- `hour::Real` Hour (optional)
+- `minute::Real` Minute (optional)
 - `second::Real` Seconds (optional)
 - `nanoseconds::Real` Nanoseconds (optional)
 - `tsys::String`: Time system of the epoch at initialization
@@ -234,7 +234,7 @@ epc = Epoch("2018-12-01 16:22:19.123456789 GPS")
 ```
 """
 struct Epoch
-    # All days, seconds, and nanoseconds are stored internally in the TAI time scale, conversion to from TAI is done on intpu/output interacting.
+    # All days, seconds, and nanoseconds are stored internally in the TAI time scale, conversion to from TAI is done on input/output interacting.
     days::Int # Total days [0, ∞)
     seconds::Int # Integer seconds [0, 86400)
     nanoseconds::Float64 # Fractional seconds [0, 1)
