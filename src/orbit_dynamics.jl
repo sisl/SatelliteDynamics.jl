@@ -52,15 +52,15 @@ of the central body. Returns the acceleration vector of the satellite.
 Assumes the satellite is much, much less massive than the central body.
 
 Arguments:
-- `r_sat::Array{<:Real, 1}`: satellite position in a commonn inertial frame [m]
-- `r_body::Array{<:Real, 1}`: position of body in a commonn inertial frame [m]
-- `GM::Array{<:Real, 1}`: gravitational coeffient of attracting body [m^3/s^2] Default: SatelliteDynamics.GM_EARTH)
+- `r_sat::AbstractArray{<:Real, 1}`: satellite position in a commonn inertial frame [m]
+- `r_body::AbstractArray{<:Real, 1}`: position of body in a commonn inertial frame [m]
+- `GM::AbstractArray{<:Real, 1}`: gravitational coeffient of attracting body [m^3/s^2] Default: SatelliteDynamics.GM_EARTH)
 (Default: SatelliteDynamics.GM_EARTH
 
 Return:
-- `a::Array{<:Real, 1}`: Acceleration in X, Y, and Z inertial directions [m/s^2]
+- `a::AbstractArray{<:Real, 1}`: Acceleration in X, Y, and Z inertial directions [m/s^2]
 """
-function accel_point_mass(r_sat::Array{<:Real, 1}, r_body::Array{<:Real, 1}, gm_body::Real=GM_EARTH)
+function accel_point_mass(r_sat::AbstractArray{<:Real, 1}, r_body::AbstractArray{<:Real, 1}, gm_body::Real=GM_EARTH)
     # Restrict inputs to position only
     r_sat  = r_sat[1:3]
     r_body = r_body[1:3]
@@ -79,14 +79,14 @@ Computes the acceleration on a satellite caused by a point-mass approximation
 of a massive body. Returns the acceleration vector of the satellite.
 
 Arguments:
-- `r_sat::Array{<:Real, 1}`: satellite position in the inertial frame [m]
-- `GM::Array{<:Real, 1}`: gravitational coeffient of attracting body [m^3/s^2] Default: SatelliteDynamics.GM_EARTH)
+- `r_sat::AbstractArray{<:Real, 1}`: satellite position in the inertial frame [m]
+- `GM::AbstractArray{<:Real, 1}`: gravitational coeffient of attracting body [m^3/s^2] Default: SatelliteDynamics.GM_EARTH)
 (Default: SatelliteDynamics.GM_EARTH
 
 Return:
-- `a::Array{<:Real, 1}`: Acceleration in X, Y, and Z inertial directions [m/s^2]
+- `a::AbstractArray{<:Real, 1}`: Acceleration in X, Y, and Z inertial directions [m/s^2]
 """
-function accel_point_mass(x::Array{<:Real, 1}, gm_body::Real=GM_EARTH)
+function accel_point_mass(x::AbstractArray{<:Real, 1}, gm_body::Real=GM_EARTH)
     # Restrict inputs to position only. Considered in body frame
     r  = x[1:3]
 
@@ -101,8 +101,8 @@ Compute the gravitational acceleration at a model given a spherical harmonic
 gravity field model.
 
 Arguments:
-- `r::Array{<:Real, 1}`: Position of the point in the body (field) fixed frame. [m]
-- `coef::Array{<:Real, 2}`: Gravity coefficients stored in dense matrix form. C_nm terns are stored along rows indexed from C_00 in coef[1, 1] to C_nm in coef[n+1, m+1]. S_nm terms are stored along matrix columns with S_n0 stored in coef[0, n+1]
+- `r::AbstractArray{<:Real, 1}`: Position of the point in the body (field) fixed frame. [m]
+- `coef::AbstractArray{<:Real, 2}`: Gravity coefficients stored in dense matrix form. C_nm terns are stored along rows indexed from C_00 in coef[1, 1] to C_nm in coef[n+1, m+1]. S_nm terms are stored along matrix columns with S_n0 stored in coef[0, n+1]
 - `n_max::Integer`: Maximum degree coefficient to use in expansion
 - `m_max::Integer`: Maximum order coefficient to use in the expansion. Must be less than the degree.
 - `r_ref::Real`: Reference distance of the gravity field.
@@ -110,9 +110,9 @@ Arguments:
 - `normralized::Bool`: Whether the input gravity field coefficients are normalized coefficients (Default: true)
 
 Returns:
-- `a::Array{<:Real, 1}`: Acceleration in X, Y, and Z inertial directions [m/s^2]
+- `a::AbstractArray{<:Real, 1}`: Acceleration in X, Y, and Z inertial directions [m/s^2]
 """
-function spherical_harmonic_gravity(r::Array{<:Real, 1}, coef::Array{<:Real, 2}, n_max::Integer, m_max::Integer, r_ref::Real, GM::Real; normalized::Bool=true)
+function spherical_harmonic_gravity(r::AbstractArray{<:Real, 1}, coef::AbstractArray{<:Real, 2}, n_max::Integer, m_max::Integer, r_ref::Real, GM::Real; normalized::Bool=true)
     # Intermediate computations
     r_sqr = dot(r, r)
     rho   = r_ref^2/r_sqr
@@ -206,18 +206,18 @@ Computes the accleration caused by Earth gravity as modeled by a spherical
 harmonic gravity field.
 
 Arguments:
-- `r_sat::Array{<:Real, 1}`: Satellite position in the inertial frame [m]
-- `R_eci_ecef::Array{<:Real, 2}`: Rotation matrix transforming a vector from the inertial to body-fixed reference frames. 
+- `r_sat::AbstractArray{<:Real, 1}`: Satellite position in the inertial frame [m]
+- `R_eci_ecef::AbstractArray{<:Real, 2}`: Rotation matrix transforming a vector from the inertial to body-fixed reference frames. 
 - `n_max::Integer`: Maximum degree coefficient to use in expansion
 - `m_max::Integer`: Maximum order coefficient to use in the expansion. Must be less than the degree.
     
 Return:
-- `a::Array{<:Real, 1}`: Gravitational acceleration in X, Y, and Z inertial directions [m/s^2]
+- `a::AbstractArray{<:Real, 1}`: Gravitational acceleration in X, Y, and Z inertial directions [m/s^2]
 
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.56-68.
 """
-function accel_gravity(x::Array{<:Real, 1}, R_eci_ecef::Array{<:Real, 2}, n_max::Int=20, m_max::Int=20)
+function accel_gravity(x::AbstractArray{<:Real, 1}, R_eci_ecef::AbstractArray{<:Real, 2}, n_max::Int=20, m_max::Int=20)
     
     # Check Limits of Gravity Field
     if n_max > GRAVITY_MODEL.n_max
@@ -258,7 +258,7 @@ Argument:
 - `epc::Epoch`: Epoch
 
 Returns:
-- `r_sun::Array{<:Real, 1}`: Position vector of the Sun in the Earth-centered inertial fame.
+- `r_sun::AbstractArray{<:Real, 1}`: Position vector of the Sun in the Earth-centered inertial fame.
 
 Notes:
 1. The EME2000 inertial frame is for most purposes equivalent to the GCRF frame.
@@ -294,7 +294,7 @@ Argument:
 - `epc::Epoch`: Epoch
 
 Returns:
-- `r_moon::Array{<:Real, 1}`: Position vector of the Moon in the Earth-centered inertial fame.
+- `r_moon::AbstractArray{<:Real, 1}`: Position vector of the Moon in the Earth-centered inertial fame.
 
 Notes:
 1. The EME2000 inertial frame is for most purposes equivalent to the GCRF frame.
@@ -352,23 +352,23 @@ Computes the acceleration of a satellite in the inertial frame due to the
 gravitational attraction of the Sun.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
-- `r_sun::Array{<:Real, 1}`: Position of sun in inertial frame.
+- `x::AbstractArray{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
+- `r_sun::AbstractArray{<:Real, 1}`: Position of sun in inertial frame.
 
 Return:
-- `a::Array{<:Real, 1}`: Acceleration due to the Sun's gravity in the inertial frame [m/s^2]
+- `a::AbstractArray{<:Real, 1}`: Acceleration due to the Sun's gravity in the inertial frame [m/s^2]
 
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.69-70.
 """
-function accel_thirdbody_sun(x::Array{<:Real, 1}, r_sun::Array{<:Real, 1})
+function accel_thirdbody_sun(x::AbstractArray{<:Real, 1}, r_sun::AbstractArray{<:Real, 1})
     # Acceleration due to sun point mass
     a_sun = accel_point_mass(x[1:3], r_sun, GM_SUN)
 
     return a_sun
 end
 
-function accel_thirdbody_sun(epc::Epoch, x::Array{<:Real, 1})
+function accel_thirdbody_sun(epc::Epoch, x::AbstractArray{<:Real, 1})
     # Compute solar position
     r_sun = sun_position(epc)
 
@@ -384,23 +384,23 @@ Computes the acceleration of a satellite in the inertial frame due to the
 gravitational attraction of the Moon.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
-- `r_moon::Array{<:Real, 1}`: Position of moon in inertial frame.
+- `x::AbstractArray{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
+- `r_moon::AbstractArray{<:Real, 1}`: Position of moon in inertial frame.
 
 Returns:
-- `a::Array{<:Real, 1}`: Acceleration due to the Moon's gravity in the inertial frame [m/s^2]
+- `a::AbstractArray{<:Real, 1}`: Acceleration due to the Moon's gravity in the inertial frame [m/s^2]
 
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.69-70.
 """
-function accel_thirdbody_moon(x::Array{<:Real, 1}, r_moon::Array{<:Real, 1})
+function accel_thirdbody_moon(x::AbstractArray{<:Real, 1}, r_moon::AbstractArray{<:Real, 1})
     # Acceleration due to moon point mass
     a_moon = accel_point_mass(x[1:3], r_moon, GM_MOON)
 
     return a_moon
 end
 
-function accel_thirdbody_moon(epc::Epoch, x::Array{<:Real, 1})
+function accel_thirdbody_moon(epc::Epoch, x::AbstractArray{<:Real, 1})
     # Compute solar position
     r_moon = moon_position(epc)
 
@@ -419,8 +419,8 @@ export density_harris_priester
 Computes the local density using the Harris-Priester density model.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
-- `r_sun::Array{<:Real, 1}`: Position of sun in inertial frame.
+- `x::AbstractArray{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
+- `r_sun::AbstractArray{<:Real, 1}`: Position of sun in inertial frame.
 
 Returns:
 - `rho:Float64`: Local atmospheric density [kg/m^3]
@@ -428,7 +428,7 @@ Returns:
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.89-91.
 """
-function density_harris_priester(x::Array{<:Real, 1}, r_sun::Array{<:Real, 1})
+function density_harris_priester(x::AbstractArray{<:Real, 1}, r_sun::AbstractArray{<:Real, 1})
     # Harris-Priester Constants
     hp_upper_limit =   1000.0          # Upper height limit [km]
     hp_lower_limit =    100.0          # Lower height limit [km]
@@ -518,7 +518,7 @@ function density_harris_priester(x::Array{<:Real, 1}, r_sun::Array{<:Real, 1})
     return density
 end
 
-function density_harris_priester(epc::Epoch, x::Array{<:Real, 1})
+function density_harris_priester(epc::Epoch, x::AbstractArray{<:Real, 1})
     r_sun = sun_position(epc)
     return density_harris_priester(x, r_sun)
 end
@@ -530,20 +530,20 @@ drag assuming that the ballistic properties of the spacecraft are captured by
 the coefficient of drag.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
+- `x::AbstractArray{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
 - `rho::Real`: atmospheric density [kg/m^3]
 - `mass::Real`: Spacecraft mass [kg]
 - `area::Real`: Wind-facing cross-sectional area [m^2]
 - `Cd::Real`: coefficient of drag [dimensionless]
-- `T::Array{<:Real, 2}`: Rotation matrix from the inertial to the true-of-date frame
+- `T::AbstractArray{<:Real, 2}`: Rotation matrix from the inertial to the true-of-date frame
 
 Return:
-- `a::Array{<:Real, 1}`: Acceleration due to drag in the X, Y, and Z inertial directions. [m/s^2]
+- `a::AbstractArray{<:Real, 1}`: Acceleration due to drag in the X, Y, and Z inertial directions. [m/s^2]
 
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.83-86.
 """
-function accel_drag(x::Array{<:Real, 1}, rho::Real, mass::Real, area::Real, Cd::Real, T::Array{<:Real, 2})
+function accel_drag(x::AbstractArray{<:Real, 1}, rho::Real, mass::Real, area::Real, Cd::Real, T::AbstractArray{<:Real, 2})
 
     # Constants
     omega = [0, 0, OMEGA_EARTH]
@@ -573,8 +573,8 @@ Computes the illumination fraction of a satellite in Earth orbit using a
 cylindrical Earth shadow model.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
-- `r_sun::Array{<:Real, 1}`: Position of sun in inertial frame.
+- `x::AbstractArray{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
+- `r_sun::AbstractArray{<:Real, 1}`: Position of sun in inertial frame.
 
 Return:
 - `nu::Float64`: Illumination fraction (0 <= nu <= 1). nu = 0 means spacecraft in complete shadow, nu = 1 mean spacecraft fully illuminated by sun.
@@ -582,7 +582,7 @@ Return:
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.80-83.
 """
-function eclipse_cylindrical(x::Array{<:Real, 1}, r_sun::Array{<:Real, 1})
+function eclipse_cylindrical(x::AbstractArray{<:Real, 1}, r_sun::AbstractArray{<:Real, 1})
     # Satellite inertial position
     r = x[1:3]
     
@@ -601,7 +601,7 @@ function eclipse_cylindrical(x::Array{<:Real, 1}, r_sun::Array{<:Real, 1})
     return nu
 end
 
-function eclipse_cylindrical(epc::Epoch, x::Array{<:Real, 1})
+function eclipse_cylindrical(epc::Epoch, x::AbstractArray{<:Real, 1})
     r_sun = sun_position(epc)
     return eclipse_cylindrical(x, r_sun)
 end
@@ -612,8 +612,8 @@ Computes the illumination fraction of a satellite in Earth orbit using a
 conical Earth shadow model.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
-- `r_sun::Array{<:Real, 1}`: Position of sun in inertial frame.
+- `x::AbstractArray{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
+- `r_sun::AbstractArray{<:Real, 1}`: Position of sun in inertial frame.
 
 Return:
 - `nu::Float64`: Illumination fraction (0 <= nu <= 1). nu = 0 means spacecraft in complete shadow, nu = 1 mean spacecraft fully illuminated by sun.
@@ -621,7 +621,7 @@ Return:
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.80-83.
 """
-function eclipse_conical(x::Array{<:Real, 1}, r_sun::Array{<:Real, 1})
+function eclipse_conical(x::AbstractArray{<:Real, 1}, r_sun::AbstractArray{<:Real, 1})
     # Satellite inertial position
     r = x[1:3]
 
@@ -654,7 +654,7 @@ function eclipse_conical(x::Array{<:Real, 1}, r_sun::Array{<:Real, 1})
 end
 
 
-function eclipse_conical(epc::Epoch, x::Array{<:Real, 1})
+function eclipse_conical(epc::Epoch, x::AbstractArray{<:Real, 1})
     r_sun = sun_position(epc)
     return eclipse_conical(x, r_sun)
 end
@@ -665,15 +665,15 @@ pressure assuming the reflecting surface is a flat plate pointed directly at
 the Sun.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
+- `x::AbstractArray{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
 
 Returns:
-- `a::Array{<:Real, 1}`: Satellite acceleration due to solar radiation pressure [m/s^2]
+- `a::AbstractArray{<:Real, 1}`: Satellite acceleration due to solar radiation pressure [m/s^2]
 
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.77-79.
 """
-function accel_srp(x::Array{<:Real, 1}, r_sun::Array{<:Real, 1}, mass::Real=0, area::Real=0, CR::Real=1.8, p0::Real=P_SUN, au::Real=AU)
+function accel_srp(x::AbstractArray{<:Real, 1}, r_sun::AbstractArray{<:Real, 1}, mass::Real=0, area::Real=0, CR::Real=1.8, p0::Real=P_SUN, au::Real=AU)
     # Spacecraft position vector
     r = x[1:3]
 
@@ -696,15 +696,15 @@ export accel_relativity
 due to the combined effects of special and general relativity.
 
 Arguments:
-- `x::Array{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
+- `x::AbstractArray{<:Real, 1}`: Satellite Cartesean state in the inertial reference frame [m; m/s]
 
 Returns:
-- `a::Array{<:Real, 1}`: Satellite acceleration due to relativity. [m/s^2]
+- `a::AbstractArray{<:Real, 1}`: Satellite acceleration due to relativity. [m/s^2]
 
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.110-112.
 """
-function accel_relativity(x::Array{<:Real, 1})
+function accel_relativity(x::AbstractArray{<:Real, 1})
     # Extract state variables
     r = x[1:3]
     v = x[4:6]

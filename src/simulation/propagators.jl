@@ -8,7 +8,7 @@ Compute the state derivative.
 
 Arguments:
 - `epc::Epoch`: Current epoch
-- `x::Array{<:Real, 1}`: Satellite state vector
+- `x::AbstractArray{<:Real, 1}`: Satellite state vector
 - `mass::Real`: Satellite mass [kg]
 - `area_drag`: Velocity-facing area affected by drag. [m^2]
 - `coef_drag`: Coefficient of drag [dimensionless]
@@ -23,9 +23,9 @@ Arguments:
 - `relativity::Bool`: Include relativistic effects in force model (Default: `true`)
 
 Returns:
-- `dx::Array{<:Float64, 1}`: Satellite state derivative, velocity and accelerations [m; m/s]
+- `dx::AbstractArray{<:Float64, 1}`: Satellite state derivative, velocity and accelerations [m; m/s]
 """
-function fderiv_earth_orbit(epc::Epoch, x::Array{<:Real} ;
+function fderiv_earth_orbit(epc::Epoch, x::AbstractArray{<:Real} ;
              mass::Real=1.0, area_drag::Real=1.0, coef_drag::Real=2.3, 
              area_srp::Real=1.0, coef_srp::Real=1.8, 
              n_grav::Integer=20, m_grav::Integer=20, 
@@ -102,7 +102,7 @@ Attributes:
 the state vector is requested to propagate to a time smaller than this step size,
 which it will do.
 - `epc::Epoch` Epoch of state
-- `x::Array{Float64, 1}` State vector. Earth-centered inertial Cartesian state.
+- `x::AbstractArray{Float64, 1}` State vector. Earth-centered inertial Cartesian state.
 - `phi::Union{Nothing, Array{Float64, 2}}` State transition matrix, or the matrix
 of partial derivatives of the state at the current time with respect to the 
 start of propagation.
@@ -128,11 +128,11 @@ mutable struct EarthInertialState
     rk4::RK4
     dt::Real
     epc::Epoch
-    x::Array{Float64, 1}
+    x::AbstractArray{Float64, 1}
     phi::Union{Nothing, Array{Float64, 2}}
 end
 
-function EarthInertialState(epc::Epoch, x::Array{<:Real, 1}, phi::Union{Nothing, Array{Float64, 2}}=nothing; dt::Real=30.0, kwargs...)
+function EarthInertialState(epc::Epoch, x::AbstractArray{<:Real, 1}, phi::Union{Nothing, Array{Float64, 2}}=nothing; dt::Real=30.0, kwargs...)
     rk4 = RK4(fderiv_earth_orbit; kwargs...)
     return EarthInertialState(rk4, dt, epc, x, phi)
 end
@@ -206,10 +206,10 @@ Arguments:
 a real number to advance the state by or the Epoch
 
 Returns:
-- `t::Array{Float64, 1}` Elapsed time as a scalar from the initial simulation epoch 
-- `epc::Array{Epoch, 1}` Epoch at each timestep 
-- `x::Array{Float64, 2}` State vectors at each time step. Time is along second axis
-- `Phi::Array{Float64, 2}` Stacked array of state transition matrices
+- `t::AbstractArray{Float64, 1}` Elapsed time as a scalar from the initial simulation epoch 
+- `epc::AbstractArray{Epoch, 1}` Epoch at each timestep 
+- `x::AbstractArray{Float64, 2}` State vectors at each time step. Time is along second axis
+- `Phi::AbstractArray{Float64, 2}` Stacked array of state transition matrices
 """
 function sim!(state::EarthInertialState, time::Union{Real, Epoch}=0.0)
     if typeof(time) <: Real

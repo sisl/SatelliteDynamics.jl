@@ -183,14 +183,14 @@ The osculating elements are assumed to be (in order):
 6. _M_, Mean anomaly [rad]
 
 Arguments:
-- x_oe `x::Array{<:Real, 1}`: Osculating orbital elements. See above for desription of the elements and their required order.
+- x_oe `x::AbstractArray{<:Real, 1}`: Osculating orbital elements. See above for desription of the elements and their required order.
 - `use_degrees:Bool`: If `true` interpret input will be interpreted as being in degrees, and output will be returned in degrees.
 - `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.GM_EARTH` if none is provided.
 
 # Returns
-- x `x::Array{<:Real, 1}`: Cartesean inertial state. Returns position and velocity. [m; m/s]
+- x `x::AbstractArray{<:Real, 1}`: Cartesean inertial state. Returns position and velocity. [m; m/s]
 """
-function sOSCtoCART(x_oe::Array{<:Real, 1}; use_degrees::Bool=false, GM::Real=GM_EARTH)
+function sOSCtoCART(x_oe::AbstractArray{<:Real, 1}; use_degrees::Bool=false, GM::Real=GM_EARTH)
 
     if use_degrees == true
         # Copy and convert input from degrees to radians if necessary
@@ -238,14 +238,14 @@ The osculating elements are assumed to be (in order):
 6. _M_, Mean anomaly [rad]
 
 Arguments:
-- x `x::Array{<:Real, 1}`: Cartesean inertial state. Returns position and velocity. [m; m/s]
+- x `x::AbstractArray{<:Real, 1}`: Cartesean inertial state. Returns position and velocity. [m; m/s]
 - `use_degrees:Bool`: If `true` interpret input will be interpreted as being in degrees, and output will be returned in degrees.
 - `GM::Real`: Gravitational constant of central body. Defaults to `SatelliteDynamics.GM_EARTH` if none is provided.
 
 # Returns
-- x_oe `x::Array{<:Real, 1}`: Osculating orbital elements. See above for desription of the elements and their required order.
+- x_oe `x::AbstractArray{<:Real, 1}`: Osculating orbital elements. See above for desription of the elements and their required order.
 """
-function sCARTtoOSC(x::Array{<:Real, 1}; use_degrees::Bool=false, GM::Real=GM_EARTH)
+function sCARTtoOSC(x::AbstractArray{<:Real, 1}; use_degrees::Bool=false, GM::Real=GM_EARTH)
 
     # Initialize Cartesian Polistion and Velocity
     r = x[1:3]
