@@ -75,9 +75,9 @@ Downloads the following files:
 """
 function download_all_data()
     # Earth Orientation Data
-    download_file("https://datacenter.iers.org/data/latestVersion/224_EOP_C04_14.62-NOW.IAU2000A224.txt", "EOP_C04_14.62-NOW.IAU2000A.txt")
-    download_file("https://datacenter.iers.org/data/latestVersion/223_EOP_C04_14.62-NOW.IAU1980223.txt", "EOP_C04_80.62-NOW.IAU2000A.txt")
-    download_file("https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt", "FINALS.ALL_IAU2000.txt")
+    # download_file("https://datacenter.iers.org/data/latestVersion/EOP_14_C04_IAU2000A_one_file_1962-now.txt", "EOP_C04_14.62-NOW.IAU2000A.txt")
+    # download_file("https://datacenter.iers.org/data/latestVersion/EOP_14_C04_IAU1980_one_file_1962-now.txt", "EOP_C04_80.62-NOW.IAU2000A.txt")
+    download_file("https://datacenter.iers.org/data/latestVersion/finals.all.iau2000.txt", "FINALS.ALL_IAU2000.txt")
 
     # Geomagnetic inidies
     download_kp()
@@ -92,9 +92,9 @@ end
 
 # Define product dictionary
 eop_products = Dict(
-    "C04_14" => ("https://datacenter.iers.org/data/latestVersion/224_EOP_C04_14.62-NOW.IAU2000A224.txt", abspath(string(@__DIR__), "../data/EOP_C04_14.62-NOW.IAU2000A.txt")),
-    "C04_80" => ("https://datacenter.iers.org/data/latestVersion/223_EOP_C04_14.62-NOW.IAU1980223.txt", abspath(string(@__DIR__), "../data/EOP_C04_80.62-NOW.IAU2000A.txt")),
-    "FINALS_2000" => ("https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt", abspath(string(@__DIR__), "../data/FINALS.ALL_IAU2000.txt"))
+    "C04_14" => ("https://datacenter.iers.org/data/latestVersion/EOP_14_C04_IAU2000A_one_file_1962-now.txt", abspath(string(@__DIR__), "../data/EOP_C04_14.62-NOW.IAU2000A.txt")),
+    "C04_80" => ("https://datacenter.iers.org/data/latestVersion/EOP_14_C04_IAU1980_one_file_1962-now.txt", abspath(string(@__DIR__), "../data/EOP_C04_80.62-NOW.IAU2000A.txt")),
+    "FINALS_2000" => ("https://datacenter.iers.org/data/latestVersion/finals.all.iau2000.txt", abspath(string(@__DIR__), "../data/FINALS.ALL_IAU2000.txt"))
 )
 
 export EarthOrientationData
