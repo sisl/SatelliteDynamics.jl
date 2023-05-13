@@ -2414,7 +2414,7 @@ Arguments:
 - `opscode::Char` Operatitonal mode of propagators
 
 Returns:
-- `rv::Array{Float64, 1}` Position and velocity as output by TLE propagator. 
+- `rv::AbstractArray{Float64, 1}` Position and velocity as output by TLE propagator. 
     Units [m m/s]
 """
 function state(tle::TLE, epc::Epoch)

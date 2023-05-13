@@ -12,7 +12,7 @@ end
 """
 Simple test function for spherical earth dynamics
 """
-function point_earth(epc::Epoch, x::Array{<:Real, 1})
+function point_earth(epc::Epoch, x::AbstractArray{<:Real, 1})
     # Restrict inputs to position only. Considered in body frame
     r  = x[1:3]
     v  = x[4:6]

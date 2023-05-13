@@ -11,7 +11,7 @@ Arguments:
 - `use_degrees:Bool`: If `true` interpret input as being in degrees.
 
 Returns:
-- `r::Array{<:Real, 2}`: Rotation matrix
+- `r::AbstractArray{<:Real, 2}`: Rotation matrix
 
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.27.
@@ -39,7 +39,7 @@ Arguments:
 - `use_degrees:Bool`: If `true` interpret input as being in degrees.
 
 Returns:
-- `r::Array{<:Real, 2}`: Rotation matrix
+- `r::AbstractArray{<:Real, 2}`: Rotation matrix
 
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.27.
@@ -67,7 +67,7 @@ Arguments:
 - `use_degrees:Bool`: If `true` interpret input as being in degrees.
 
 Returns:
-- `r::Array{<:Real, 2}`: Rotation matrix
+- `r::AbstractArray{<:Real, 2}`: Rotation matrix
 
 References:
 1. O. Montenbruck, and E. Gill, _Satellite Orbits: Models, Methods and Applications_, 2012, p.27.
@@ -156,16 +156,16 @@ representation.
 
 Data members:
 - `theta::Float64`: Angle of rotation
-- `vec::Array{Float64, 1}`: Axis of rotation
+- `vec::AbstractArray{Float64, 1}`: Axis of rotation
 
 References:
 1. J. Diebel, _Representing attitude: Euler angles, unit quaternions, and rotation vectors._ Matrix 58(15-16) (2006).
 """
 mutable struct EulerAxis
     angle::Float64
-    axis::Array{Float64, 1}
+    axis::AbstractArray{Float64, 1}
 
-    function EulerAxis(angle::Real, axis::Array{<:Real, 1})
+    function EulerAxis(angle::Real, axis::AbstractArray{<:Real, 1})
         if length(axis) != 3
             throw(ArgumentError("Invalid array for EulerAxis initialization. Input size: $(size(axis)), Required size: (3,)"))
         end
@@ -179,7 +179,7 @@ end
 ##############
 
 # Quaternion Constructors 
-function Quaternion(vec::Array{<:Real, 1})
+function Quaternion(vec::AbstractArray{<:Real, 1})
     if length(vec) != 4
         throw(ArgumentError("Invalid array for Quaternion initialization. Input length: $(length(vec)), Required length: 4"))
     end
@@ -187,7 +187,7 @@ function Quaternion(vec::Array{<:Real, 1})
     Quaternion(vec...)
 end
 
-function Quaternion(mat::Array{<:Real, 2})
+function Quaternion(mat::AbstractArray{<:Real, 2})
     if size(mat) == (1,4)
         # Actually vector initialization. so it and return early
         return Quaternion(mat...)
@@ -377,7 +377,7 @@ Arguments:
 - `q::Quaternion`: Quaternion
 
 Returns:
-- `vec::Array{Float64, 1}`: Quaternion as a (4,) vector
+- `vec::AbstractArray{Float64, 1}`: Quaternion as a (4,) vector
 """
 function as_vector(q::Quaternion)
     return q[:]
@@ -392,7 +392,7 @@ Arguments:
 - `q::Quaternion`: Quaternion
 
 Returns:
-- `mat::Array{Float64, 2}`: Rotation Matrix on SO(3).
+- `mat::AbstractArray{Float64, 2}`: Rotation Matrix on SO(3).
 """
 function as_matrix(q::Quaternion)
     # initialize Empty Matrix
@@ -591,7 +591,7 @@ end
 # EulerAngle #
 ##############
 
-function EulerAngle(seq::Integer, vec::Array{<:Real, 1})
+function EulerAngle(seq::Integer, vec::AbstractArray{<:Real, 1})
     if length(vec) != 3
         throw(ArgumentError("Invalid array for EulerAngle initialization. Input length: $(length(vec)), Required length: 3"))
     end
@@ -599,7 +599,7 @@ function EulerAngle(seq::Integer, vec::Array{<:Real, 1})
     EulerAngle(seq, vec...)
 end
 
-function EulerAngle(seq::Integer, mat::Array{<:Real, 2})
+function EulerAngle(seq::Integer, mat::AbstractArray{<:Real, 2})
     if size(mat) != (3,3)
         throw(ArgumentError("Invalid array for Quaternion initialization. Input size: $(size(mat)), Required size: (3,3)"))
     end
@@ -714,7 +714,7 @@ Arguments:
 - `e::EulerAngle` Euler Angle
 
 Returns:
-- `evec::Array{Float64, 1}` Euler angles components in vector form.
+- `evec::AbstractArray{Float64, 1}` Euler angles components in vector form.
 """
 function as_vector(e::EulerAngle)
     return [e.phi, e.theta, e.psi]
@@ -741,7 +741,7 @@ function EulerAxis(angle::Real, v1::Real, v2::Real, v3::Real)
     return EulerAxis(angle, [v1, v2, v3])
 end
 
-function EulerAxis(vec::Array{<:Real, 1})
+function EulerAxis(vec::AbstractArray{<:Real, 1})
     if length(vec) != 4
         throw(ArgumentError("Invalid array for EulerAxis initialization. Input size: $(size(vec)), Required size: (4,)"))
     end
@@ -749,7 +749,7 @@ function EulerAxis(vec::Array{<:Real, 1})
     return EulerAxis(vec[1], [vec[2], vec[3], vec[4]])
 end
 
-function EulerAxis(mat::Array{<:Real, 2})
+function EulerAxis(mat::AbstractArray{<:Real, 2})
     if size(mat) != (3,3)
         throw(ArgumentError("Invalid array for EulerAxis initialization. Input size: $(size(mat)), Required size: (3,3)"))
     end

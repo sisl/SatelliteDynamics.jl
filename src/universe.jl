@@ -344,7 +344,7 @@ struct GravModel
     GM::Float64
     n_max::Int64
     m_max::Int64
-    data::Array{Float64, 2}
+    data::AbstractArray{Float64, 2}
 end
 
 function GravModel(filepath::String)

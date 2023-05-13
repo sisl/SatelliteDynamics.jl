@@ -17,13 +17,13 @@ include("nrlmsise00_data.jl")
 Internal data structure used for setting model parameters
 """
 mutable struct NRLMSISE_Flags
-    switches::Array{<:Int, 1}
-    sw::Array{<:Real, 1}
-    swc::Array{<:Real, 1}
+    switches::AbstractArray{<:Int, 1}
+    sw::AbstractArray{<:Real, 1}
+    swc::AbstractArray{<:Real, 1}
 
-    function NRLMSISE_Flags(switches::Array{<:Int, 1}=zeros(Int, 24),
-            sw::Array{<:Real, 1}=zeros(Float32, 24),
-            swc::Array{<:Real, 1}=zeros(Float32, 24),)
+    function NRLMSISE_Flags(switches::AbstractArray{<:Int, 1}=zeros(Int, 24),
+            sw::AbstractArray{<:Real, 1}=zeros(Float32, 24),
+            swc::AbstractArray{<:Real, 1}=zeros(Float32, 24),)
         new(switches, sw, swc)
     end
 end
@@ -51,12 +51,12 @@ mutable struct NRLMSISE_Input
     f107A::Float64  # 81 day average of F10.7cm flux (centered on day)
     f107::Float64   # Daily F10.7cm flux for previous day
     ap::Float64     # Magnetic index (daily)
-    ap_array::Array{<:Real, 1} # Magnetic index array
+    ap_array::AbstractArray{<:Real, 1} # Magnetic index array
 
     function NRLMSISE_Input(year::Int=2000, doy::Int=1, sec::Float64=0.0, 
                 alt::Float64=0.0, g_lat::Float64=0.0, g_lon::Float64=0.0,
                 lst::Float64=0.0, f107A::Float64=0.0, f107::Float64=0.0, 
-                ap::Float64=0.0, ap_array::Array{<:Real, 1}=zeros(Float64, 7))
+                ap::Float64=0.0, ap_array::AbstractArray{<:Real, 1}=zeros(Float64, 7))
         new(year, doy, sec, alt, g_lat, g_lon, lst, f107A, f107, ap, ap_array)
     end
 end
@@ -67,10 +67,10 @@ d = zeros(Float64, 9)
 t = zeros(Float64, 2)
 """
 mutable struct NRLMSISE_Output
-    d::Array{Float64, 1}
-    t::Array{Float64, 1}
+    d::AbstractArray{Float64, 1}
+    t::AbstractArray{Float64, 1}
 
-    function NRLMSISE_Output(d::Array{<:Real, 1}=zeros(Float64, 9), t::Array{<:Real, 1}=zeros(Float64, 2))
+    function NRLMSISE_Output(d::AbstractArray{<:Real, 1}=zeros(Float64, 9), t::AbstractArray{<:Real, 1}=zeros(Float64, 2))
         new(d, t)
     end
 end
@@ -222,15 +222,15 @@ end
 Integrate cubic spline from xa[1] to x
 
 Arguments:
--`xa::Array{Real, 1}` Array of tabulated function inputs in ascending order by x
--`ya::Array{Real, 1}` Array of tabulated function outputs in ascending order by x
--`y2a::Array{Real, 1}` Array of second derivatives
+-`xa::AbstractArray{Real, 1}` Array of tabulated function inputs in ascending order by x
+-`ya::AbstractArray{Real, 1}` Array of tabulated function outputs in ascending order by x
+-`y2a::AbstractArray{Real, 1}` Array of second derivatives
 -`x::Real` Array output point
 
 Returns:
 -`y::Real` Array output value
 """
-function splini(xa::Array{<:Real, 1}, ya::Array{<:Real, 1}, y2a::Array{<:Real, 1}, n::Int, x::Real)
+function splini(xa::AbstractArray{<:Real, 1}, ya::AbstractArray{<:Real, 1}, y2a::AbstractArray{<:Real, 1}, n::Int, x::Real)
     yi  = 0
     klo = 1
     khi = 2
@@ -261,15 +261,15 @@ end
 Interpolate cubic spline from to x
 
 Arguments:
--`xa::Array{Real, 1}` Array of tabulated function inputs in ascending order by x
--`ya::Array{Real, 1}` Array of tabulated function outputs in ascending order by x
--`y2a::Array{Real, 1}` Array of second derivates
+-`xa::AbstractArray{Real, 1}` Array of tabulated function inputs in ascending order by x
+-`ya::AbstractArray{Real, 1}` Array of tabulated function outputs in ascending order by x
+-`y2a::AbstractArray{Real, 1}` Array of second derivates
 -`x::Real` Array output point
 
 Returns:
 -`y::Real` Array output value
 """
-function splint(xa::Array{<:Real, 1}, ya::Array{<:Real, 1}, y2a::Array{<:Real, 1}, n::Int, x::Real)
+function splint(xa::AbstractArray{<:Real, 1}, ya::AbstractArray{<:Real, 1}, y2a::AbstractArray{<:Real, 1}, n::Int, x::Real)
     klo = 1
     khi = n
     k   = 0
@@ -300,16 +300,16 @@ end
 Interpolate cubic spline from to x
 
 Arguments:
--`x::Array{Real, 1}` Array of tabulated function inputs in ascending order by x
--`y::Array{Real, 1}` Array of tabulated function outputs in ascending order by x
+-`x::AbstractArray{Real, 1}` Array of tabulated function inputs in ascending order by x
+-`y::AbstractArray{Real, 1}` Array of tabulated function outputs in ascending order by x
 -`yp1::Real` Specified derivative at x[1]   (yp1 >= 1e30 signals second derivative is zero)
 -`ypn::Real` Specified derivative at x[end] (ypn >= 1e30 signals second derivative is zero)
 -`x::Real` Array output point
 
 Returns:
--`y::Array{Float64, 1}` Array second derivatives
+-`y::AbstractArray{Float64, 1}` Array second derivatives
 """
-function spline(x::Array{<:Real, 1}, y::Array{<:Real, 1}, n::Int, yp1::Real, ypn::Real)
+function spline(x::AbstractArray{<:Real, 1}, y::AbstractArray{<:Real, 1}, n::Int, yp1::Real, ypn::Real)
     u  = zeros(Float64, n) # Need the + 1 here because C implementation already allocates extra
     y2 = zeros(Float64, n)
 
@@ -382,8 +382,8 @@ Returns:
 - `meso_tgn2`
 """
 function densm!(alt::Real, d0::Real, xm::Real, tz::Real, 
-                mn3::Int, zn3::Array{<:Real, 1}, tn3::Array{<:Real, 1}, tgn3::Array{<:Real, 1}, 
-                mn2::Int, zn2::Array{<:Real, 1}, tn2::Array{<:Real, 1}, tgn2::Array{<:Real, 1};
+                mn3::Int, zn3::AbstractArray{<:Real, 1}, tn3::AbstractArray{<:Real, 1}, tgn3::AbstractArray{<:Real, 1}, 
+                mn2::Int, zn2::AbstractArray{<:Real, 1}, tn2::AbstractArray{<:Real, 1}, tgn2::AbstractArray{<:Real, 1};
                 gsurf::Real, re::Real)
     
 
@@ -530,7 +530,7 @@ end
 
 function densu!(alt::Real, dlb::Real, tinf::Real, tlb::Real, xm::Real, 
                alpha::Real, tz::Real, zlb::Real, s2::Real, 
-               mn1::Int, zn1::Array{<:Real, 1}, tn1::Array{<:Real, 1}, tgn1::Array{<:Real, 1};
+               mn1::Int, zn1::AbstractArray{<:Real, 1}, tn1::AbstractArray{<:Real, 1}, tgn1::AbstractArray{<:Real, 1};
                gsurf::Real, re::Real)
 
     x          = 0
@@ -693,7 +693,7 @@ function densu!(alt::Real, dlb::Real, tinf::Real, tlb::Real, xm::Real,
 end
 
 # Equation A24a
-@inline function g0(a::Real, p::Array{<:Real, 1})
+@inline function g0(a::Real, p::AbstractArray{<:Real, 1})
     return (a - 4.0 + (p[26] - 1.0) * (a - 4.0 + (exp(-sqrt(p[25]*p[25]) * (a - 4.0)) - 1.0) / sqrt(p[25]*p[25])))
 end
 
@@ -703,7 +703,7 @@ end
 end
 
 # Equation A24a
-@inline function sg0(ex::Real, p::Array{<:Real, 1}, ap::Array{<:Real, 1})
+@inline function sg0(ex::Real, p::AbstractArray{<:Real, 1}, ap::AbstractArray{<:Real, 1})
     return (g0(ap[2],p) + (g0(ap[3],p)*ex + g0(ap[4],p)*ex*ex + 
             g0(ap[5],p)*ex^3.0	+ (g0(ap[6],p)*ex^4.0 + 
             g0(ap[7],p)*ex^12.0)*(1.0- ex^8.0)/(1.0-ex)))/sumex(ex)
@@ -716,7 +716,7 @@ end
 """
 Calculate G(L) function
 """
-function globe7(p::Array{<:Real, 1}, input::NRLMSISE_Input, flags::NRLMSISE_Flags)
+function globe7(p::AbstractArray{<:Real, 1}, input::NRLMSISE_Input, flags::NRLMSISE_Flags)
     # Working variables
     t = zeros(Float64, 15)
 
@@ -940,8 +940,8 @@ end
 """
 Calculate G(L) function for lower atmosphere
 """
-function glob7s(p::Array{<:Real, 1}, input::NRLMSISE_Input, flags::NRLMSISE_Flags; 
-                dfa::Real, plg::Array{<:Array{<:Real,1},1}, ctloc::Real, stloc::Real, c2tloc::Real, s2tloc::Real, s3tloc::Real, c3tloc::Real)
+function glob7s(p::AbstractArray{<:Real, 1}, input::NRLMSISE_Input, flags::NRLMSISE_Flags; 
+                dfa::Real, plg::AbstractArray{<:Array{<:Real,1},1}, ctloc::Real, stloc::Real, c2tloc::Real, s2tloc::Real, s3tloc::Real, c3tloc::Real)
     # Working variables
     pset = 2.0
     t    = zeros(Float64, 14)
@@ -1593,7 +1593,7 @@ Computes the local atmospheric density using the NRLMSISE00 atmosphere model.
 
 Arguments:
 - `epc::Epoch`: Epoch of computation. Used to lookup space weather data
-- `x::Array{<:Real, 1}`: Satellite state in geodetic coordinates [lon, lat, alt]
+- `x::AbstractArray{<:Real, 1}`: Satellite state in geodetic coordinates [lon, lat, alt]
 - `use_degrees:Bool`: If `true` interprets geodetic inputs as being in degrees
 
 Returns:
@@ -1605,7 +1605,7 @@ Notes:
 References:
 1. _Picone, JM, et al._ NRLMSISE-00 empirical model of the atmosphere: Statistical comparisons and scientific issues _Journal of Geophysical Research: Space Physics_
 """
-function density_nrlmsise00(epc::Epoch, x::Array{<:Real, 1}; use_degrees::Bool=false)
+function density_nrlmsise00(epc::Epoch, x::AbstractArray{<:Real, 1}; use_degrees::Bool=false)
     # Create NRLMSISE00 model input
     input  = NRLMSISE_Input()
     flags  = NRLMSISE_Flags()

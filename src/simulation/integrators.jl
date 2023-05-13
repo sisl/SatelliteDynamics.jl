@@ -28,7 +28,7 @@ Internal funciton used to compute the variational matrix.
 Arguments:
 - `rk4::RK4` 4-th order Runge-Kutta numerical integrator object
 - `epc::Union{Real, Epoch}` Absolute time of start of integration step
-- `x::Array{<:Real, 1}` State vector for linearizing perturbations around
+- `x::AbstractArray{<:Real, 1}` State vector for linearizing perturbations around
 - `apert::Union{Real, Array{<:Real,1}}` Absolute perturbations to state elements
 used to numerically calculate the partial derivatives through a forward difference
 method.
@@ -38,7 +38,7 @@ Returns:
 matrix of partial derivatives of the dynamics function _f_ with respect to the 
 input state _x_.
 """
-function varmat(rk4::RK4, epc::Union{Real,Epoch}, x::Array{<:Real, 1}; apert=1.0::Union{Real, Array{<:Real,1}})
+function varmat(rk4::RK4, epc::Union{Real,Epoch}, x::AbstractArray{<:Real, 1}; apert=1.0::Union{Real, Array{<:Real,1}})
     # Get state length
     n = length(x)
 
@@ -73,7 +73,7 @@ function varmat(rk4::RK4, epc::Union{Real,Epoch}, x::Array{<:Real, 1}; apert=1.0
     return V
 end
 
-function istep(rk4::RK4, epc::Union{Real,Epoch}, dt::Real, x::Array{<:Real, 1})
+function istep(rk4::RK4, epc::Union{Real,Epoch}, dt::Real, x::AbstractArray{<:Real, 1})
     # Compute State coefficients
 
     # Perform internal steps
@@ -95,10 +95,10 @@ Arguments:
 - `rk4::RK4` 4-th order Runge-Kutta numerical integrator object
 - `epc::Union{Real, Epoch}` Absolute time of start of integration step
 - `dt::Real` Integration step size
-- `x::Array{<:Real, 1}` State vector
-- `phi::Array{<:Real, 2}` State transition matrix at start of integration step
+- `x::AbstractArray{<:Real, 1}` State vector
+- `phi::AbstractArray{<:Real, 2}` State transition matrix at start of integration step
 """
-function istep(rk4::RK4, epc::Union{Real,Epoch}, dt::Real, x::Array{<:Real, 1}, phi::Array{<:Real, 2}; apert=1.0::Union{Real, Array{<:Real,1}})
+function istep(rk4::RK4, epc::Union{Real,Epoch}, dt::Real, x::AbstractArray{<:Real, 1}, phi::AbstractArray{<:Real, 2}; apert=1.0::Union{Real, Array{<:Real,1}})
     # Compute State coefficients
 
     # Perform state integration
