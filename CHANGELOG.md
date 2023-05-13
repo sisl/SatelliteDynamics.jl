@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-## [0.4.5] - 2023-05-23
+## [0.4.4] - 2023-05-23
 
 ### Changed 
 - Merged change to utilize `AbstractArray` internally in the package for Array types to improve performance. [PR 15](https://github.com/sisl/SatelliteDynamics.jl/pull/15). Thanks to [@thetazero](https://github.com/thetazero)
@@ -24,13 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed `universe.jl` Earth Orientation Parameter download capabilities, which were broken due to change in upstream IERS data source URL change.
 - Updated `Manifest.toml` to current Julia format
-
-## [0.4.4] - 2022-07-26
-
-### Changed 
-- Updated Earth model data
-
-### Fixed
 - Fixed documentation mistakes and typos
 
 ## [0.2.2] - 2019-04-10
