@@ -3,3 +3,10 @@
 *.jl.mem
 deps/deps.jl
 docs/build*
+
+# Platform Specific
+.DS_Store
+
+# IDE Specific
+.vscode
+.idea
