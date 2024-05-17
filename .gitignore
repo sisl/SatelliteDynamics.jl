@@ -1,8 +1,12 @@
-*.jl.cov
 *.jl.*.cov
+*.jl.cov
 *.jl.mem
+/docs/Manifest.toml
+/docs/build/
+
 deps/deps.jl
 docs/build*
+docs/src/plots/*
 
 # Platform Specific
 .DS_Store
@@ -10,3 +14,5 @@ docs/build*
 # IDE Specific
 .vscode
 .idea
+
+build/*
