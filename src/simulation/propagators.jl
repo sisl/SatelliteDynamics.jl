@@ -12,7 +12,7 @@ Arguments:
 - `mass::Real`: Satellite mass [kg]
 - `area_drag`: Velocity-facing area affected by drag. [m^2]
 - `coef_drag`: Coefficient of drag [dimensionless]
-- `area_srp`: Velocity-facing area affected by drag. [m^2]
+- `area_srp`: Sun-facing area affected by solar-radiation pressure. [m^2]
 - `coef_srp`: Coefficient of reflectivity [dimensionless]  
 - `n_grav::Integer`: Gravity model degree (Default: 20)
 - `m_grav::Integer`: Gravity model order (Default: 20)
