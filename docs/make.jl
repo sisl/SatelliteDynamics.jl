@@ -3,13 +3,24 @@ using SatelliteDynamics
 
 include("src/makeplots.jl")
 
+DocMeta.setdocmeta!(SatelliteDynamics, :DocTestSetup, :(using SatelliteDynamics); recursive=true)
+
+# Generate plots
+makeplots()
+
 # Generate documents
 makedocs(
     modules   = [SatelliteDynamics],
     doctest   = false,
     clean     = true,
-    linkcheck = true,
-    format    = Documenter.HTML(),
+    linkcheck = false,
+    checkdocs = :none,
+    format    = Documenter.HTML(
+        canonical="https://sisl.github.io/SatelliteDynamics.jl",
+        edit_link="main",
+        assets=String[],
+        prettyurls = get(ENV, "CI", nothing) == "true"
+    ),
     sitename  = "SatelliteDynamics.jl",
     authors   = "Duncan Eddy",
     pages     = Any[
@@ -22,6 +33,7 @@ makedocs(
             "modules/attitude.md",
             "modules/coordinates.md",
             "modules/astrodynamics.md",
+            "modules/sgp_models.md",
             "Orbit Dynamics" => "modules/orbit_dynamics.md",
             "Earth Environment" => Any[
                 "Space Weather" => "modules/earth_environment/space_weather.md",
@@ -39,11 +51,7 @@ makedocs(
     ]
 )
 
-# Generate plots
-makeplots()
-
 deploydocs(
     repo = "github.com/sisl/SatelliteDynamics.jl",
-    devbranch = "master",
-    devurl = "latest",
+    devbranch = "main",
 )

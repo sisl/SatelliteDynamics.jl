@@ -159,8 +159,8 @@ function makeplots()
     println("Generating plots")
 
     # Make output directory
-    plot_dir = (pwd()[end-3:end] == "docs") ? "build/plots" : "docs/build/plots"
-    if isdir(plot_dir)
+    plot_dir = "src/plots"
+    if isdir(joinpath(pwd(), plot_dir))
         rm(plot_dir, recursive=true)
     end
     mkdir(plot_dir)

@@ -419,16 +419,21 @@ global GRAVITY_MODEL = GravModel(abspath(@__DIR__, "../data/EGM2008_90.gfc"))
 
 export load_gravity_model
 """
-Load new gravity model into module global EarthOrientationData object. The product can be one of the symbols: `:EGM2008_20`, `:EGM2008_90`, `:GGM01S`, `:GGM05S`, or the filepath to a text-encoded gravity model file.
+Load new gravity model into module global EarthOrientationData object.
 
 Arguments:
 - `gfc_file::String` File path of gravity field model
-- `product_name::Symbol` _OR_ a symbol of a known gravity field product. Valid ones are: `:EGM2008_20`, `:EGM2008_90`, `:GGM01S`, `:GGM05S`
 """
 function load_gravity_model_file(gfc_file::String)
     global GRAVITY_MODEL = GravModel(gfc_file::String) 
 end
 
+"""
+Load new gravity model into module global EarthOrientationData object. The product can be one of the symbols: `:EGM2008_20`, `:EGM2008_90`, `:GGM01S`, `:GGM05S`, or the filepath to a text-encoded gravity model file.
+
+Arguments:
+- `product_name::Symbol` Symbol of a known gravity field product. Valid ones are: `:EGM2008_20`, `:EGM2008_90`, `:GGM01S`, `:GGM05S`
+"""
 function load_gravity_model(product_name::Symbol)
     global GRAVITY_MODEL = GravModel(product_name::Symbol) 
 end
