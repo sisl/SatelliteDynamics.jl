@@ -3,7 +3,9 @@ module SatelliteDynamics
 
 # Usings
 using Dates
+using Downloads
 using Printf
+using Suppressor
 using LinearAlgebra
 using SOFA
 

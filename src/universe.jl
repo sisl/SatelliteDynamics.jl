@@ -6,49 +6,32 @@ DATA_DIR = abspath(joinpath(abspath(string(@__DIR__)), "../data"))
 
 function download_file(url, file)
     filepath = abspath(joinpath(DATA_DIR, file))
+    tempfilepath = filepath * ".tmp"
+
     @debug("Downloading datafile. URL: $url DESTINATION: $filepath")
     
     # Remove any temp files
-    run(`rm -f $(filepath)_tmp`)
+    rm(tempfilepath, force=true)
 
     # Attempt to download data
-    run(`curl -S -L $url -o $(filepath)_tmp`)
+    download(url, tempfilepath)
 
     # Move temporary file into permanent location
-    run(`rm -f $filepath`)
-    run(`mv $(filepath)_tmp $filepath`)
+    rm(filepath, force=true)
+    mv(tempfilepath, filepath)
+
+    @debug("Downloaded all datafiles.")
 end
 
 export download_kp
 """
 Download geomagnetic indices.
 
-Arguments:
-- `year_start::Int` First year to download data for. Default: 2000
-- `year_end::Int` Last year to download data for. Default: 2019
-
 Notes:
-1. Data source is GFZ Potsdam Geomagnetic WDC tables: https://www.gfz-potsdam.de/en/kp-index/
+1. Data source is Celestract: https://celestrak.com/SpaceData/sw19571001.txt
 """
-function download_kp(year_start::Int=2000, year_end::Int=Dates.year(Dates.today()))
-    for year in year_start:year_end
-        download_file("ftp://ftp.gfz-potsdam.de/pub/home/obs/kp-ap/wdc/yearly/kp$year.wdc", "kp$year.wdc")
-    end
-
-    # Merge Data and clean up
-    open(abspath(joinpath(DATA_DIR, "kpall.wdc")), "w") do fp_kpall
-        # For each file on disk: 1. Open and read it, 2. Write it to all 3. Delete it
-        for year in year_start:year_end
-            kp_filepath = abspath(joinpath(DATA_DIR, "kp$year.wdc"))
-            open(kp_filepath) do fp_kpfile
-                # Read and write all in one operation
-                write(fp_kpall, read(fp_kpfile, String))
-
-                # Delete File from disk
-                rm(kp_filepath)
-            end
-        end 
-    end
+function download_kp()
+    download_file("https://celestrak.com/SpaceData/sw19571001.txt", "sw19571001.txt")
 end
 
 export download_solar_flux
@@ -61,7 +44,7 @@ Notes:
 1. Data source is NRC Canada solar flux tables: ftp://ftp.seismo.nrcan.gc.ca/spaceweather/solar_flux/daily_flux_values/fluxtable.txt
 """
 function download_solar_flux()
-    download_file("ftp://ftp.seismo.nrcan.gc.ca/spaceweather/solar_flux/daily_flux_values/fluxtable.txt", "fluxtable.txt")
+    @suppress download_file("ftp://ftp.seismo.nrcan.gc.ca/spaceweather/solar_flux/daily_flux_values/fluxtable.txt", "fluxtable.txt")
 end
 
 export download_all_data
@@ -75,9 +58,10 @@ Downloads the following files:
 """
 function download_all_data()
     # Earth Orientation Data
-    # download_file("https://datacenter.iers.org/data/latestVersion/EOP_14_C04_IAU2000A_one_file_1962-now.txt", "EOP_C04_14.62-NOW.IAU2000A.txt")
-    # download_file("https://datacenter.iers.org/data/latestVersion/EOP_14_C04_IAU1980_one_file_1962-now.txt", "EOP_C04_80.62-NOW.IAU2000A.txt")
-    download_file("https://datacenter.iers.org/data/latestVersion/finals.all.iau2000.txt", "FINALS.ALL_IAU2000.txt")
+    for (product_name, product_data) in eop_products
+        (url, dest) = product_data
+        download_file(url, basename(dest))
+    end
 
     # Geomagnetic inidies
     download_kp()
@@ -92,9 +76,8 @@ end
 
 # Define product dictionary
 eop_products = Dict(
-    "C04_14" => ("https://datacenter.iers.org/data/latestVersion/EOP_14_C04_IAU2000A_one_file_1962-now.txt", abspath(string(@__DIR__), "../data/EOP_C04_14.62-NOW.IAU2000A.txt")),
-    "C04_80" => ("https://datacenter.iers.org/data/latestVersion/EOP_14_C04_IAU1980_one_file_1962-now.txt", abspath(string(@__DIR__), "../data/EOP_C04_80.62-NOW.IAU2000A.txt")),
-    "FINALS_2000" => ("https://datacenter.iers.org/data/latestVersion/finals.all.iau2000.txt", abspath(string(@__DIR__), "../data/FINALS.ALL_IAU2000.txt"))
+    "C04_20" => ("https://datacenter.iers.org/data/latestVersion/EOP_20_C04_one_file_1962-now.txt", abspath(string(@__DIR__), "../data/EOP_20_C04_one_file_1962-now.txt")),
+    "FINALS_2000" => ("https://datacenter.iers.org/data/latestVersion/finals.all.iau2000.txt", abspath(string(@__DIR__), "../data/finals.all.iau2000.txt"))
 )
 
 export EarthOrientationData
@@ -107,7 +90,7 @@ y-components of Earth's polar motion. The dictionary key is the Epoch the
 parameters are for as a Modified Julian Day at 0h UTC.
 
 Arguments:
-- `product::Symbol` The IERS product type can be `"C04_14"`, `"C04_80"`, or `"FINALS_2000"`
+- `product::Symbol` The IERS product type can be `"C04_20"` or `"FINALS_2000"`
 """
 struct EarthOrientationData
     data::Dict{Int, Tuple{Float64, Float64, Float64}}
@@ -130,7 +113,7 @@ function EarthOrientationData(product::String)
                 eop_data[mjd_utc] = (ut1_utc, xp, yp)
             end
         end
-    elseif product == "C04_14" || product == "C04_80"
+    elseif product == "C04_20" || product == "C04_14"
         open(eop_products[product][2], "r") do product_file
             for i in 1:14
                 # Read first 14 lines to skip to data
