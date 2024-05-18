@@ -277,7 +277,7 @@ Arguments:
 - `yp::Real` y-component of the pole locator in radians.
 """
 function set_eop(mjd::Real, ut1_utc::Real, xp::Real, yp::Real)
-    EOP.data[convert(Int, floor(mjd))] = (ut1_utc, xp*AS2RAD, yp*AS2RAD)
+    EOP.data[convert(Int, floor(mjd))] = (ut1_utc, xp, yp)
 end
 
 export load_eop
