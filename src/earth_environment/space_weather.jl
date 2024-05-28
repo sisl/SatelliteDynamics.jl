@@ -1,20 +1,4 @@
-##########################
-# Geomagnetic Index Data #
-##########################
-
-export GeomagneticIndexData
-"""
-GeomagneticIndexData stores geomagnetic index data stores the geomagnetic
-activity Kp index and the dervied Ap indices.
-
-# Attributes
-- `data::Dict`
-"""
-struct GeomagneticIndexData
-    data::Dict{Int, Tuple{Array{Float64, 1}, Float64, Array{Float64, 1}, Float64}}
-end
-
-function get_kp_decimal(number, digit)
+function get_kp_decimal(number::String, digit::String)
     if isempty(strip(string(number)))
         number = 0.0
     else
@@ -30,61 +14,168 @@ function get_kp_decimal(number, digit)
     return number + decimal
 end
 
-function GeomagneticIndexData(filepath::String)
-    data = Dict{Int, Tuple{Array{Float64, 1}, Float64, Array{Float64, 1}, Float64}}()
+export SpaceWeatherData
+"""
+SpaceWeatherData stores space weather data. The data contains both geomagnetic
+index data and solar flux data.
+
+# Attributes
+- `geomagnetic::SpaceWeatherData` Geomagnetic index data
+"""
+struct SpaceWeatherData
+    cycle::Dict{Int, Tuple{Int, Int}}
+    geomagnetic_data::Dict{Int, Tuple{Array{Float64, 1}, Float64, Array{Float64, 1}, Float64}}
+    solarflux_data::Dict{Int, Tuple{Float64, Float64, Float64, Float64}}
+end
+
+
+function SpaceWeatherData(filepath::String)
+    cycle_data = Dict{Int, Tuple{Int, Int}}()
+    geomag_data = Dict{Int, Tuple{Array{Float64, 1}, Float64, Array{Float64, 1}, Float64}}()
+    solarflux_data = Dict{Int, Tuple{Float64, Float64, Float64, Float64}}()
 
     # Load file and read in data
     open(filepath, "r") do fp
-        for line in readlines(fp)
-            if !isempty(line)
-                # Day of observation
-                year  = 2000 + parse(Int, line[1:2])
-                month = parse(Int, line[3:4])
-                day   = parse(Int, line[5:6])
+        line = readline(fp)
+        while !occursin("BEGIN OBSERVED", line)
+            # Skip header
+            line = readline(fp)
+        end
 
-                # Data
-                kp_data = Float64[]
+        # Read first line of observed data
+        line = readline(fp)
 
-                for i in 13:2:27
-                    push!(kp_data, get_kp_decimal(line[i], line[i+1]))
-                end
+        while !occursin("END OBSERVED", line)
+            # Split the line into individual items
+            split_line = split(line)
 
-                kp_daily = get_kp_decimal(line[29:30], line[31])
+            # Parse Date Information
+            year  = parse(Int, split_line[1])
+            month = parse(Int, split_line[2])
+            day   = parse(Int, split_line[3])
+            mjd   = caldate_to_mjd(year, month, day)
 
-                # Data
-                ap_data = Float64[]
+            bsrn  = parse(Int, split_line[4])
+            dom   = parse(Int, split_line[5])
 
-                for i in 32:3:55
-                    push!(ap_data, parse(Float64, line[i:(i+2)]))
-                end
+            cycle_data[mjd] = (bsrn, dom)
 
-                ap_daily = parse(Float64, line[56:58])
-                
-                mjd = round(Int, caldate_to_mjd(year, month, day))
-                data[mjd] = (kp_data, kp_daily, ap_data, ap_daily)
+            # Parse Geomagnetic Data
+
+            kp_data = Float64[]
+            for i in 6:13
+                push!(kp_data, get_kp_decimal(split_line[1], split_line[2]))
             end
+
+            kp_sum = get_kp_decimal(split_line[14][1:2], split_line[14][3])
+
+            ap_data = Float64[]
+
+            for i in 15:22
+                push!(ap_data, parse(Float64, split_line[i]))
+            end
+
+            ap_avg = parse(Float64, split_line[23])
+
+            geomag_data[mjd] = (kp_data, kp_sum, ap_data, ap_avg)
+
+            # Parse Solar Flux Data
+            f107_adj = parse(Float64, split_line[27])
+            f107_obs = parse(Float64, split_line[31])
+            f107_adj_avg = parse(Float64, split_line[30])
+            f107_obs_avg = parse(Float64, split_line[33])
+
+            solarflux_data[mjd] = (f107_obs, f107_adj, f107_obs_avg, f107_adj_avg)
+
+            # Read in next line
+            line = readline(fp)
+        end
+
+        while !occursin("BEGIN DAILY_PREDICTED", line)
+            # Skip header
+            line = readline(fp)
+        end
+
+        # Read first line of predicted data
+        line = readline(fp)
+
+        while !occursin("END DAILY_PREDICTED", line)
+            # Split the line into individual items
+            split_line = split(line)
+
+            # Parse Date Information
+            year  = parse(Int, split_line[1])
+            month = parse(Int, split_line[2])
+            day   = parse(Int, split_line[3])
+            mjd   = caldate_to_mjd(year, month, day)
+
+            bsrn  = parse(Int, split_line[4])
+            dom   = parse(Int, split_line[5])
+
+            cycle_data[mjd] = (bsrn, dom)
+
+            # Parse Geomagnetic Data
+
+            kp_data = Float64[]
+            for i in 6:13
+                push!(kp_data, get_kp_decimal(split_line[1], split_line[2]))
+            end
+
+            kp_sum = get_kp_decimal(split_line[14][1:2], split_line[14][3])
+
+            ap_data = Float64[]
+
+            for i in 15:22
+                push!(ap_data, parse(Float64, split_line[i]))
+            end
+
+            ap_avg = parse(Float64, split_line[23])
+
+            geomag_data[mjd] = (kp_data, kp_sum, ap_data, ap_avg)
+
+            # Parse Solar Flux Data
+            f107_adj = parse(Float64, split_line[27])
+            f107_obs = parse(Float64, split_line[31])
+            f107_adj_avg = parse(Float64, split_line[30])
+            f107_obs_avg = parse(Float64, split_line[33])
+
+            solarflux_data[mjd] = (f107_obs, f107_adj, f107_obs_avg, f107_adj_avg)
+
+            # Read in next line
+            line = readline(fp)
         end
     end
 
-    GeomagneticIndexData(data)
+    return SpaceWeatherData(cycle_data, geomag_data, solarflux_data)
 end
 
-export GEOMAGNETIC_DATA
+export SPACE_WEATHER_DATA
 """
-Module-wide global GeomagneticIndexData. This data object is used as the
+Module-wide global SpaceWeatherData. This data object is used as the
 default source of geomagnetic data by dynamics models if no explicit 
-GeomagneticIndexData file is provided to those transformations.
+SpaceWeatherData file is provided to those transformations.
 
 This value can be overridden in your own code as follows:
 
 ```julia
-SatelliteDynamics.SpaceWeather.GEOMAGNETIC_DATA = GeomagneticIndexData(index_file)
+SatelliteDynamics.SpaceWeather.SPACE_WEATHER_DATA = SpaceWeatherData(index_file)
 ```
 
-This global variable defaults used are pull from GFZ Potsdam FTP server:
-ftp://ftp.gfz-potsdam.de/pub/home/obs/kp-ap/wdc
+This global variable defaults used are pull from the Celestrak Space Weather
+data repository: https://celestrak.org/SpaceData/
 """
-global GEOMAGNETIC_DATA = GeomagneticIndexData(abspath(@__DIR__, "../../data/kpall.wdc"))
+global SPACE_WEATHER_DATA = SpaceWeatherData(abspath(@__DIR__, "../../data/sw19571001.txt"))
+
+export load_space_weather_data
+"""
+Load new space weather data into the module-wide global SpaceWeatherData structure.
+
+Arguments:
+- `filename::String` Path to the space weather data file.
+"""
+function load_space_weather_data(filename::String)
+    global SPACE_WEATHER_DATA = SpaceWeatherData(filename) 
+end
 
 export KpIndices
 """
@@ -94,12 +185,12 @@ Arguments:
 - `mjd::Real` Modified Julian date of desired data. Time system of input is UT1
 - `epc::Epoch` Epoch of desired input Time system of input is UT1
 """
-function KpIndices(geoindices::GeomagneticIndexData, mjd::Real)
-    return geoindices.data[floor(Int, mjd)][1]
+function KpIndices(swdata::SpaceWeatherData, mjd::Real)
+    return swdata.geomagnetic_data[floor(Int, mjd)][1]
 end
 
-KpIndices(mjd::Real)  = KpIndices(GEOMAGNETIC_DATA, mjd)
-KpIndices(epc::Epoch) = KpIndices(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
+KpIndices(mjd::Real)  = KpIndices(SpaceWeatherData, mjd)
+KpIndices(epc::Epoch) = KpIndices(SpaceWeatherData, mjd(epc, tsys="UT1"))
 
 export KpIndex
 """
@@ -109,17 +200,17 @@ Arguments:
 - `mjd::Real` Modified Julian date of desired data. Time system of input is UT1
 - `epc::Epoch` Epoch of desired input Time system of input is UT1
 """
-function KpIndex(geoindices::GeomagneticIndexData, mjd::Real)
+function KpIndex(swdata::SpaceWeatherData, mjd::Real)
     # Base UT1 day for index
     mjd_ut1  = floor(Int, mjd)
 
     # Get Index into vector based on 3-hour window
     hour_idx = floor(Int, (mjd - mjd_ut1)*8)
-    return geoindices.data[mjd_ut1][1][hour_idx+1]
+    return swdata.geomagnetic_data[mjd_ut1][1][hour_idx+1]
 end
 
-KpIndex(mjd::Real)  = KpIndex(GEOMAGNETIC_DATA, mjd)
-KpIndex(epc::Epoch) = KpIndex(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
+KpIndex(mjd::Real)  = KpIndex(SpaceWeatherData, mjd)
+KpIndex(epc::Epoch) = KpIndex(SpaceWeatherData, mjd(epc, tsys="UT1"))
 
 export KpDailyIndex
 """
@@ -129,12 +220,12 @@ Arguments:
 - `mjd::Real` Modified Julian date of desired data. Time system of input is UT1
 - `epc::Epoch` Epoch of desired input Time system of input is UT1
 """
-function KpDailyIndex(geoindices::GeomagneticIndexData, mjd::Real)
-    return geoindices.data[floor(Int, mjd)][2]
+function KpDailyIndex(swdata::SpaceWeatherData, mjd::Real)
+    return swdata.geomagnetic_data[floor(Int, mjd)][2]
 end
 
-KpDailyIndex(mjd::Real)  = KpDailyIndex(GEOMAGNETIC_DATA, mjd)
-KpDailyIndex(epc::Epoch) = KpDailyIndex(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
+KpDailyIndex(mjd::Real)  = KpDailyIndex(SpaceWeatherData, mjd)
+KpDailyIndex(epc::Epoch) = KpDailyIndex(SpaceWeatherData, mjd(epc, tsys="UT1"))
 
 export ApIndices
 """
@@ -144,12 +235,12 @@ Arguments:
 - `mjd::Real` Modified Julian date of desired data. Time system of input is UT1
 - `epc::Epoch` Epoch of desired input Time system of input is UT1
 """
-function ApIndices(geoindices::GeomagneticIndexData, mjd::Real)
-    return geoindices.data[floor(Int, mjd)][3]
+function ApIndices(swdata::SpaceWeatherData, mjd::Real)
+    return swdata.geomagnetic_data[floor(Int, mjd)][3]
 end
 
-ApIndices(mjd::Real)  = ApIndices(GEOMAGNETIC_DATA, mjd)
-ApIndices(epc::Epoch) = ApIndices(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
+ApIndices(mjd::Real)  = ApIndices(SpaceWeatherData, mjd)
+ApIndices(epc::Epoch) = ApIndices(SpaceWeatherData, mjd(epc, tsys="UT1"))
 
 export ApIndex
 """
@@ -159,17 +250,17 @@ Arguments:
 - `mjd::Real` Modified Julian date of desired data. Time system of input is UT1
 - `epc::Epoch` Epoch of desired input Time system of input is UT1
 """
-function ApIndex(geoindices::GeomagneticIndexData, mjd::Real)
+function ApIndex(swdata::SpaceWeatherData, mjd::Real)
     # Base UT1 day for index
     mjd_ut1  = floor(Int, mjd)
 
     # Get Index into vector based on 3-hour window
     hour_idx = floor(Int, (mjd - mjd_ut1)*8)
-    return geoindices.data[mjd_ut1][3][hour_idx+1]
+    return swdata.geomagnetic_data[mjd_ut1][3][hour_idx+1]
 end
 
-ApIndex(mjd::Real)  = ApIndex(GEOMAGNETIC_DATA, mjd)
-ApIndex(epc::Epoch) = ApIndex(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
+ApIndex(mjd::Real)  = ApIndex(SpaceWeatherData, mjd)
+ApIndex(epc::Epoch) = ApIndex(SpaceWeatherData, mjd(epc, tsys="UT1"))
 
 export ApDailyIndex
 """
@@ -179,119 +270,12 @@ Arguments:
 - `mjd::Real` Modified Julian date of desired data. Time system of input is UT1
 - `epc::Epoch` Epoch of desired input Time system of input is UT1
 """
-function ApDailyIndex(geoindices::GeomagneticIndexData, mjd::Real)
-    return geoindices.data[floor(Int, mjd)][4]
+function ApDailyIndex(swdata::SpaceWeatherData, mjd::Real)
+    return swdata.geomagnetic_data[floor(Int, mjd)][4]
 end
 
-ApDailyIndex(mjd::Real)  = ApDailyIndex(GEOMAGNETIC_DATA, mjd)
-ApDailyIndex(epc::Epoch) = ApDailyIndex(GEOMAGNETIC_DATA, mjd(epc, tsys="UT1"))
-
-###################
-# Solar Flux Data #
-###################
-
-export SolarFluxData
-"""
-SolarFluxData stores solar flux index data.
-
-The data is a dictionary keyed to the modified julian date in UT of the day of 
-observation. All observations are taken at 20:00 UT at the of question. The values
-are a tuple storing the solar radio flux the F10.7cm solar radio flux. The first 
-entry is the flux observed directly at the Ottowa radio observatory station,
-while the second entry is the flux value adjusted to 1 AU. The final two entries
-is the 81-day average, cenerted on the day entry, of the observed and adjusted 
-solar radio flux.
-
-# Attributes
-- `data::Dict{Int, Tuple{Float64, Float64, Float64}` Stores observed F10.7cm
-solar radio flux, the adjusted solar radio flux, and the 81-day average centered
-on the day in question.
-"""
-struct SolarFluxData
-    data::Dict{Int, Tuple{Float64, Float64, Float64, Float64}}
-end
-
-function SolarFluxData(filepath::String)
-    data = Dict{Int, Tuple{Float64, Float64, Float64, Float64}}()
-
-    # Used to calculate the average solar radio flux for the days in question
-    avg  = []
-
-    # Load file and read in data
-    open(filepath, "r") do fp
-        for i in 1:2
-            # Skip first two lines 
-            readline(fp)
-        end
-
-        for line in readlines(fp)
-            split_line = split(line)
-
-            # Day of observation
-            year  = parse(Int, split_line[1][1:4])
-            month = parse(Int, split_line[1][5:6])
-            day   = parse(Int, split_line[1][7:8])
-
-            # Data
-            f107_obs = parse(Float64, split_line[5])
-            f107_adj = parse(Float64, split_line[6])
-
-            # Push data to array for computing 81 day average
-            push!(avg, [year month day f107_obs f107_adj])
-        end
-    end
-
-    # Format data in matrix to make it possible to compute 81-day average
-    avg = vcat(avg...)
-    
-    day_avg = 81            # Number of days in average
-    day_os  = round(Int, (day_avg-1)/2) # One sided average direction
-    n_data  = size(avg)[1]
-    for i in 1:n_data
-        min_index = max(1, i-day_os)
-        max_index = min(n_data, i+day_os)
-
-        n_avg   = 0 # Number of data points in average
-        obs_avg = 0 # Observed flux average
-        adj_avg = 0 # Adjusted flux average
-        for idx in min_index:max_index
-            n_avg += 1
-
-            obs_avg += avg[idx, 4]
-            adj_avg += avg[idx, 5]
-        end
-
-        # Calculate data average
-        obs_avg = obs_avg/n_avg
-        adj_avg = adj_avg/n_avg
-
-        # Insert entry into dictionary
-        year      = round(Int, avg[i, 1])
-        month     = round(Int, avg[i, 2])
-        day       = round(Int, avg[i, 3])
-        mjd       = round(Int, caldate_to_mjd(year, month, day))
-        data[mjd] = (avg[i, 4], avg[i, 5], obs_avg, adj_avg)
-    end
-
-    SolarFluxData(data)
-end
-
-export SOLAR_FLUX_DATA
-"""
-Module-wide global SolarFluxData object. This data object is used as the
-default source of Solar Flux Data by dynamics models if no explicit 
-SolarFluxData file is provided to those transformations.
-
-This value can be overridden in your own code as follows:
-
-```julia
-SatelliteDynamics.SpaceWeather.SOLAR_FLUX_DATA = SolarFluxData(flux_file)
-```
-
-This global variable defaults uses flux data provide by National Resources Canada: 
-ftp://ftp.seismo.nrcan.gc.ca/spaceweather/solar_flux/daily_flux_values/fluxtable.txt
-"""
-global SOLAR_FLUX_DATA = SolarFluxData(abspath(@__DIR__, "../../data/fluxtable.txt"))
+ApDailyIndex(mjd::Real)  = ApDailyIndex(SpaceWeatherData, mjd)
+ApDailyIndex(epc::Epoch) = ApDailyIndex(SpaceWeatherData, mjd(epc, tsys="UT1"))
 
 export f107Data
 """
@@ -305,12 +289,12 @@ Returns:
 - `data::Tuple{Float64, Float64, Float64, Float64}` Flux data on the day in question
 Elements are observed, adjusted, 81-observed average, 81-adjusted average.
 """
-function f107Data(solarflux::SolarFluxData, mjd::Real)
-    return solarflux.data[floor(Int, mjd)]
+function f107Data(solarflux::SpaceWeatherData, mjd::Real)
+    return solarflux.solarflux_data[floor(Int, mjd)]
 end
 
-f107Data(mjd::Real)  = f107Data(SOLAR_FLUX_DATA, mjd)
-f107Data(epc::Epoch) = f107Data(SOLAR_FLUX_DATA, mjd(epc, tsys="UT1"))
+f107Data(mjd::Real)  = f107Data(SPACE_WEATHER_DATA, mjd)
+f107Data(epc::Epoch) = f107Data(SPACE_WEATHER_DATA, mjd(epc, tsys="UT1"))
 
 export f107Observed
 """
@@ -320,12 +304,12 @@ Arguments:
 - `mjd::Real` Modified Julian date of desired data. Time system of input is UT1
 - `epc::Epoch` Epoch of desired input Time system of input is UT1
 """
-function f107Observed(solarflux::SolarFluxData, mjd::Real)
-    return solarflux.data[floor(Int, mjd)][1]
+function f107Observed(solarflux::SpaceWeatherData, mjd::Real)
+    return solarflux.solarflux_data[floor(Int, mjd)][1]
 end
 
-f107Observed(mjd::Real)  = f107Observed(SOLAR_FLUX_DATA, mjd)
-f107Observed(epc::Epoch) = f107Observed(SOLAR_FLUX_DATA, mjd(epc, tsys="UT1"))
+f107Observed(mjd::Real)  = f107Observed(SPACE_WEATHER_DATA, mjd)
+f107Observed(epc::Epoch) = f107Observed(SPACE_WEATHER_DATA, mjd(epc, tsys="UT1"))
 
 export f107Adjusted
 """
@@ -336,41 +320,41 @@ Arguments:
 - `mjd::Real` Modified Julian date of desired data. Time system of input is UT1
 - `epc::Epoch` Epoch of desired input Time system of input is UT1
 """
-function f107Adjusted(solarflux::SolarFluxData, mjd::Real)
-    return solarflux.data[floor(Int, mjd)][2]
+function f107Adjusted(solarflux::SpaceWeatherData, mjd::Real)
+    return solarflux.solarflux_data[floor(Int, mjd)][2]
 end
 
-f107Adjusted(mjd::Real)  = f107Adjusted(SOLAR_FLUX_DATA, mjd)
-f107Adjusted(epc::Epoch) = f107Adjusted(SOLAR_FLUX_DATA, mjd(epc, tsys="UT1"))
+f107Adjusted(mjd::Real)  = f107Adjusted(SPACE_WEATHER_DATA, mjd)
+f107Adjusted(epc::Epoch) = f107Adjusted(SPACE_WEATHER_DATA, mjd(epc, tsys="UT1"))
 
 export f107ObservedAvg
 """
 Retrieve the 81-day average of the F10.7 cm solar flux data observed at the 
-observatory centered on the day in question.
+observatory over the previous 81-days.
 
 Arguments:
 - `mjd::Real` Modified Julian date of desired data. Time system of input is UT1
 - `epc::Epoch` Epoch of desired input Time system of input is UT1
 """
-function f107ObservedAvg(solarflux::SolarFluxData, mjd::Real)
-    return solarflux.data[floor(Int, mjd)][3]
+function f107ObservedAvg(solarflux::SpaceWeatherData, mjd::Real)
+    return solarflux.solarflux_data[floor(Int, mjd)][3]
 end
 
-f107ObservedAvg(mjd::Real)  = f107ObservedAvg(SOLAR_FLUX_DATA, mjd)
-f107ObservedAvg(epc::Epoch) = f107ObservedAvg(SOLAR_FLUX_DATA, mjd(epc, tsys="UT1"))
+f107ObservedAvg(mjd::Real)  = f107ObservedAvg(SPACE_WEATHER_DATA, mjd)
+f107ObservedAvg(epc::Epoch) = f107ObservedAvg(SPACE_WEATHER_DATA, mjd(epc, tsys="UT1"))
 
 export f107AdjustedAvg
 """
 Retrieve the 81-day average of the F10.7 cm solar flux data adjusted to 1 AU 
-centered on the day in question.
+over the previous 81-days.
 
 Arguments:
 - `mjd::Real` Modified Julian date of desired data. Time system of input is UT1
 - `epc::Epoch` Epoch of desired input Time system of input is UT1
 """
-function f107AdjustedAvg(solarflux::SolarFluxData, mjd::Real)
-    return solarflux.data[floor(Int, mjd)][4]
+function f107AdjustedAvg(solarflux::SpaceWeatherData, mjd::Real)
+    return solarflux.solarflux_data[floor(Int, mjd)][4]
 end
 
-f107AdjustedAvg(mjd::Real)  = f107AdjustedAvg(SOLAR_FLUX_DATA, mjd)
-f107AdjustedAvg(epc::Epoch) = f107AdjustedAvg(SOLAR_FLUX_DATA, mjd(epc, tsys="UT1"))
+f107AdjustedAvg(mjd::Real)  = f107AdjustedAvg(SPACE_WEATHER_DATA, mjd)
+f107AdjustedAvg(epc::Epoch) = f107AdjustedAvg(SPACE_WEATHER_DATA, mjd(epc, tsys="UT1"))
