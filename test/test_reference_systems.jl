@@ -55,8 +55,6 @@ end
 let 
     epc = Epoch(2007, 4, 5, 12, 0, 0, tsys="UTC")
 
-    set_eop(54195.5, -0.072073685, 0.0349282, 0.4833163)
-
     rc2i = bias_precession_nutation(epc)
 
     tol = 1e-8
@@ -76,17 +74,15 @@ end
 let 
     epc = Epoch(2007, 4, 5, 12, 0, 0, tsys="UTC")
 
-    set_eop(54195.5, -0.072073685, 0.0349282, 0.4833163)
-
     r = earth_rotation(epc) * bias_precession_nutation(epc)
 
     tol = 1e-8
-    @test isapprox(r[1, 1], +0.973104317573127, atol=tol)
-    @test isapprox(r[1, 2], +0.230363826247709, atol=tol)
+    @test isapprox(r[1, 1], +0.973104306489053, atol=tol)
+    @test isapprox(r[1, 2], +0.230363873072102, atol=tol)
     @test isapprox(r[1, 3], -0.000703332818845, atol=tol)
 
-    @test isapprox(r[2, 1], -0.230363798804182, atol=tol)
-    @test isapprox(r[2, 2], +0.973104570735574, atol=tol)
+    @test isapprox(r[2, 1], -0.230363845629309, atol=tol)
+    @test isapprox(r[2, 2], +0.973104559650757, atol=tol)
     @test isapprox(r[2, 3], +0.000120888549586, atol=tol)
 
     @test isapprox(r[3, 1], +0.000712264729599, atol=tol)
@@ -97,17 +93,15 @@ end
 let 
     epc = Epoch(2007, 4, 5, 12, 0, 0, tsys="UTC")
 
-    set_eop(54195.5, -0.072073685, 0.0349282, 0.4833163)
-
     r = rECItoECEF(epc)
 
     tol = 1e-8
-    @test isapprox(r[1, 1], +0.973104317697535, atol=tol)
-    @test isapprox(r[1, 2], +0.230363826239128, atol=tol)
+    @test isapprox(r[1, 1], +0.973104306607419, atol=tol)
+    @test isapprox(r[1, 2], +0.230363873063145, atol=tol)
     @test isapprox(r[1, 3], -0.000703163482198, atol=tol)
 
-    @test isapprox(r[2, 1], -0.230363800456037, atol=tol)
-    @test isapprox(r[2, 2], +0.973104570632801, atol=tol)
+    @test isapprox(r[2, 1], -0.230363847280417, atol=tol)
+    @test isapprox(r[2, 2], +0.973104559548028, atol=tol)
     @test isapprox(r[2, 3], +0.000118545366625, atol=tol)
 
     @test isapprox(r[3, 1], +0.000711560162668, atol=tol)
@@ -118,17 +112,15 @@ end
 let 
     epc = Epoch(2007, 4, 5, 12, 0, 0, tsys="UTC")
 
-    set_eop(54195.5, -0.072073685, 0.0349282, 0.4833163)
-
     r = rECEFtoECI(epc)
 
     tol = 1e-8
-    @test isapprox(r[1, 1], +0.973104317697535, atol=tol)
-    @test isapprox(r[1, 2], -0.230363800456037, atol=tol)
+    @test isapprox(r[1, 1], +0.973104306607419, atol=tol)
+    @test isapprox(r[1, 2], -0.230363847280417, atol=tol)
     @test isapprox(r[1, 3], +0.000711560162668, atol=tol)
 
-    @test isapprox(r[2, 1], +0.230363826239128, atol=tol)
-    @test isapprox(r[2, 2], +0.973104570632801, atol=tol)
+    @test isapprox(r[2, 1], +0.230363873063145, atol=tol)
+    @test isapprox(r[2, 2], +0.973104559548028, atol=tol)
     @test isapprox(r[2, 3], +0.000046626403995, atol=tol)
 
     @test isapprox(r[3, 1], -0.000703163482198, atol=tol)

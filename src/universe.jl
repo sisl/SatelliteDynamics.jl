@@ -82,59 +82,180 @@ eop_products = Dict(
 
 export EarthOrientationData
 """
-The EarthOrientationData constains a single data member of type 
-`Dict{Int, Tuple{Float64, Float64, Float64}}` that stores the Earth
-Orientation parameters `UT1-UTC`, `xp`, and `yp` whose units are _meters_, 
-_radians_, and _radians_, respectively. `xp` and `yp` are the x- and 
-y-components of Earth's polar motion. The dictionary key is the Epoch the 
-parameters are for as a Modified Julian Day at 0h UTC.
+Earth Orientation Data object. This object stores Earth Orientation Parameters (EOP) and Celestial Intermediate Pole (CIP) offsets. 
+The object is used to compute the Earth Orientation Parameters for a given Modified Julian Date (MJD).
 
-Arguments:
-- `product::Symbol` The IERS product type can be `"C04_20"` or `"FINALS_2000"`
+Attributes:
+- `data::Dict{Int, Tuple{Float64, Float64, Float64}}` EOP data stored as a dictionary with MJD as the key and a tuple of (UT1-UTC [s], xp [rad], yp [rad]) as the value.
+- `last_eop_data::Int` Last MJD value in the EOP data.
+- `dXdYData::Dict{Int, Tuple{Float64, Float64}}` CIP offsets stored as a dictionary with MJD as the key and a tuple of (dX [rad], dY [rad]) as the value.
+- `last_dxdy_mjd::Int` Last MJD value in the dX/dY data.
 """
 struct EarthOrientationData
     data::Dict{Int, Tuple{Float64, Float64, Float64}}
+    last_eop_data::Int
+    dXdYData::Dict{Int, Tuple{Float64, Float64}}
+    last_dxdy_mjd::Int
+end
+
+"""
+Load Earth Orientation Data from a file. The caller must specify the product type to interpret the file as.
+If the product is not recognized, an error will be thrown.
+
+Arguments:
+- `product::Symbol` The IERS product type can be `:C04_20` or `:FINALS_2000`
+
+Returns:
+- `EarthOrientationData` Earth Orientation Data object.
+"""
+function EarthOrientationData(product::Symbol) 
+    product_string = string(product)
+
+
+    # Load in Data from filepath
+    if product_string == "FINALS_2000"
+        return EarthOrientationDataFromFinals(eop_products[product_string][2])
+    elseif product_string == "C04_20"
+        return EarthOrientationDataFromC04_20(eop_products[product_string][2])
+    else
+        error("Unknown symbol $(String(product))")
+    end
+
+    return EarthOrientationData(eop_data, last_eop_data, dxdy_data, last_dxdy_mjd)
+end
+
+"""
+Load Earth Orientation Data from a file. The caller must specify the product type to interpret the file as.
+If the product is not recognized, an error will be thrown.
+
+Arguments:
+- `filepath::String` Path to the Earth Orientation Data file.
+- `product::Symbol` The IERS product type can be `:C04_20` or `:FINALS_2000`
+
+Returns:
+- `EarthOrientationData` Earth Orientation Data object.
+"""
+function EarthOrientationData(filepath::String, product::Symbol)
+    if product == :C04_20
+        return EarthOrientationDataFromC04_20(filepath)
+    elseif product == :FINALS_2000
+        return EarthOrientationDataFromFinals(filepath)
+    else
+        error("Unknown symbol $(String(:product))")
+    end
 end
 
 
-function EarthOrientationData(product::String) 
-    # Initialize Data Array
+"""
+Parse the Earth Orientation Data from a C04_20 file.
+
+Arguments:
+- `filepath::String` Path to the C04_20 Earth Orientation Data file.
+
+Returns:
+- `EarthOrientationData` Earth Orientation Data object.
+"""
+function EarthOrientationDataFromC04_20(filepath::String)
     eop_data = Dict{Int, Tuple{Float64, Float64, Float64}}()
+    last_eop_data = 0
 
-    # Load in Data from filepath
-    if product == "FINALS_2000"
-        for line in readlines(eop_products[product][2])
-            if line[17] == 'P' || line[17] == 'I'
-                mjd_utc = parse(Int, line[8:12])            # MJD (UTC)
-                ut1_utc = parse(Float64, line[59:68])         # UT1-UTC [s]
-                xp      = parse(Float64, line[19:27])*AS2RAD  # xp [rad]
-                yp      = parse(Float64, line[38:46])*AS2RAD  # yp [rad]
+    dxdy_data = Dict{Int, Tuple{Float64, Float64}}()
+    last_dxdy_mjd = 0
 
-                eop_data[mjd_utc] = (ut1_utc, xp, yp)
-            end
-        end
-    elseif product == "C04_20" || product == "C04_14"
-        open(eop_products[product][2], "r") do product_file
-            for i in 1:14
-                # Read first 14 lines to skip to data
+    try 
+        open(filepath, "r") do product_file
+            for i in 1:6
+                # Read first 6 lines to skip to data
                 readline(product_file)
             end
 
             for line in readlines(product_file)
                 split_line = split(line)
-                mjd_utc = parse(Int, split_line[4])
-                ut1_utc = parse(Float64, split_line[7])
-                xp      = parse(Float64, split_line[5])*AS2RAD
-                yp      = parse(Float64, split_line[6])*AS2RAD
+                mjd_utc = parse(Float64, split_line[5])
+
+                # Parse always-present EOP data
+                ut1_utc = parse(Float64, split_line[8])
+                xp      = parse(Float64, split_line[6])*AS2RAD
+                yp      = parse(Float64, split_line[7])*AS2RAD
 
                 eop_data[mjd_utc] = (ut1_utc, xp, yp)
+
+                if mjd_utc > last_eop_data
+                    last_eop_data = mjd_utc
+                end
+
+                # Parse dX and dY data - Guaranteed to be present for C04_20
+
+                dX = parse(Float64, split_line[9]) * AS2RAD
+                dY = parse(Float64, split_line[10]) * AS2RAD
+
+                dxdy_data[mjd_utc] = (dX, dY)
+
+                if mjd_utc > last_dxdy_mjd
+                    last_dxdy_mjd = mjd_utc
+                end
+                
             end
         end
-    else
-        error("Unknown symbol $(String(:product))")
+    catch e
+        error("Failed to parse \"$filepath\" as C04_20 EOP File. Error: $e")
     end
 
-    return EarthOrientationData(eop_data)
+    return EarthOrientationData(eop_data, last_eop_data, dxdy_data, last_dxdy_mjd)
+end
+
+"""
+Parse the Earth Orientation Data from a Finals 2000 file.
+
+Arguments:
+- `filepath::String` Path to the Finals 2000 Earth Orientation Data file.
+
+Returns:
+- `EarthOrientationData` Earth Orientation Data object.
+"""
+function EarthOrientationDataFromFinals(filepath::String)
+    # Initialize data storage
+    eop_data = Dict{Int, Tuple{Float64, Float64, Float64}}()
+    last_eop_data = 0
+
+    dxdy_data = Dict{Int, Tuple{Float64, Float64}}()
+    last_dxdy_mjd = 0
+
+    # Load in Data from filepath
+    try
+        for line in readlines(filepath)
+            if line[17] == 'P' || line[17] == 'I'
+                mjd_utc = parse(Int, line[8:12])            # MJD (UTC)
+                ut1_utc = parse(Float64, line[59:68])         # UT1-UTC [s]
+                xp      = parse(Float64, line[19:27])*AS2RAD  # xp [rad]
+                yp      = parse(Float64, line[38:46])*AS2RAD  # yp [rad]
+                
+
+                eop_data[mjd_utc] = (ut1_utc, xp, yp)
+
+                if mjd_utc > last_eop_data
+                    last_eop_data = mjd_utc
+                end
+
+                # Parse dX and dY data - Not always present in FINALS_2000
+
+                if length(line) >= 125 && (line[96] == 'I' || line[96] == 'P')
+                    dX = parse(Float64, line[100:106]) * AS2RAD * 1.0e-3 # Apply 1.0e-3 scale factor for file
+                    dY = parse(Float64, line[119:125]) * AS2RAD * 1.0e-3
+
+                    dxdy_data[mjd_utc] = (dX, dY)
+
+                    if mjd_utc > last_dxdy_mjd
+                        last_dxdy_mjd = mjd_utc
+                    end
+                end
+            end
+        end
+    catch e
+        error("Failed to parse \"$filepath\" as Finals 2000 EOP File: $e")
+    end
+
+    return EarthOrientationData(eop_data, last_eop_data, dxdy_data, last_dxdy_mjd)
 end
 
 # Declare global Earth Orientation Data Object used by Reference System Calls
@@ -147,13 +268,13 @@ no explicit EarthOrientationData file is provided to those transformations.
 This value can be overridden in your own code as follows:
 
 ```julia
-SatelliteDynamics.EOP = EarthOrientationData(:EOP_PRODUCT_CHOICE)
+SatelliteDynamics.EOP = EarthOrientationData(:FINALS_2000)
 ```
 
 This global variable defaults to use the module's internal version of `"FINALS_2000"` 
 if it is not otherwise set/provided.
 """
-global EOP = EarthOrientationData("FINALS_2000")
+global EOP = EarthOrientationData(:FINALS_2000)
 
 # Access Methods
 export UT1_UTC
@@ -169,6 +290,11 @@ Returns:
 - `ut1_utc::Float` UT1 - UTC offset. [s] 
 """
 function UT1_UTC(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
+
+    if mjd > eop.last_eop_data
+        error("Requested time (MJD: $mjd) is beyond the last EOP data point (MJD: $(eop.last_eop_data)). Consider updating downloaded EOP data files (e.g. using `download_all_data()`).")
+    end
+
     if interp
         x1 = floor(mjd)
         x2 = floor(mjd) + 1
@@ -193,9 +319,14 @@ Arguments:
 - `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
 
 Returns:
-- `pole_locator::Tuple{ -Float, Float}` (x, y) pole location in radians.
+- `pole_locator::Tuple{Float, Float}` (x, y) pole location in radians.
 """
 function POLE_LOCATOR(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
+
+    if mjd > eop.last_eop_data
+        error("Requested time (MJD: $mjd) is beyond the last EOP data point (MJD: $(eop.last_eop_data)). Consider updating downloaded EOP data files (e.g. using `download_all_data()`).")
+    end
+
     if interp
         x1 = floor(mjd)
         x2 = floor(mjd) + 1
@@ -225,6 +356,10 @@ Returns:
 - `xp::Float` x-component of pole locator in radians.
 """
 function XP(eop::EarthOrientationData, mjd::Real; interp=false)
+    if mjd > eop.last_eop_data
+        error("Requested time (MJD: $mjd) is beyond the last EOP data point (MJD: $(eop.last_eop_data)). Consider updating downloaded EOP data files (e.g. using `download_all_data()`).")
+    end
+    
     if interp
         x1 = floor(mjd)
         x2 = floor(mjd) + 1
@@ -252,6 +387,11 @@ Returns:
 - `yp::Float` y-component of pole locator in radians.
 """
 function YP(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
+
+    if mjd > eop.last_eop_data
+        error("Requested time (MJD: $mjd) is beyond the last EOP data point (MJD: $(eop.last_eop_data)). Consider updating downloaded EOP data files (e.g. using `download_all_data()`).")
+    end
+
     if interp
         x1 = floor(mjd)
         x2 = floor(mjd) + 1
@@ -265,6 +405,104 @@ function YP(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
 end
 
 YP(mjd::Real; interp::Bool=false) = YP(EOP, mjd, interp=interp)
+
+export POLE_OFFSETS
+"""
+Compute the Celestial Intermediate Pole (CIP) offsets, `(xp, xp)`.  If the EarthOrientationData argument is ommitted the function will use the default module-global value.
+
+Arguments:
+- `eop::EarthOrientationData` EarthOrientationData object to use to compute the offset
+- `mjd::Real` Modified Julian Date in UTC of the Epoch for which the pole locator is desired.
+- `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
+
+Returns:
+- `pole_offsets::Tuple{Float, Float}` (x, y) pole location in radians.
+"""
+function POLE_OFFSETS(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
+
+    if mjd > eop.last_dxdy_mjd
+        error("Requested time (MJD: $mjd) is beyond the last dX/dY data point (MJD: $(eop.last_dxdy_mjd)). Consider updating downloaded EOP data files (e.g. using `download_all_data()`).")
+    end
+
+    if interp
+        x1 = floor(mjd)
+        x2 = floor(mjd) + 1
+
+        # Get values converted to array for interpolation
+        y1 = [v for v in eop.data[convert(Int, floor(mjd))][1:2]]
+        y2 = [v for v in eop.data[convert(Int, floor(mjd)+1)][1:2]]
+        x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
+        return x
+    else
+        return eop.dXdYData[convert(Int, floor(mjd))][1:2]
+    end
+end
+
+POLE_OFFSETS(mjd::Real; interp::Bool=false) = POLE_OFFSETS(EOP, mjd, interp=interp)
+
+export DX
+"""
+Compute x-component of the Celestial Intermediate Pole offset (`dX`) in [radians]. If the first EarthOrientationData argument is ommitted the function will use the default module-global value.
+
+Arguments:
+- `eop::EarthOrientationData` EarthOrientationData object to use to compute the offset
+- `mjd::Real` Modified Julian Date in UTC of the Epoch for which the `dX` value is desired.
+- `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
+
+Returns:
+- `dX::Float` x-component of pole offset in radians.
+"""
+function DX(eop::EarthOrientationData, mjd::Real; interp=false)
+
+    if mjd > eop.last_dxdy_mjd
+        error("Requested time (MJD: $mjd) is beyond the last dX/dY data point (MJD: $(eop.last_dxdy_mjd)). Consider updating downloaded EOP data files (e.g. using `download_all_data()`).")
+    end
+
+    if interp
+        x1 = floor(mjd)
+        x2 = floor(mjd) + 1
+        y1 = eop.dXdYData[convert(Int, floor(mjd))][1]
+        y2 = eop.dXdYData[convert(Int, floor(mjd)+1)][1]
+        x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
+        return x
+    else
+        return eop.dXdYData[convert(Int, floor(mjd))][1]
+    end
+end
+
+DX(mjd::Real; interp::Bool=false) = DX(EOP, mjd, interp=interp)
+
+export DY
+"""
+Compute y-component of the Celestial Intermediate Pole offset (`dY`) in [radians]. If the first EarthOrientationData argument is ommitted the function will use the default module-global value.
+
+Arguments:
+- `eop::EarthOrientationData` EarthOrientationData object to use to compute the offset
+- `mjd::Real` Modified Julian Date in UTC of the Epoch for which the `dY` value is desired.
+- `interp::Bool` Whether to linearly interpolate the parameter data to the input MJD.
+
+Returns:
+- `dY::Float` y-component of pole offset in radians.
+"""
+function DY(eop::EarthOrientationData, mjd::Real; interp::Bool=false)
+
+    if mjd > eop.last_dxdy_mjd
+        error("Requested time (MJD: $mjd) is beyond the last dX/dY data point (MJD: $(eop.last_dxdy_mjd)). Consider updating downloaded EOP data files (e.g. using `download_all_data()`).")
+    end
+
+    if interp
+        x1 = floor(mjd)
+        x2 = floor(mjd) + 1
+        y1 = eop.dXdYData[convert(Int, floor(mjd))][2]
+        y2 = eop.dXdYData[convert(Int, floor(mjd)+1)][2]
+        x  = (y2 - y1)/(x2 - x1) * (mjd - x1) + y1
+        return x
+    else
+        return eop.dXdYData[convert(Int, floor(mjd))][2]
+    end
+end
+
+DY(mjd::Real; interp::Bool=false) = DY(EOP, mjd, interp=interp)
 
 export set_eop
 """
@@ -282,13 +520,17 @@ end
 
 export load_eop
 """
-Load new Earth orientation data into the module global EarthOrientationData object. The product can be one of the symbols: `"C04_14"`, `"C04_80"`, or `"FINALS_2000"`.
+Load new Earth orientation data into the module global EarthOrientationData object. The product can be one of the symbols: `:C04_20` or `:FINALS_2000`.
 
 Arguments:
-- `product::String` Loads a different set of EarthOrientationData values into the module-wide global EarthOrientationData parameters.
+- `product::Symbol` Loads a different set of EarthOrientationData values into the module-wide global EarthOrientationData parameters.
 """
-function load_eop(product::String)
-    global EOP = EarthOrientationData(product::String) 
+function load_eop(product::Symbol)
+    global EOP = EarthOrientationData(product::Symbol) 
+end
+
+function load_eop(filepath::String, product::Symbol)
+    global EOP = EarthOrientationData(filepath, product) 
 end
 
 #################

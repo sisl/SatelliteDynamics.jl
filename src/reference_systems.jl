@@ -214,17 +214,13 @@ Returns:
 - `rc2i::Matrix{<:Real}`: 3x3 Rotation matrix transforming GCRS -> CIRS
 """
 function bias_precession_nutation(epc::Epoch)
-    # Constants of IAU 2006A transofrmation
-    DMAS2R =  4.848136811095359935899141e-6 / 1.0e3
-    dx06   =  0.0001750*DMAS2R
-    dy06   = -0.0002259*DMAS2R
-
     # Compute X, Y, s terms using low-precision series terms
     x, y, s = iauXys00b(MJD_ZERO, mjd(epc, tsys="TT"))
 
     # Apply IAU2006 Offsets
-    x += dx06
-    y += dy06
+    mjd_utc = mjd(epc, tsys="UT1")
+    x += DX(mjd_utc)
+    y += DY(mjd_utc)
 
     # Compute transformation and return
     rc2i = iauC2ixys(x, y, s)
