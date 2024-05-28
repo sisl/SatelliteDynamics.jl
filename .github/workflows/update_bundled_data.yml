@@ -9,8 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: 1.10
+      - uses: julia-actions/cache@v1
+      - uses: actions/checkout@v4
       - name: Update package data
-        run: ./scripts/update-data.sh
+        run: julia --project ./scripts/update_data.jl
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
         with:
