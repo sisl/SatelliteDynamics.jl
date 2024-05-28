@@ -1,7 +1,7 @@
 name = "SatelliteDynamics"
 uuid = "0e7c1a32-1b9f-5532-88a4-e668712d6a4c"
 authors = ["Duncan Eddy <duncan.eddy@gmail.com> and contributors"]
-version = "0.5.0"
+version = "0.6.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"

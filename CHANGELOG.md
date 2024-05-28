@@ -15,6 +15,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.6.0] - 2024-06-27
+
+### Added
+- Added new `SpaceWeatherData` class to `SpaceWeather` module to store space weather data.
+- Added `load_space_weather_data` function to `SpaceWeather` module to load space weather data from file.
+
+### Removed
+- Removed `GeomagneticData` and `SolarFluxData` classes from `SpaceWeather` module. These classes are now covered by the `SpaceWeatherData` class.
+
+### Fixed
+- Fixed download sources for Earth Orientation Parameters, Solar Flux, and Geomagnetic data.
+- Fixed ECI to ECEF conversion to properly use dX an dY values from IERS data
+to correct for Earth's rotation.
+- Fixed typos in documentation.
+
+### Changed 
+- Implemented nightly data download for Earth Orientation Parameters, Solar Flux, and Geomagnetic data so that data is always up-to-date.
+- Improved error message on out-of-range date for Earth Orientation Parameters to provide more clear explanation of the issue.
+
 ## [0.4.5] - 2023-05-23
 
 ### Changed 
