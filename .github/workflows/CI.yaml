@@ -74,6 +74,6 @@ jobs:
         shell: julia --project=docs --color=yes {0}
         run: |
           using Documenter: DocMeta, doctest
-          using DecisionMakingByExample
-          DocMeta.setdocmeta!(DecisionMakingByExample, :DocTestSetup, :(using DecisionMakingByExample); recursive=true)
-          doctest(DecisionMakingByExample)
+          using SatelliteDynamics
+          DocMeta.setdocmeta!(SatelliteDynamics, :DocTestSetup, :(using SatelliteDynamics); recursive=true)
+          doctest(SatelliteDynamics)
