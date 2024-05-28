@@ -12,16 +12,15 @@ Earth's atmosphere.
 solar activity and another input to most atmospheric models.
 
 ```@docs
-GeomagneticIndexData
-GEOMAGNETIC_DATA
+SpaceWeatherData
+SPACE_WEATHER_DATA
+load_space_weather_data
 KpIndices
 KpIndex
 KpDailyIndex
 ApIndices
 ApIndex
 ApDailyIndex
-SolarFluxData
-SOLAR_FLUX_DATA
 f107Data
 f107Observed
 f107Adjusted
