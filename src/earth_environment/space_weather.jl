@@ -1,13 +1,16 @@
-function get_kp_decimal(number::String, digit::String)
-    if isempty(strip(string(number)))
-        number = 0.0
-    else
-        number = parse(Int, number)
+function get_kp_decimal(str)
+
+    # Parse number
+    number = 0.0
+    if length(str) >= 2
+        number = parse(Int, str[1:end-1])
     end
+
+    # Parse decimal
     decimal = 0.0
-    if parse(Int, digit) == 3
+    if parse(Int, str[end]) == 3
         decimal = 1.0/3.0
-    elseif parse(Int, digit) == 7
+    elseif parse(Int, str[end]) == 7
         decimal = 2.0/3.0
     end
 
@@ -64,10 +67,10 @@ function SpaceWeatherData(filepath::String)
 
             kp_data = Float64[]
             for i in 6:13
-                push!(kp_data, get_kp_decimal(split_line[1], split_line[2]))
+                push!(kp_data, get_kp_decimal(split_line[i]))
             end
 
-            kp_sum = get_kp_decimal(split_line[14][1:2], split_line[14][3])
+            kp_sum = get_kp_decimal(split_line[14])
 
             ap_data = Float64[]
 
@@ -118,10 +121,10 @@ function SpaceWeatherData(filepath::String)
 
             kp_data = Float64[]
             for i in 6:13
-                push!(kp_data, get_kp_decimal(split_line[1], split_line[2]))
+                push!(kp_data, get_kp_decimal(split_line[i]))
             end
 
-            kp_sum = get_kp_decimal(split_line[14][1:2], split_line[14][3])
+            kp_sum = get_kp_decimal(split_line[14])
 
             ap_data = Float64[]
 
@@ -135,9 +138,9 @@ function SpaceWeatherData(filepath::String)
 
             # Parse Solar Flux Data
             f107_adj = parse(Float64, split_line[27])
-            f107_obs = parse(Float64, split_line[31])
-            f107_adj_avg = parse(Float64, split_line[30])
-            f107_obs_avg = parse(Float64, split_line[33])
+            f107_obs = parse(Float64, split_line[30])
+            f107_adj_avg = parse(Float64, split_line[29])
+            f107_obs_avg = parse(Float64, split_line[32])
 
             solarflux_data[mjd] = (f107_obs, f107_adj, f107_obs_avg, f107_adj_avg)
 
@@ -189,8 +192,8 @@ function KpIndices(swdata::SpaceWeatherData, mjd::Real)
     return swdata.geomagnetic_data[floor(Int, mjd)][1]
 end
 
-KpIndices(mjd::Real)  = KpIndices(SpaceWeatherData, mjd)
-KpIndices(epc::Epoch) = KpIndices(SpaceWeatherData, mjd(epc, tsys="UT1"))
+KpIndices(mjd::Real)  = KpIndices(SPACE_WEATHER_DATA, mjd)
+KpIndices(epc::Epoch) = KpIndices(SPACE_WEATHER_DATA, mjd(epc, tsys="UT1"))
 
 export KpIndex
 """
@@ -209,8 +212,8 @@ function KpIndex(swdata::SpaceWeatherData, mjd::Real)
     return swdata.geomagnetic_data[mjd_ut1][1][hour_idx+1]
 end
 
-KpIndex(mjd::Real)  = KpIndex(SpaceWeatherData, mjd)
-KpIndex(epc::Epoch) = KpIndex(SpaceWeatherData, mjd(epc, tsys="UT1"))
+KpIndex(mjd::Real)  = KpIndex(SPACE_WEATHER_DATA, mjd)
+KpIndex(epc::Epoch) = KpIndex(SPACE_WEATHER_DATA, mjd(epc, tsys="UT1"))
 
 export KpDailyIndex
 """
@@ -224,8 +227,8 @@ function KpDailyIndex(swdata::SpaceWeatherData, mjd::Real)
     return swdata.geomagnetic_data[floor(Int, mjd)][2]
 end
 
-KpDailyIndex(mjd::Real)  = KpDailyIndex(SpaceWeatherData, mjd)
-KpDailyIndex(epc::Epoch) = KpDailyIndex(SpaceWeatherData, mjd(epc, tsys="UT1"))
+KpDailyIndex(mjd::Real)  = KpDailyIndex(SPACE_WEATHER_DATA, mjd)
+KpDailyIndex(epc::Epoch) = KpDailyIndex(SPACE_WEATHER_DATA, mjd(epc, tsys="UT1"))
 
 export ApIndices
 """
@@ -239,8 +242,8 @@ function ApIndices(swdata::SpaceWeatherData, mjd::Real)
     return swdata.geomagnetic_data[floor(Int, mjd)][3]
 end
 
-ApIndices(mjd::Real)  = ApIndices(SpaceWeatherData, mjd)
-ApIndices(epc::Epoch) = ApIndices(SpaceWeatherData, mjd(epc, tsys="UT1"))
+ApIndices(mjd::Real)  = ApIndices(SPACE_WEATHER_DATA, mjd)
+ApIndices(epc::Epoch) = ApIndices(SPACE_WEATHER_DATA, mjd(epc, tsys="UT1"))
 
 export ApIndex
 """
@@ -259,8 +262,8 @@ function ApIndex(swdata::SpaceWeatherData, mjd::Real)
     return swdata.geomagnetic_data[mjd_ut1][3][hour_idx+1]
 end
 
-ApIndex(mjd::Real)  = ApIndex(SpaceWeatherData, mjd)
-ApIndex(epc::Epoch) = ApIndex(SpaceWeatherData, mjd(epc, tsys="UT1"))
+ApIndex(mjd::Real)  = ApIndex(SPACE_WEATHER_DATA, mjd)
+ApIndex(epc::Epoch) = ApIndex(SPACE_WEATHER_DATA, mjd(epc, tsys="UT1"))
 
 export ApDailyIndex
 """
@@ -274,8 +277,8 @@ function ApDailyIndex(swdata::SpaceWeatherData, mjd::Real)
     return swdata.geomagnetic_data[floor(Int, mjd)][4]
 end
 
-ApDailyIndex(mjd::Real)  = ApDailyIndex(SpaceWeatherData, mjd)
-ApDailyIndex(epc::Epoch) = ApDailyIndex(SpaceWeatherData, mjd(epc, tsys="UT1"))
+ApDailyIndex(mjd::Real)  = ApDailyIndex(SPACE_WEATHER_DATA, mjd)
+ApDailyIndex(epc::Epoch) = ApDailyIndex(SPACE_WEATHER_DATA, mjd(epc, tsys="UT1"))
 
 export f107Data
 """

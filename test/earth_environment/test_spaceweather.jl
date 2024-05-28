@@ -1,4 +1,9 @@
 
+
+let
+    load_space_weather_data(TEST_SW_DATA)
+end
+
 ##########################
 # Geomagnetic Index Data #
 ##########################
@@ -15,14 +20,14 @@ end
 ###################
 
 let
-    @test f107Observed(53941) == 75.9
-    @test f107Adjusted(53941) == 78.3
-    @test isapprox(f107ObservedAvg(53941), 72.2951, atol=1e-4)
-    @test isapprox(f107AdjustedAvg(53941), 74.5593, atol=1e-4)
+    @test f107Observed(53941) == 75.5
+    @test f107Adjusted(53941) == 77.9
+    @test isapprox(f107ObservedAvg(53941), 77.3, atol=1e-4)
+    @test isapprox(f107AdjustedAvg(53941), 79.6, atol=1e-4)
     
     data = f107Data(53941)
-    @test data[1] == 75.9
-    @test data[2] == 78.3
-    @test isapprox(data[3], 72.2951, atol=1e-4)
-    @test isapprox(data[4], 74.5593, atol=1e-4)
+    @test data[1] == 75.5
+    @test data[2] == 77.9
+    @test isapprox(data[3], 77.3, atol=1e-4)
+    @test isapprox(data[4], 79.6, atol=1e-4)
 end

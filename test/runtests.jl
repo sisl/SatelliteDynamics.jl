@@ -17,6 +17,7 @@ Random.seed!(0)
 # Define paths for test data
 const TEST_C04_EOP_DATA = abspath(joinpath(@__DIR__, "./data/EOP_20_C04_one_file_1962-now.txt"))
 const TEST_FINALS_EOP_DATA = abspath(joinpath(@__DIR__, "./data/FINALS.ALL_IAU2000.txt"))
+const TEST_SW_DATA = abspath(joinpath(@__DIR__, "./data/sw19571001.txt"))
 
 # Check equality of two arrays
 @inline function array_isapprox(x::AbstractArray{F},
