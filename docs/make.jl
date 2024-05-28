@@ -19,7 +19,7 @@ makedocs(
         canonical="https://sisl.github.io/SatelliteDynamics.jl",
         edit_link="main",
         assets=String[],
-        prettyurls = "true"
+        prettyurls = true
     ),
     sitename  = "SatelliteDynamics.jl",
     authors   = "Duncan Eddy",
