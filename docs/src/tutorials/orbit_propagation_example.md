@@ -73,13 +73,13 @@ t, epc, eci = sim!(orb, epcf)
 And that's it! All it took was 6 lines of code with the SatelliteDynamics 
 module to propagate an orbit. 
 
-We can visualize the orbit in inertial space:
+<!-- We can visualize the orbit in inertial space:
 
 ![](../plots/keplerian_orbit.svg)
 
 Or the evolution of the orbital elements:
 
-![](../plots/keplerian_elements.svg)
+![](../plots/keplerian_elements.svg) -->
 
 ## Full Force Model
 
@@ -112,7 +112,7 @@ orb  = EarthInertialState(epc0, eci0, dt=1.0,
 t, epc, eci = sim!(orb, epcf)
 ```
 
-We can visualize the orbit in inertial space:
+<!-- We can visualize the orbit in inertial space:
 
 ![](../plots/fullforce_orbit.svg)
 
@@ -121,4 +121,4 @@ Or the evolution of the orbital elements:
 ![](../plots/fullforce_elements.svg)
 
 From these plots we can see the effect of the orbit perturbations on each of the
-orbital elements.
+orbital elements. -->
