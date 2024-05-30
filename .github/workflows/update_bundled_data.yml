@@ -15,10 +15,14 @@ jobs:
           version: 1.10
       - uses: julia-actions/cache@v2
       - uses: actions/checkout@v4
-      - name: Ensure packages are up-to-date and precompiled
-        run: julia --project -e "using Pkg; Pkg.instantiate(); using SatelliteDynamics;"
+      - name: Update Package Registry
+        run: julia -e 'using Pkg; Pkg.update();'
+      - name: Add SatelliteDynamics.jl
+        run: julia -e 'using Pkg; Pkg.add(PackageSpec(path="."));'
+      - name: Precompile Package
+        run: julia -e 'using Pkg; Pkg.precompile();'
       - name: Update package data
-        run: julia --project ./scripts/update_data.jl
+        run: julia ./scripts/update_data.jl
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
         with:
