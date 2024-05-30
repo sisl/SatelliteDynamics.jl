@@ -12,15 +12,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
         with:
-          version: 1.10
+          version: "1.10"
       - uses: julia-actions/cache@v2
       - uses: actions/checkout@v4
       - name: Update Package Registry
         run: julia -e 'using Pkg; Pkg.update();'
-      - name: Add SatelliteDynamics.jl
-        run: julia -e 'using Pkg; Pkg.add(PackageSpec(path="."));'
-      - name: Precompile Package
-        run: julia -e 'using Pkg; Pkg.precompile();'
+      - name: Ensure dependencies are built
+        run: julia --project -e "using Pkg; Pkg.precompile(); using SatelliteDynamics; Pkg.instantiate();"
       - name: Update package data
         run: julia ./scripts/update_data.jl
       - name: Commit and push changes
