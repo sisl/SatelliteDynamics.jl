@@ -3,6 +3,7 @@ name: Update Bundled Data
 on:
   schedule:
     - cron: '30 9 * * *'
+  workflow_dispatch:
 
 jobs:
   update-eop-data:
