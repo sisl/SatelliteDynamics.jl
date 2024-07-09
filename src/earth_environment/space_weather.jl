@@ -49,46 +49,51 @@ function SpaceWeatherData(filepath::String)
         line = readline(fp)
 
         while !occursin("END OBSERVED", line)
-            # Split the line into individual items
-            split_line = split(line)
+            try 
+                # Split the line into individual items
+                split_line = split(line)
 
-            # Parse Date Information
-            year  = parse(Int, split_line[1])
-            month = parse(Int, split_line[2])
-            day   = parse(Int, split_line[3])
-            mjd   = caldate_to_mjd(year, month, day)
+                # Parse Date Information
+                year  = parse(Int, split_line[1])
+                month = parse(Int, split_line[2])
+                day   = parse(Int, split_line[3])
+                mjd   = caldate_to_mjd(year, month, day)
 
-            bsrn  = parse(Int, split_line[4])
-            dom   = parse(Int, split_line[5])
+                bsrn  = parse(Int, split_line[4])
+                dom   = parse(Int, split_line[5])
 
-            cycle_data[mjd] = (bsrn, dom)
+                cycle_data[mjd] = (bsrn, dom)
 
-            # Parse Geomagnetic Data
+                # Parse Geomagnetic Data
 
-            kp_data = Float64[]
-            for i in 6:13
-                push!(kp_data, get_kp_decimal(split_line[i]))
+                kp_data = Float64[]
+                for i in 6:13
+                    push!(kp_data, get_kp_decimal(split_line[i]))
+                end
+
+                kp_sum = get_kp_decimal(split_line[14])
+
+                ap_data = Float64[]
+
+                for i in 15:22
+                    push!(ap_data, parse(Float64, split_line[i]))
+                end
+
+                ap_avg = parse(Float64, split_line[23])
+
+                geomag_data[mjd] = (kp_data, kp_sum, ap_data, ap_avg)
+
+                # Parse Solar Flux Data
+                f107_adj = parse(Float64, split_line[27])
+                f107_obs = parse(Float64, split_line[31])
+                f107_adj_avg = parse(Float64, split_line[30])
+                f107_obs_avg = parse(Float64, split_line[33])
+
+                solarflux_data[mjd] = (f107_obs, f107_adj, f107_obs_avg, f107_adj_avg)
+
+            catch e
+                error("Failed to parse Space Weather Data File \"$filepath\". Line: \"$line\".\n Error: $e")
             end
-
-            kp_sum = get_kp_decimal(split_line[14])
-
-            ap_data = Float64[]
-
-            for i in 15:22
-                push!(ap_data, parse(Float64, split_line[i]))
-            end
-
-            ap_avg = parse(Float64, split_line[23])
-
-            geomag_data[mjd] = (kp_data, kp_sum, ap_data, ap_avg)
-
-            # Parse Solar Flux Data
-            f107_adj = parse(Float64, split_line[27])
-            f107_obs = parse(Float64, split_line[31])
-            f107_adj_avg = parse(Float64, split_line[30])
-            f107_obs_avg = parse(Float64, split_line[33])
-
-            solarflux_data[mjd] = (f107_obs, f107_adj, f107_obs_avg, f107_adj_avg)
 
             # Read in next line
             line = readline(fp)
@@ -103,49 +108,53 @@ function SpaceWeatherData(filepath::String)
         line = readline(fp)
 
         while !occursin("END DAILY_PREDICTED", line)
-            # Split the line into individual items
-            split_line = split(line)
+            try
+                # Split the line into individual items
+                split_line = split(line)
 
-            # Parse Date Information
-            year  = parse(Int, split_line[1])
-            month = parse(Int, split_line[2])
-            day   = parse(Int, split_line[3])
-            mjd   = caldate_to_mjd(year, month, day)
+                # Parse Date Information
+                year  = parse(Int, split_line[1])
+                month = parse(Int, split_line[2])
+                day   = parse(Int, split_line[3])
+                mjd   = caldate_to_mjd(year, month, day)
 
-            bsrn  = parse(Int, split_line[4])
-            dom   = parse(Int, split_line[5])
+                bsrn  = parse(Int, split_line[4])
+                dom   = parse(Int, split_line[5])
 
-            cycle_data[mjd] = (bsrn, dom)
+                cycle_data[mjd] = (bsrn, dom)
 
-            # Parse Geomagnetic Data
+                # Parse Geomagnetic Data
 
-            kp_data = Float64[]
-            for i in 6:13
-                push!(kp_data, get_kp_decimal(split_line[i]))
+                kp_data = Float64[]
+                for i in 6:13
+                    push!(kp_data, get_kp_decimal(split_line[i]))
+                end
+
+                kp_sum = get_kp_decimal(split_line[14])
+
+                ap_data = Float64[]
+
+                for i in 15:22
+                    push!(ap_data, parse(Float64, split_line[i]))
+                end
+
+                ap_avg = parse(Float64, split_line[23])
+
+                geomag_data[mjd] = (kp_data, kp_sum, ap_data, ap_avg)
+
+                # Parse Solar Flux Data
+                f107_adj = parse(Float64, split_line[27])
+                f107_obs = parse(Float64, split_line[30])
+                f107_adj_avg = parse(Float64, split_line[29])
+                f107_obs_avg = parse(Float64, split_line[32])
+
+                solarflux_data[mjd] = (f107_obs, f107_adj, f107_obs_avg, f107_adj_avg)
+
+                # Read in next line
+                line = readline(fp)
+            catch e
+                error("Failed to parse Space Weather Data File \"$filepath\". Line: \"$line\".\n Error: $e")
             end
-
-            kp_sum = get_kp_decimal(split_line[14])
-
-            ap_data = Float64[]
-
-            for i in 15:22
-                push!(ap_data, parse(Float64, split_line[i]))
-            end
-
-            ap_avg = parse(Float64, split_line[23])
-
-            geomag_data[mjd] = (kp_data, kp_sum, ap_data, ap_avg)
-
-            # Parse Solar Flux Data
-            f107_adj = parse(Float64, split_line[27])
-            f107_obs = parse(Float64, split_line[30])
-            f107_adj_avg = parse(Float64, split_line[29])
-            f107_obs_avg = parse(Float64, split_line[32])
-
-            solarflux_data[mjd] = (f107_obs, f107_adj, f107_obs_avg, f107_adj_avg)
-
-            # Read in next line
-            line = readline(fp)
         end
     end
 
