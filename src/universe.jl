@@ -41,10 +41,10 @@ Download F10.7cm Solar Flux data.
 10.7cm solar flux is the standard measure of solar activity in space weather models.
 
 Notes:
-1. Data source is NRC Canada solar flux tables: ftp://ftp.seismo.nrcan.gc.ca/spaceweather/solar_flux/daily_flux_values/fluxtable.txt
+1. Data source is NRC Canada solar flux tables: https://www.spaceweather.gc.ca/solar_flux_data/daily_flux_values/fluxtable.txt
 """
 function download_solar_flux()
-    @suppress download_file("ftp://ftp.seismo.nrcan.gc.ca/spaceweather/solar_flux/daily_flux_values/fluxtable.txt", "fluxtable.txt")
+    @suppress download_file("https://www.spaceweather.gc.ca/solar_flux_data/daily_flux_values/fluxtable.txt", "fluxtable.txt")
 end
 
 export download_all_data
