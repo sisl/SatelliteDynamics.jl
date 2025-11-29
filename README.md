@@ -1,5 +1,10 @@
 # SatelliteDynamics.jl [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://sisl.github.io/SatelliteDynamics.jl/stable/) [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://sisl.github.io/SatelliteDynamics.jl/dev/) [![Build Status](https://github.com/sisl/SatelliteDynamics.jl/actions/workflows/CI.yaml/badge.svg?branch=main)](https://github.com/sisl/SatelliteDynamics.jl/actions/workflows/CI.yml?query=branch%3Amain) [![Coverage](https://codecov.io/gh/sisl/SatelliteDynamics.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/sisl/SatelliteDynamics.jl)
 
+> [!TIP]
+> This package is no longer under active development, but still generally works.
+>
+> Please consider using [brahe](https://github.com/duncaneddy/brahe) as an alternative for new projects. It is actively maintained and has a broader feature set.
+
 SatelliteDynamics package is meant to address the needs of the satellite operator, academic researcher, and public enthusiast communities.
 
 Current high-fidelity satellite dynamics modeling software generally falls into two camps:
