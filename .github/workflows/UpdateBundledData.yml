@@ -14,6 +14,7 @@ jobs:
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
         with:
-          author_name: Github Worker
+          author_name: github-actions[bot]
+          author_email: 41898282+github-actions[bot]@users.noreply.github.com
           message: 'Commit from GitHub Actions - Daily Update of Bundled Data'
           add: 'data/*'
