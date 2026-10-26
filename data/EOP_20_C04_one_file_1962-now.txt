@@ -1,4 +1,4 @@
 <html><head><title>Request Rejected</title></head><body>
-Dieser URL wird nicht beantwortet. Bitte wenden Sie sich mit Ihrer Anfrage an das <a href="http://www.bkg.bund.de/"> Bundesamt fuer Kartographie und Geodaesie. <br></a>Nennen Sie uns bitte diese Support ID: 11893466650218194986<br><br><a href='javascript:history.back();'>[Zurück]</a>
+Dieser URL wird nicht beantwortet. Bitte wenden Sie sich mit Ihrer Anfrage an das <a href="http://www.bkg.bund.de/"> Bundesamt fuer Kartographie und Geodaesie. <br></a>Nennen Sie uns bitte diese Support ID: 11893466650260942595<br><br><a href='javascript:history.back();'>[Zurück]</a>
 <br><br>
-The requested URL was rejected. Please consult <a href="http://www.bkg.bund.de/"> Bundesamt fuer Kartographie und Geodaesie.</a><br>Your support ID is: 11893466650218194986<br><br><a href='javascript:history.back();'>[Go Back]</a></body></html>
+The requested URL was rejected. Please consult <a href="http://www.bkg.bund.de/"> Bundesamt fuer Kartographie und Geodaesie.</a><br>Your support ID is: 11893466650260942595<br><br><a href='javascript:history.back();'>[Go Back]</a></body></html>
